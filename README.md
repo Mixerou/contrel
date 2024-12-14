@@ -57,7 +57,7 @@ Use it to communicate your intent to the project developers.
 
 - `*` - it selects all available scopes
 
-- `repo` - changes that not effect project modules (example: ci, readme, etc.)
+- `repo` - changes that not affect project modules (example: ci, readme, etc.)
 
 - `backend` - changes that effects [`Backend`](./backend) module
 
@@ -67,7 +67,7 @@ Use it to communicate your intent to the project developers.
 
 If a commit has a footer `BREAKING CHANGE:`,
 or appends a `!` after the type/scope,
-it introduces a breaking codebase changes.
+it introduces breaking codebase changes.
 
 #### Subject
 
