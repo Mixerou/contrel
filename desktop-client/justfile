@@ -1,0 +1,41 @@
+output_dir := "target"
+debug_subdir := "debug"
+release_subdir := "release"
+
+default:
+    @just --list
+
+# Configuration
+
+configure-debug:
+    cmake -S . -B {{ output_dir }}/{{ debug_subdir }} -G Ninja -DCMAKE_BUILD_TYPE=Debug
+
+configure-release:
+    cmake -S . -B {{ output_dir }}/{{ release_subdir }} -G Ninja -DCMAKE_BUILD_TYPE=Release
+
+alias configure := configure-debug
+
+# Build
+
+build-debug: configure-debug
+    cmake --build {{ output_dir }}/{{ debug_subdir }}
+
+build-release: configure-release
+    cmake --build {{ output_dir }}/{{ release_subdir }}
+
+alias build := build-debug
+
+# Run
+
+run-debug: build-debug
+    ./{{ output_dir }}/{{ debug_subdir }}/contrel_desktop_client_debug
+
+run-release: build-release
+    ./{{ output_dir }}/{{ release_subdir }}/contrel_desktop_client
+
+alias run := run-debug
+
+# Clean
+
+clean:
+    rm -rf ./{{ output_dir }}

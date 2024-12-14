@@ -1,0 +1,11 @@
+---
+BasedOnStyle: Google
+SortIncludes: CaseSensitive
+IncludeIsMainRegex: '^(.*)/[^/]+\.cc$'
+IncludeCategories:
+  - Regex: '<[a-z]+>'
+    Priority: 1
+  - Regex: '^<.*\.h>'
+    Priority: 2
+  - Regex: '^"[^"]*"'
+    Priority: 3

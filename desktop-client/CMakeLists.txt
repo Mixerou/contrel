@@ -1,0 +1,66 @@
+cmake_minimum_required(VERSION 3.30 FATAL_ERROR)
+project(contrel_desktop_client VERSION 0.0.1 LANGUAGES CXX)
+
+# C
+set(CMAKE_C_STANDARD 23)
+set(CMAKE_C_STANDARD_REQUIRED ON)
+set(CMAKE_C_EXTENSIONS OFF)
+
+# C++
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+# General
+include_directories(src src/ui/widgets)
+include_directories(libs/glfw/include/GLFW)
+include_directories(libs/imgui libs/imgui/misc/freetype libs/imgui/backends)
+include_directories(libs/stb)
+
+add_subdirectory(libs/freetype)
+add_subdirectory(libs/glad)
+add_subdirectory(libs/glfw)
+add_subdirectory(libs/lunasvg)
+
+set(IMGUI_SOURCES
+        # Base
+        libs/imgui/imgui.cpp
+        libs/imgui/imgui_draw.cpp
+        libs/imgui/imgui_tables.cpp
+        libs/imgui/imgui_widgets.cpp
+
+        # Miscs
+        libs/imgui/misc/freetype/imgui_freetype.cpp
+
+        # Backends
+        libs/imgui/backends/imgui_impl_glfw.cpp
+        libs/imgui/backends/imgui_impl_opengl3.cpp
+)
+
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+    add_definitions(-DDEBUG_BUILD)
+    set(IMGUI_SOURCES
+            ${IMGUI_SOURCES}
+            libs/imgui/imgui_demo.cpp
+    )
+endif ()
+
+set(SOURCES
+        src/main.cc
+        src/app.cc
+
+        # Widgets
+        src/ui/widgets/texts.cc
+)
+
+# Definitions
+add_compile_definitions(IMGUI_USER_CONFIG="imgui_config.h")
+
+# Target
+add_executable(${PROJECT_NAME} ${IMGUI_SOURCES} ${SOURCES})
+set_target_properties(${PROJECT_NAME} PROPERTIES DEBUG_POSTFIX _debug)
+
+# Deps
+find_package(OpenGL REQUIRED)
+
+target_link_libraries(${PROJECT_NAME} freetype OpenGL::GL glad glfw lunasvg::lunasvg)

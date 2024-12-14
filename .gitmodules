@@ -1,0 +1,15 @@
+[submodule "desktop-client/libs/imgui"]
+	path = desktop-client/libs/imgui
+	url = https://github.com/ocornut/imgui
+[submodule "desktop-client/libs/freetype"]
+	path = desktop-client/libs/freetype
+	url = https://github.com/freetype/freetype
+[submodule "desktop-client/libs/glfw"]
+	path = desktop-client/libs/glfw
+	url = https://github.com/glfw/glfw
+[submodule "desktop-client/libs/lunasvg"]
+	path = desktop-client/libs/lunasvg
+	url = https://github.com/sammycage/lunasvg
+[submodule "desktop-client/libs/stb"]
+	path = desktop-client/libs/stb
+	url = https://github.com/nothings/stb

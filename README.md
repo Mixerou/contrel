@@ -61,6 +61,8 @@ Use it to communicate your intent to the project developers.
 
 - `backend` - changes that effects [`Backend`](./backend) module
 
+- `desk-cl` - changes that effects [`Desktop Client`](./desktop-client) module
+
 #### Exclamation mark
 
 If a commit has a footer `BREAKING CHANGE:`,
