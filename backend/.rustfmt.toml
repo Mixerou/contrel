@@ -1,0 +1,3 @@
+imports_granularity = 'Module' # In Rustfmt 1.8.0 this option is unstable
+group_imports = 'StdExternalCrate' # In Rustfmt 1.8.0 this option is unstable
+newline_style = 'Unix'

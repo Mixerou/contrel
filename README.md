@@ -59,6 +59,8 @@ Use it to communicate your intent to the project developers.
 
 - `repo` - changes that not effect project modules (example: ci, readme, etc.)
 
+- `backend` - changes that effects [`Backend`](./backend) module
+
 #### Exclamation mark
 
 If a commit has a footer `BREAKING CHANGE:`,

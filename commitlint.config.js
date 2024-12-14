@@ -15,7 +15,7 @@ module.exports = {
         'type-empty': [2, 'never', false],
 
         // Also edit scopes in /README.md
-        'scope-enum': [2, 'always', ['*', 'repo']],
+        'scope-enum': [2, 'always', ['*', 'repo', 'backend']],
         'scope-case': [2, 'always', 'kebab-case'],
         'scope-empty': [2, 'never', false],
 
