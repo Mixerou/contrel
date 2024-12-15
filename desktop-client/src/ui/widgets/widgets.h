@@ -14,6 +14,11 @@ enum class Alignment {
   kRight,
 };
 
+enum class ColorAccent {
+  kPrimary,
+  kDanger,
+};
+
 // Texts
 void BodyText(const char *fmt, ...);
 
@@ -22,7 +27,8 @@ void HeadingXlText(const char *fmt, ...);
 void HeadingXlTextCenter(const char *fmt, ...);
 
 // Application Status Badges
-void ErrorAppBadge(const char *fmt);
+void ErrorAppBadge(const char *fmt,
+                   ColorAccent color_accent = ColorAccent::kPrimary);
 }  // namespace widgets
 
 #endif  // DESKTOP_CLIENT_WIDGETS_H

@@ -105,11 +105,9 @@ int main(int, char **) {
     }
 
     {
-      if (is_ping_error) {
-        ImGui::PushStyleColor(ImGuiCol_Text, kColorPrimary700);
-        widgets::ErrorAppBadge("We're currently offline");
-        ImGui::PopStyleColor();
-      }
+      if (is_ping_error)
+        widgets::ErrorAppBadge("We're currently offline",
+                               widgets::ColorAccent::kDanger);
 
       auto center = ImGui::GetMainViewport()->GetWorkCenter();
 
