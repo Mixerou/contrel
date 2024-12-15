@@ -6,12 +6,15 @@
 
 #include "app.h"
 #include "constants.h"
+#include "workers.h"
 
 using namespace constants;
 
 namespace app {
 ImFont *body_font = nullptr;
 ImFont *heading_xl_font = nullptr;
+
+workers::ApiWorker api_worker;
 
 void InitFonts() {
   auto io = ImGui::GetIO();

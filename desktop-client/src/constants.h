@@ -5,7 +5,9 @@
 #ifndef DESKTOP_CLIENT_CONSTANTS_H
 #define DESKTOP_CLIENT_CONSTANTS_H
 
-#include "imgui.h"
+#include <string>
+
+#include <imgui.h>
 
 namespace constants {
 // Scale
@@ -48,6 +50,9 @@ constexpr ImVec4 kColorWhite = ImVec4(0.96, 0.96, 0.96, 1.0);
 
 constexpr ImVec4 kColorDefaultText = kColorBlack;
 constexpr ImVec4 kColorDefaultBackground = kColorWhite;
+
+// Backend-related
+constexpr std::string_view kBackendApiUrl = "https://contrel.mixero.dev/api";
 }  // namespace constants
 
 #endif  // DESKTOP_CLIENT_CONSTANTS_H

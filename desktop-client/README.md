@@ -18,7 +18,11 @@ Desktop Client module of the Contrel Project
 
 [Dear ImGui]: https://github.com/ocornut/imgui
 
+[IXWebSocket]: https://github.com/machinezone/IXWebSocket
+
 [LunaSVG]: https://github.com/sammycage/lunasvg
+
+[msgpack]: https://github.com/msgpack/msgpack-c
 
 [stb]: https://github.com/nothings/stb
 
@@ -26,7 +30,9 @@ Desktop Client module of the Contrel Project
 - [Glad] — 2.0.8 (generated from [Glad Configurator])
 - [GLFW] — 3.4
 - [Dear ImGui] — v1.91.6
+- [IXWebSocket] — v11.4.5
 - [LunaSVG] — v3.0.1
+- [msgpack] — cpp-7.0.0
 - [stb] — 0dd01c2
 
 ### System

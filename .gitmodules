@@ -13,3 +13,9 @@
 [submodule "desktop-client/libs/stb"]
 	path = desktop-client/libs/stb
 	url = https://github.com/nothings/stb
+[submodule "desktop-client/libs/ix_websocket"]
+	path = desktop-client/libs/ix_websocket
+	url = https://github.com/machinezone/IXWebSocket
+[submodule "desktop-client/libs/msgpack"]
+	path = desktop-client/libs/msgpack
+	url = https://github.com/msgpack/msgpack-c

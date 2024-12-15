@@ -20,6 +20,9 @@ void BodyText(const char *fmt, ...);
 void HeadingXlText(const char *fmt, ...);
 
 void HeadingXlTextCenter(const char *fmt, ...);
+
+// Application Status Badges
+void ErrorAppBadge(const char *fmt);
 }  // namespace widgets
 
 #endif  // DESKTOP_CLIENT_WIDGETS_H

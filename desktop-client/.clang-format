@@ -3,9 +3,9 @@ BasedOnStyle: Google
 SortIncludes: CaseSensitive
 IncludeIsMainRegex: '^(.*)/[^/]+\.cc$'
 IncludeCategories:
-  - Regex: '<[a-z]+>'
+  - Regex: '<[a-z_]+>'
     Priority: 1
-  - Regex: '^<.*\.h>'
+  - Regex: '^<.*\.(h|hpp)>'
     Priority: 2
   - Regex: '^"[^"]*"'
     Priority: 3

@@ -2,8 +2,6 @@
 // Created by Mixerou on 14.12.2024.
 //
 
-#include <iostream>
-
 #include <glad/gl.h>
 #include <glfw3.h>
 #include <imgui.h>
@@ -11,6 +9,7 @@
 #include <imgui_impl_opengl3.h>
 
 #include "app.h"
+#include "backend.h"
 #include "constants.h"
 #include "widgets.h"
 
@@ -84,7 +83,34 @@ int main(int, char **) {
     }
 #endif
 
+    // Dumb ping loop
+    static bool is_ping_requested = false;
+    static bool is_ping_error = false;
+    static backend::BackendRequest request;
+
+    if (is_ping_requested) {
+      backend::ping_response_t response_body;
+      auto response = backend::GetResponse(request, response_body);
+
+      if (response == backend::ResponseStatus::kCompleted) {
+        is_ping_requested = false;
+        is_ping_error = false;
+      } else if (response == backend::ResponseStatus::kError) {
+        is_ping_requested = false;
+        is_ping_error = true;
+      }
+    } else {
+      is_ping_requested = true;
+      request = backend::Ping();
+    }
+
     {
+      if (is_ping_error) {
+        ImGui::PushStyleColor(ImGuiCol_Text, kColorPrimary700);
+        widgets::ErrorAppBadge("We're currently offline");
+        ImGui::PopStyleColor();
+      }
+
       auto center = ImGui::GetMainViewport()->GetWorkCenter();
 
       ImGui::SetNextWindowPos(ImVec2(center.x, center.y), ImGuiCond_Always,

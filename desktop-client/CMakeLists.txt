@@ -11,8 +11,13 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+# Options
+option(USE_TLS "Enable TLS support for the IXWebSocket" ON)
+option(MSGPACK_USE_BOOST "Use Boost for the msgpack" OFF)
+
+
 # General
-include_directories(src src/ui/widgets)
+include_directories(src src/backend src/ui/widgets src/workers)
 include_directories(libs/glfw/include/GLFW)
 include_directories(libs/imgui libs/imgui/misc/freetype libs/imgui/backends)
 include_directories(libs/stb)
@@ -20,7 +25,9 @@ include_directories(libs/stb)
 add_subdirectory(libs/freetype)
 add_subdirectory(libs/glad)
 add_subdirectory(libs/glfw)
+add_subdirectory(libs/ix_websocket)
 add_subdirectory(libs/lunasvg)
+add_subdirectory(libs/msgpack)
 
 set(IMGUI_SOURCES
         # Base
@@ -49,8 +56,15 @@ set(SOURCES
         src/main.cc
         src/app.cc
 
-        # Widgets
+        # Backend
+        src/backend/api.cc
+
+        # UI Widgets
+        src/ui/widgets/app_badges.cc
         src/ui/widgets/texts.cc
+
+        # Workers
+        src/workers/api.cc
 )
 
 # Definitions
@@ -63,4 +77,4 @@ set_target_properties(${PROJECT_NAME} PROPERTIES DEBUG_POSTFIX _debug)
 # Deps
 find_package(OpenGL REQUIRED)
 
-target_link_libraries(${PROJECT_NAME} freetype OpenGL::GL glad glfw lunasvg::lunasvg)
+target_link_libraries(${PROJECT_NAME} freetype OpenGL::GL glad glfw ixwebsocket::ixwebsocket lunasvg::lunasvg msgpack-cxx)
