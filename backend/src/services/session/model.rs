@@ -47,4 +47,19 @@ impl Session {
 
         Ok(session)
     }
+
+    pub async fn update_user_id(id: &i64, user_id: Option<i64>) -> Result<Self, BackendError> {
+        let connection = db::get_connection();
+
+        let session = query_as!(
+            Self,
+            r#"UPDATE sessions SET user_id = $1 WHERE id = $2 RETURNING *"#,
+            user_id,
+            id,
+        )
+        .fetch_one(connection)
+        .await?;
+
+        Ok(session)
+    }
 }

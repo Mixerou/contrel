@@ -255,6 +255,7 @@ backend_error_template! {
     // It can be used for the general / unknown 4xxx error.
     (HTTP_CODE_BAD_REQUEST, Some(4000), InvalidRequest, "Invalid request");
     (HTTP_CODE_BAD_REQUEST, Some(4001), BadEmail, "Bad email");
-    (HTTP_CODE_BAD_REQUEST, Some(4003), AlreadyRegistered, "Account with this email already registered");
     (HTTP_CODE_FORBIDDEN, Some(4002), LoggedInRestriction, "This action cannot be performed while you are logged in");
+    (HTTP_CODE_BAD_REQUEST, Some(4003), AlreadyRegistered, "Account with this email already registered");
+    (HTTP_CODE_BAD_REQUEST, Some(4004), BadLoginCredentials, "Bad login credentials");
 }
