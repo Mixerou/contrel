@@ -33,6 +33,7 @@ add_subdirectory(libs/freetype)
 add_subdirectory(libs/glad)
 add_subdirectory(libs/glfw)
 add_subdirectory(libs/ix_websocket)
+add_subdirectory(libs/keychain)
 add_subdirectory(libs/lunasvg)
 add_subdirectory(libs/mbedtls)
 add_subdirectory(libs/msgpack)
@@ -85,4 +86,4 @@ set_target_properties(${PROJECT_NAME} PROPERTIES DEBUG_POSTFIX _debug)
 # Deps
 find_package(OpenGL REQUIRED)
 
-target_link_libraries(${PROJECT_NAME} freetype OpenGL::GL glad glfw ixwebsocket::ixwebsocket lunasvg::lunasvg mbedtls mbedcrypto mbedx509 msgpack-cxx)
+target_link_libraries(${PROJECT_NAME} freetype OpenGL::GL glad glfw ixwebsocket::ixwebsocket keychain lunasvg::lunasvg mbedtls mbedcrypto mbedx509 msgpack-cxx)

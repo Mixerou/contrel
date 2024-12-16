@@ -2,7 +2,10 @@
 // Created by Mixerou on 14.12.2024.
 //
 
+#include <iostream>
+
 #include <imgui.h>
+#include <keychain/keychain.h>
 
 #include "app.h"
 #include "constants.h"
@@ -46,3 +49,31 @@ void InitStyle() {
   style.Colors[ImGuiCol_NavCursor] = ImVec4(0.0, 0.0, 0.0, 0.0);
 }
 }  // namespace app
+
+namespace app::states {
+System::System() {
+  keychain::Error error;
+  std::lock_guard<std::mutex> lock(session_token_mutex_);
+
+  session_token_ =
+      keychain::getPassword("dev.mixero.contrel", "desktop-client", "", error);
+}
+
+std::string System::GetSessionToken() {
+  std::lock_guard<std::mutex> lock(session_token_mutex_);
+  return session_token_;
+}
+
+void System::SetSessionToken(std::string session_token) {
+  {
+    std::lock_guard<std::mutex> lock(session_token_mutex_);
+    session_token_ = session_token;
+  }
+
+  keychain::Error error;
+  keychain::setPassword("dev.mixero.contrel", "desktop-client", "",
+                        session_token, error);
+}
+
+System system;
+}  // namespace app::states
