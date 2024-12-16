@@ -5,6 +5,7 @@ project(contrel_desktop_client VERSION 0.0.1 LANGUAGES CXX)
 set(CMAKE_C_STANDARD 23)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS OFF)
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-constant-logical-operand") # I need this, because some dependencies ruin the compilation
 
 # C++
 set(CMAKE_CXX_STANDARD 23)
