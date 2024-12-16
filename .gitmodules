@@ -19,3 +19,6 @@
 [submodule "desktop-client/libs/msgpack"]
 	path = desktop-client/libs/msgpack
 	url = https://github.com/msgpack/msgpack-c
+[submodule "desktop-client/libs/mbedtls"]
+	path = desktop-client/libs/mbedtls
+	url = https://github.com/Mbed-TLS/mbedtls

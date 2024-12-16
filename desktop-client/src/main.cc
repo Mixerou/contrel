@@ -7,6 +7,7 @@
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
+#include <ixwebsocket/IXNetSystem.h>
 
 #include "app.h"
 #include "backend.h"
@@ -20,6 +21,8 @@ static void GlfwErrorCallback(int error, const char *description) {
 }
 
 int main(int, char **) {
+  ix::initNetSystem();
+
   glfwSetErrorCallback(GlfwErrorCallback);
   if (!glfwInit()) return EXIT_FAILURE;
 
@@ -141,6 +144,8 @@ int main(int, char **) {
 
   glfwDestroyWindow(window);
   glfwTerminate();
+
+  ix::uninitNetSystem();
 
   return EXIT_SUCCESS;
 }

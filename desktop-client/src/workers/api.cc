@@ -18,6 +18,10 @@ void ApiWorker::Loop() {
   while (true) {
     ApiRequest request;
 
+    ix::HttpClient http_client;
+    auto args = http_client.createRequest();
+    args->compress = false;
+
     {
       std::unique_lock<std::mutex> lock(queue_mutex_);
       request_condition_.wait(
@@ -29,8 +33,6 @@ void ApiWorker::Loop() {
       requests_.pop();
     }
 
-    ix::HttpClient http_client;
-    auto args = http_client.createRequest();
     auto response =
         http_client.request(format("{}{}", kBackendApiUrl, request.path),
                             request.method, request.body, args);

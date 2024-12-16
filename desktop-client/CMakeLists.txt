@@ -12,14 +12,20 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Options
+option(USE_ZLIB "Enable ZLIB support for the IXWebSocket" OFF)
 option(USE_TLS "Enable TLS support for the IXWebSocket" ON)
+option(MBEDTLS_FOUND "Mark MbedTLS as found for the IXWebSocket" ON)
+option(USE_MBED_TLS "Use MbedTLS for the TLS support for the IXWebSocket" ON)
+option(USE_OPEN_SSL "Use OpenSSL for the TLS support for the IXWebSocket" OFF)
+option(ENABLE_TESTING "Build tests for the MbedTLS" OFF)
+option(ENABLE_PROGRAMS "Build programs for the MbedTLS" OFF)
 option(MSGPACK_USE_BOOST "Use Boost for the msgpack" OFF)
-
 
 # General
 include_directories(src src/backend src/ui/widgets src/workers)
 include_directories(libs/glfw/include/GLFW)
 include_directories(libs/imgui libs/imgui/misc/freetype libs/imgui/backends)
+include_directories(libs/mbedtls/include)
 include_directories(libs/stb)
 
 add_subdirectory(libs/freetype)
@@ -27,6 +33,7 @@ add_subdirectory(libs/glad)
 add_subdirectory(libs/glfw)
 add_subdirectory(libs/ix_websocket)
 add_subdirectory(libs/lunasvg)
+add_subdirectory(libs/mbedtls)
 add_subdirectory(libs/msgpack)
 
 set(IMGUI_SOURCES
@@ -77,4 +84,4 @@ set_target_properties(${PROJECT_NAME} PROPERTIES DEBUG_POSTFIX _debug)
 # Deps
 find_package(OpenGL REQUIRED)
 
-target_link_libraries(${PROJECT_NAME} freetype OpenGL::GL glad glfw ixwebsocket::ixwebsocket lunasvg::lunasvg msgpack-cxx)
+target_link_libraries(${PROJECT_NAME} freetype OpenGL::GL glad glfw ixwebsocket::ixwebsocket lunasvg::lunasvg mbedtls mbedcrypto mbedx509 msgpack-cxx)
