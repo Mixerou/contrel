@@ -12,6 +12,7 @@ mod db;
 mod error;
 mod services;
 mod snowflake_generator;
+mod utils;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -32,6 +33,7 @@ async fn main() -> std::io::Result<()> {
             web::scope(api_path.as_str())
                 .wrap(NormalizePath::new(TrailingSlash::Trim))
                 .wrap(services::session::middleware::CheckSession)
+                .configure(services::auth::init_routes)
                 .configure(services::system::init_routes),
         )
     })

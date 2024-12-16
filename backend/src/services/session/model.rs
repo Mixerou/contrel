@@ -11,6 +11,7 @@ pub struct Session {
     pub id: i64,
     pub token: String,
     pub created_at: PrimitiveDateTime,
+    pub user_id: Option<i64>,
 }
 
 impl Session {

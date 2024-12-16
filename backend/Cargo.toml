@@ -10,6 +10,7 @@ repository = "https://github.com/Mixerou/contrel"
 
 [dependencies]
 actix-web = "4.9.0"
+argon2 = "0.5.3"
 dotenv = "0.15.0"
 env_logger = "0.11.5"
 futures-util = "0.3.31"
@@ -21,6 +22,9 @@ rs-snowflake = "0.6.0"
 serde = { version = "1.0.216", features = ["derive"] }
 sqlx = { version = "0.8.2", default-features = false, features = ["runtime-tokio", "tls-rustls", "postgres", "macros", "time"] }
 time = "0.3.37"
+
+[profile.dev.package.argon2]
+opt-level = 3
 
 [profile.dev.package.sqlx]
 opt-level = 3
