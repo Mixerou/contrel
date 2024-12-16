@@ -1,9 +1,12 @@
 use std::fmt;
 
+use actix_web::http::header::ToStrError as ActixToStrError;
 use actix_web::http::StatusCode;
 use actix_web::{HttpResponse, ResponseError};
 use rmp_serde::encode::Error as RmpEncodeError;
 use serde::{Deserialize, Serialize};
+use sqlx::error::ErrorKind as SqlxErrorKind;
+use sqlx::Error as SqlxError;
 
 use crate::constants::{
     DEFAULT_CONTENT_TYPE, HTTP_CODE_BAD_REQUEST, HTTP_CODE_CONFLICT, HTTP_CODE_FORBIDDEN,
@@ -15,7 +18,9 @@ use crate::constants::{
 #[allow(dead_code)]
 pub enum BackendErrorKind {
     // Dependencies
+    ActixToStr(ActixToStrError),
     RmpEncode(RmpEncodeError),
+    Sqlx(SqlxError),
 
     // Other
     Other(Option<String>),
@@ -90,12 +95,44 @@ impl fmt::Display for BackendError {
 }
 
 // From dependency errors
+impl From<ActixToStrError> for BackendError {
+    fn from(error: ActixToStrError) -> Self {
+        Self::new_internal(
+            format!("Actix `to_str` error: {error}"),
+            BackendErrorKind::ActixToStr(error),
+        )
+    }
+}
+
 impl From<RmpEncodeError> for BackendError {
     fn from(error: RmpEncodeError) -> Self {
         Self::new_internal(
             format!("RMP encode error: {error}"),
             BackendErrorKind::RmpEncode(error),
         )
+    }
+}
+
+impl From<SqlxError> for BackendError {
+    fn from(error: SqlxError) -> Self {
+        match error {
+            SqlxError::RowNotFound => BackendErrorTemplate::NotFound
+                .error()
+                .set_kind(BackendErrorKind::Sqlx(error)),
+            SqlxError::Database(ref db_error) => match db_error.kind() {
+                SqlxErrorKind::UniqueViolation => BackendErrorTemplate::Conflict
+                    .error()
+                    .set_kind(BackendErrorKind::Sqlx(error)),
+                _ => Self::new_internal(
+                    format!("Sqlx database error: {db_error}"),
+                    BackendErrorKind::Sqlx(error),
+                ),
+            },
+            error => Self::new_internal(
+                format!("Sqlx error: {error}"),
+                BackendErrorKind::Sqlx(error),
+            ),
+        }
     }
 }
 
