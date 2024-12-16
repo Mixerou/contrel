@@ -52,6 +52,12 @@ impl Auth {
 
         Ok(())
     }
+
+    pub async fn logout(session_id: i64) -> Result<(), BackendError> {
+        Session::update_user_id(&session_id, None).await?;
+
+        Ok(())
+    }
 }
 
 #[derive(Clone, Deserialize)]

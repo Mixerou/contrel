@@ -38,7 +38,19 @@ async fn login(session: ReqData<Session>, payload: Bytes) -> Result<HttpResponse
     Ok(HttpResponse::NoContent().finish())
 }
 
+#[post("/auth/logout")]
+async fn logout(session: ReqData<Session>) -> Result<HttpResponse, BackendError> {
+    if session.user_id.is_none() {
+        return Err(BackendErrorTemplate::Forbidden.into());
+    }
+
+    Auth::logout(session.id).await?;
+
+    Ok(HttpResponse::NoContent().finish())
+}
+
 pub fn init_routes(cfg: &mut ServiceConfig) {
     cfg.service(register);
     cfg.service(login);
+    cfg.service(logout);
 }
