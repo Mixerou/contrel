@@ -21,6 +21,19 @@ BackendRequest Login(LoginRequestPayload payload) {
       app::api_worker.Enqueue("/auth/login", ix::HttpClient::kPost,
                               buffer.data()),
       Layer::kApi);
+
+  return request;
+}
+
+BackendRequest Register(RegisterRequestPayload payload) {
+  msgpack::sbuffer buffer;
+  msgpack::pack(buffer, payload);
+
+  BackendRequest request(
+      app::api_worker.Enqueue("/auth/register", ix::HttpClient::kPost,
+                              buffer.data()),
+      Layer::kApi);
+
   return request;
 }
 }  // namespace backend

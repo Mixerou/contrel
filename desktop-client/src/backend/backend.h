@@ -65,6 +65,18 @@ struct LoginRequestPayload {
 
 BackendRequest Login(LoginRequestPayload payload);
 
+// Register
+struct RegisterRequestPayload {
+  std::string email;
+  std::string password;
+  std::string first_name;
+  std::string last_name;
+
+  MSGPACK_DEFINE(email, password, first_name, last_name);
+};
+
+BackendRequest Register(RegisterRequestPayload payload);
+
 template <typename T>
 ResponseStatus GetResponse(BackendRequest &request, T &response_reference) {
   switch (request.layer) {
