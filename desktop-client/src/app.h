@@ -21,6 +21,14 @@ void InitStyle();
 
 namespace states {
 struct System {
+  enum class Screen {
+    kAuth,
+    kHotels,
+  };
+
+  Screen current_screen;
+  bool is_online;
+
   System();
 
   std::string GetSessionToken();

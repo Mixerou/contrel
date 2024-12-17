@@ -12,6 +12,7 @@
 #include "app.h"
 #include "backend.h"
 #include "constants.h"
+#include "screens.h"
 #include "widgets.h"
 
 using namespace constants;
@@ -86,41 +87,40 @@ int main(int, char **) {
     }
 #endif
 
-    // Dumb ping loop
-    static bool is_ping_requested = false;
-    static bool is_ping_error = false;
-    static backend::BackendRequest request;
+    {  // Dumb ping loop
+      static bool is_ping_requested = false;
+      static backend::BackendRequest request;
 
-    if (is_ping_requested) {
-      backend::ping_response_t response_body;
-      auto response = backend::GetResponse(request, response_body);
+      if (is_ping_requested) {
+        backend::ping_response_t response_body;
+        auto response = backend::GetResponse(request, response_body);
 
-      if (response == backend::ResponseStatus::kCompleted) {
-        is_ping_requested = false;
-        is_ping_error = false;
-      } else if (response == backend::ResponseStatus::kError) {
-        is_ping_requested = false;
-        is_ping_error = true;
+        if (response == backend::ResponseStatus::kCompleted) {
+          is_ping_requested = false;
+          app::states::system.is_online = true;
+        } else if (response != backend::ResponseStatus::kInProcess) {
+          is_ping_requested = false;
+          app::states::system.is_online = false;
+        }
+      } else {
+        is_ping_requested = true;
+        request = backend::Ping();
       }
-    } else {
-      is_ping_requested = true;
-      request = backend::Ping();
-    }
 
-    {
-      if (is_ping_error)
+      if (!app::states::system.is_online)
         widgets::ErrorAppBadge("We're currently offline",
                                widgets::ColorAccent::kDanger);
+    }
 
-      auto center = ImGui::GetMainViewport()->GetWorkCenter();
-
-      ImGui::SetNextWindowPos(ImVec2(center.x, center.y), ImGuiCond_Always,
-                              ImVec2(0.5, 0.5));
-      ImGui::Begin("home_screen", nullptr, kWindowDefaultFlags);
-
-      widgets::HeadingXlTextCenter("Welcome to Contrel");
-
-      ImGui::End();
+    switch (app::states::system.current_screen) {
+      case app::states::System::Screen::kAuth:
+        screens::LoginScreen();
+        break;
+      case app::states::System::Screen::kHotels:
+        screens::HotelsScreen();
+        break;
+      default:
+        break;
     }
 
     ImGui::Render();

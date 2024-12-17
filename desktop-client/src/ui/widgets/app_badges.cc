@@ -10,8 +10,8 @@
 using namespace constants;
 
 namespace widgets {
-void ErrorAppBadge(const char *fmt, ColorAccent color_accent) {
-  auto center = ImGui::GetMainViewport()->GetWorkCenter();
+void ErrorAppBadge(const char *fmt, const ColorAccent color_accent) {
+  auto viewport_size = ImGui::GetMainViewport()->WorkSize;
 
   switch (color_accent) {
     case ColorAccent::kDanger:
@@ -25,8 +25,9 @@ void ErrorAppBadge(const char *fmt, ColorAccent color_accent) {
 
   ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 12.0);
   ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(16.0, 8.0));
-  ImGui::SetNextWindowPos(ImVec2(center.x, 16.0), ImGuiCond_Always,
-                          ImVec2(0.5, 0.0));
+  ImGui::SetNextWindowPos(
+      ImVec2(viewport_size.x - 16.0, viewport_size.y - 16.0), ImGuiCond_Always,
+      ImVec2(1.0, 1.0));
   ImGui::Begin(fmt, nullptr, kWindowFloatFlags);
 
   BodyText(fmt);

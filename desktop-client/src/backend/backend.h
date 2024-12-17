@@ -18,22 +18,53 @@ enum class Layer {
   kApi,
 };
 
+struct ErrorResponse {
+  int code;
+  std::string message;
+
+  ErrorResponse() {}
+  MSGPACK_DEFINE(code, message);
+};
+
 struct BackendRequest {
   int worker_request_id;
   Layer layer;
+  ErrorResponse error_response;
+
+  BackendRequest() {}
+
+  BackendRequest(int worker_request_id, Layer layer)
+      : worker_request_id(worker_request_id), layer(layer) {}
 };
 
 enum class ResponseStatus {
   kInProcess,
   kCompleted,
   kError,
+  kCompetedWithError,
 };
 
+// In MessagePack this is a `90`
+struct EmptyResponse {
+  EmptyResponse() {}
+  MSGPACK_DEFINE();
+};
+
+// Ping
 typedef std::string ping_response_t;
 
 BackendRequest Ping();
 
-// true, if the response is ready
+// Login
+struct LoginRequestPayload {
+  std::string email;
+  std::string password;
+
+  MSGPACK_DEFINE(email, password);
+};
+
+BackendRequest Login(LoginRequestPayload payload);
+
 template <typename T>
 ResponseStatus GetResponse(BackendRequest &request, T &response_reference) {
   switch (request.layer) {
@@ -43,17 +74,27 @@ ResponseStatus GetResponse(BackendRequest &request, T &response_reference) {
       if (!response.has_value()) return ResponseStatus::kInProcess;
 
       auto unwrapped_response = response->get();
+      auto body = unwrapped_response->body;
 
       if (unwrapped_response->errorCode != ix::HttpErrorCode::Ok)
         return ResponseStatus::kError;
 
-      auto body = unwrapped_response->body;
+      if (body.empty()) return ResponseStatus::kCompleted;
+
       auto object = msgpack::unpack(body.c_str(), body.size()).get();
 
-      // TODO: try ... catch
-      object.convert(response_reference);
+      // TODO: catch msgpack::type_error
+      try {
+        object.convert(request.error_response);
+        return ResponseStatus::kCompetedWithError;
+      } catch (...) {
+        object.convert(response_reference);
+        return ResponseStatus::kCompleted;
+      }
 
-      return ResponseStatus::kCompleted;
+      //      catch (...) {
+      //        return ResponseStatus::kError;
+      //      }
     }
     default:
       // theoretically unreachable code

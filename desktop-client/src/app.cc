@@ -42,6 +42,10 @@ void InitStyle() {
 
   style.WindowPadding = ImVec2(0.0, 0.0);
   style.WindowBorderSize = 0.0;
+  style.ChildBorderSize = 0.0;
+  style.FrameBorderSize = 0.0;
+
+  style.ItemSpacing = kStyleItemSpacing;
 
   style.Colors[ImGuiCol_Text] = kColorDefaultText;
   style.Colors[ImGuiCol_WindowBg] = kColorDefaultBackground;
@@ -51,7 +55,7 @@ void InitStyle() {
 }  // namespace app
 
 namespace app::states {
-System::System() {
+System::System() : is_online(true), current_screen(Screen::kAuth) {
   keychain::Error error;
   std::lock_guard<std::mutex> lock(session_token_mutex_);
 
