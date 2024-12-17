@@ -2,7 +2,8 @@ use std::fmt;
 
 use actix_web::http::header::ToStrError as ActixToStrError;
 use actix_web::http::StatusCode;
-use actix_web::{HttpResponse, ResponseError};
+use actix_web::{Error as ActixWebError, HttpResponse, ResponseError};
+use actix_ws::{CloseCode, CloseReason};
 use argon2::password_hash::Error as Argon2PasswordHashError;
 use argon2::Error as Argon2Error;
 use rmp_serde::encode::Error as RmpEncodeError;
@@ -21,6 +22,7 @@ use crate::constants::{
 pub enum BackendErrorKind {
     // Dependencies
     ActixToStr(ActixToStrError),
+    ActixWeb(ActixWebError),
     Argon2(Argon2Error),
     Argon2PasswordHash(Argon2PasswordHashError),
     RmpEncode(RmpEncodeError),
@@ -104,6 +106,15 @@ impl From<ActixToStrError> for BackendError {
         Self::new_internal(
             format!("Actix `to_str` error: {error}"),
             BackendErrorKind::ActixToStr(error),
+        )
+    }
+}
+
+impl From<ActixWebError> for BackendError {
+    fn from(error: ActixWebError) -> Self {
+        Self::new_internal(
+            format!("Actix Web error: {error}"),
+            BackendErrorKind::ActixWeb(error),
         )
     }
 }
@@ -258,4 +269,57 @@ backend_error_template! {
     (HTTP_CODE_FORBIDDEN, Some(4002), LoggedInRestriction, "This action cannot be performed while you are logged in");
     (HTTP_CODE_BAD_REQUEST, Some(4003), AlreadyRegistered, "Account with this email already registered");
     (HTTP_CODE_BAD_REQUEST, Some(4004), BadLoginCredentials, "Bad login credentials");
+}
+
+macro_rules! websocket_close_error {
+    ( $( ($code:expr, $name:ident, $description:expr); )+ ) => {
+        #[allow(dead_code)]
+        #[repr(u16)]
+        pub enum WebSocketCloseError {
+            $( $name = $code, )+
+        }
+
+        impl WebSocketCloseError {
+            pub fn get_close_reason(&self) -> CloseReason {
+                match self {
+                    $(
+                        Self::$name => {
+                            CloseReason {
+                                code: CloseCode::Other($code),
+                                description: Some($description.to_string()),
+                            }
+                        }
+                    )+
+                }
+            }
+        }
+
+        impl From<WebSocketCloseError> for CloseReason {
+            fn from(error: WebSocketCloseError) -> Self {
+                error.get_close_reason()
+            }
+        }
+    }
+}
+
+websocket_close_error! {
+    (1000, Normal, "Connection purpose fulfilled");
+    (1001, Away, "Endpoint gone");
+    (1002, Protocol, "Protocol error detected");
+    (1003, Unsupported, "Unsupported data type received");
+    (1006, Abnormal, "Connection dropped unexpectedly");
+    (1007, Invalid, "Inconsistent message data");
+    (1008, Policy, "Policy violation detected");
+    (1009, Size, "Message too large");
+    (1010, Extension, "Missing expected extension");
+    (1011, Error, "Unexpected server condition");
+    (1012, Restart, "Server rebooting");
+    (1013, Again, "Server overloaded, retry");
+    (1015, Tls, "TLS issue");
+
+    (4000, Unknown, "Unknown error");
+    (4001, Opcode, "Opcode not allowed");
+    (4002, NotAuthenticated, "Not authenticated");
+    (4003, AuthenticationFailed, "Authentication failed");
+    (4004, AlreadyAuthenticated, "Already authenticated");
 }

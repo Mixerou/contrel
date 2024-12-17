@@ -51,5 +51,6 @@ $ cargo +nightly fmt
 | `BACKEND_IP`               |  `127.0.0.1`  | IP on which the Backend will run.                                                                                             |
 | `BACKEND_PORT`             |    `5000`     | The port that the Backend will listen to.                                                                                     |
 | `BACKEND_API_PATH`         | Empty string  | Domain path to the API. Do not add `/` at the end.                                                                            |
+|  `BACKEND_WEB_SOCKET_PATH` |  `/gateway`   | Domain path to the WebSocket. Do not add `/` at the end.                                                                      |
 | `DATABASE_URL`             |       -       | URL to your postgres database in the format `postgres://{username}:{password}@{domain/ip}/{database}`.                        |
 | `DATABASE_MAX_CONNECTIONS` |      50       | The maximum number of connections that the database pool should maintain.                                                     |

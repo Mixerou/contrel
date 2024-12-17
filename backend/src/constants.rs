@@ -1,4 +1,10 @@
+use std::time::Duration;
+
 use actix_web::http::header::ContentType;
+
+// WebSocket
+pub const WEB_SOCKET_HEARTBEAT_INTERVAL: Duration = Duration::from_secs(15);
+pub const WEB_SOCKET_CLIENT_TIMEOUT: Duration = Duration::from_secs(45);
 
 // HTTP codes
 pub const HTTP_CODE_BAD_REQUEST: u16 = 400;
