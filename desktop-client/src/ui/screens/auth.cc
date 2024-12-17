@@ -119,6 +119,12 @@ void LoginScreen() {
     auto response = backend::GetResponse(request, empty_response);
 
     if (response == backend::ResponseStatus::kCompleted) {
+      first_name[0] = '\0';
+      last_name[0] = '\0';
+      email[0] = '\0';
+      password[0] = '\0';
+      password_confirmation[0] = '\0';
+      is_registration = false;
       is_requesting = false;
       error = "";
       app::states::system.current_screen = app::states::System::Screen::kHotels;

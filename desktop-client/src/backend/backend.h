@@ -77,6 +77,9 @@ struct RegisterRequestPayload {
 
 BackendRequest Register(RegisterRequestPayload payload);
 
+// Logout
+BackendRequest Logout();
+
 template <typename T>
 ResponseStatus GetResponse(BackendRequest &request, T &response_reference) {
   switch (request.layer) {

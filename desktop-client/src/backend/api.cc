@@ -36,4 +36,11 @@ BackendRequest Register(RegisterRequestPayload payload) {
 
   return request;
 }
+
+BackendRequest Logout() {
+  BackendRequest request(
+      app::api_worker.Enqueue("/auth/logout", ix::HttpClient::kPost),
+      Layer::kApi);
+  return request;
+}
 }  // namespace backend
