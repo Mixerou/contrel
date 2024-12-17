@@ -23,7 +23,7 @@ option(ENABLE_PROGRAMS "Build programs for the MbedTLS" OFF)
 option(MSGPACK_USE_BOOST "Use Boost for the msgpack" OFF)
 
 # General
-include_directories(src src/backend src/ui/widgets src/workers)
+include_directories(src src/backend src/ui/layouts src/ui/screens src/ui/widgets src/utils src/workers)
 include_directories(libs/glfw/include/GLFW)
 include_directories(libs/imgui libs/imgui/misc/freetype libs/imgui/backends)
 include_directories(libs/mbedtls/include)
@@ -33,6 +33,7 @@ add_subdirectory(libs/freetype)
 add_subdirectory(libs/glad)
 add_subdirectory(libs/glfw)
 add_subdirectory(libs/ix_websocket)
+add_subdirectory(libs/keychain)
 add_subdirectory(libs/lunasvg)
 add_subdirectory(libs/mbedtls)
 add_subdirectory(libs/msgpack)
@@ -67,9 +68,24 @@ set(SOURCES
         # Backend
         src/backend/api.cc
 
+        # UI Layouts
+        src/ui/layouts/app.cc
+        src/ui/layouts/auth.cc
+
+        # UI Screens
+        src/ui/screens/auth.cc
+        src/ui/screens/hotels.cc
+
         # UI Widgets
         src/ui/widgets/app_badges.cc
+        src/ui/widgets/buttons.cc
+        src/ui/widgets/inputs.cc
+        src/ui/widgets/layout.cc
         src/ui/widgets/texts.cc
+
+        # Utils
+        src/utils/string.cc
+        src/utils/texture.cc
 
         # Workers
         src/workers/api.cc
@@ -85,4 +101,4 @@ set_target_properties(${PROJECT_NAME} PROPERTIES DEBUG_POSTFIX _debug)
 # Deps
 find_package(OpenGL REQUIRED)
 
-target_link_libraries(${PROJECT_NAME} freetype OpenGL::GL glad glfw ixwebsocket::ixwebsocket lunasvg::lunasvg mbedtls mbedcrypto mbedx509 msgpack-cxx)
+target_link_libraries(${PROJECT_NAME} freetype OpenGL::GL glad glfw ixwebsocket::ixwebsocket keychain lunasvg::lunasvg mbedtls mbedcrypto mbedx509 msgpack-cxx)

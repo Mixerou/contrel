@@ -13,10 +13,12 @@ namespace constants {
 // Scale
 constexpr float kFontScaleFactor = 1.0;
 constexpr float kFontSizeFactor = 1.0;
+constexpr float kVectorTextureScaleFactor = 1.0;
 
 // Scale (for the HiDPI monitors)
 // constexpr float kFontScaleFactor = 0.5;
 // constexpr float kFontSizeFactor = 2.0;
+// constexpr float kVectorTextureScaleFactor = 2.0;
 
 // Window Flags
 constexpr ImGuiWindowFlags kWindowDefaultFlags =
@@ -56,11 +58,32 @@ constexpr ImVec4 kColorDanger700 = ImVec4(0.25, 0.0, 0.0, 1.0);
 constexpr ImVec4 kColorDanger800 = ImVec4(0.17, 0.0, 0.0, 1.0);
 constexpr ImVec4 kColorDanger900 = ImVec4(0.08, 0.0, 0.0, 1.0);
 
+constexpr ImVec4 kColorNeutral50 = ImVec4(0.98, 0.98, 0.98, 1.0);
+constexpr ImVec4 kColorNeutral100 = ImVec4(0.96, 0.96, 0.96, 1.0);
+constexpr ImVec4 kColorNeutral200 = ImVec4(0.90, 0.90, 0.90, 1.0);
+constexpr ImVec4 kColorNeutral300 = ImVec4(0.83, 0.83, 0.83, 1.0);
+constexpr ImVec4 kColorNeutral400 = ImVec4(0.64, 0.64, 0.64, 1.0);
+constexpr ImVec4 kColorNeutral500 = ImVec4(0.45, 0.45, 0.45, 1.0);
+constexpr ImVec4 kColorNeutral600 = ImVec4(0.32, 0.32, 0.32, 1.0);
+constexpr ImVec4 kColorNeutral700 = ImVec4(0.25, 0.25, 0.25, 1.0);
+constexpr ImVec4 kColorNeutral800 = ImVec4(0.15, 0.15, 0.15, 1.0);
+constexpr ImVec4 kColorNeutral900 = ImVec4(0.09, 0.09, 0.09, 1.0);
+constexpr ImVec4 kColorNeutral1000 = ImVec4(0.04, 0.04, 0.04, 1.0);
+
 constexpr ImVec4 kColorBlack = ImVec4(0.04, 0.04, 0.04, 1.0);
-constexpr ImVec4 kColorWhite = ImVec4(0.96, 0.96, 0.96, 1.0);
+constexpr ImVec4 kColorWhite = kColorNeutral100;
 
 constexpr ImVec4 kColorDefaultText = kColorBlack;
 constexpr ImVec4 kColorDefaultBackground = kColorWhite;
+
+// Style
+constexpr ImVec2 kStyleItemSpacing = ImVec2(8.0, 8.0);
+
+constexpr ImVec2 kStyleButtonPadding = ImVec2(24.0, 8.0);
+constexpr float kStyleButtonRounding = 12.0;
+
+constexpr ImVec2 kStyleInputPadding = ImVec2(16.0, 8.0);
+constexpr float kStyleInputRounding = 12.0;
 
 // Backend-related
 constexpr std::string_view kBackendApiUrl = "https://contrel.mixero.dev/api";

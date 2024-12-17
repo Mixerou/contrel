@@ -1,9 +1,14 @@
 use std::fmt;
 
+use actix_web::http::header::ToStrError as ActixToStrError;
 use actix_web::http::StatusCode;
 use actix_web::{HttpResponse, ResponseError};
+use argon2::password_hash::Error as Argon2PasswordHashError;
+use argon2::Error as Argon2Error;
 use rmp_serde::encode::Error as RmpEncodeError;
 use serde::{Deserialize, Serialize};
+use sqlx::error::ErrorKind as SqlxErrorKind;
+use sqlx::Error as SqlxError;
 
 use crate::constants::{
     DEFAULT_CONTENT_TYPE, HTTP_CODE_BAD_REQUEST, HTTP_CODE_CONFLICT, HTTP_CODE_FORBIDDEN,
@@ -15,7 +20,11 @@ use crate::constants::{
 #[allow(dead_code)]
 pub enum BackendErrorKind {
     // Dependencies
+    ActixToStr(ActixToStrError),
+    Argon2(Argon2Error),
+    Argon2PasswordHash(Argon2PasswordHashError),
     RmpEncode(RmpEncodeError),
+    Sqlx(SqlxError),
 
     // Other
     Other(Option<String>),
@@ -90,12 +99,62 @@ impl fmt::Display for BackendError {
 }
 
 // From dependency errors
+impl From<ActixToStrError> for BackendError {
+    fn from(error: ActixToStrError) -> Self {
+        Self::new_internal(
+            format!("Actix `to_str` error: {error}"),
+            BackendErrorKind::ActixToStr(error),
+        )
+    }
+}
+
+impl From<Argon2Error> for BackendError {
+    fn from(error: Argon2Error) -> Self {
+        Self::new_internal(
+            format!("Argon2 error: {error}"),
+            BackendErrorKind::Argon2(error),
+        )
+    }
+}
+
+impl From<Argon2PasswordHashError> for BackendError {
+    fn from(error: Argon2PasswordHashError) -> Self {
+        Self::new_internal(
+            format!("Argon2 password hash error: {error}"),
+            BackendErrorKind::Argon2PasswordHash(error),
+        )
+    }
+}
+
 impl From<RmpEncodeError> for BackendError {
     fn from(error: RmpEncodeError) -> Self {
         Self::new_internal(
             format!("RMP encode error: {error}"),
             BackendErrorKind::RmpEncode(error),
         )
+    }
+}
+
+impl From<SqlxError> for BackendError {
+    fn from(error: SqlxError) -> Self {
+        match error {
+            SqlxError::RowNotFound => BackendErrorTemplate::NotFound
+                .error()
+                .set_kind(BackendErrorKind::Sqlx(error)),
+            SqlxError::Database(ref db_error) => match db_error.kind() {
+                SqlxErrorKind::UniqueViolation => BackendErrorTemplate::Conflict
+                    .error()
+                    .set_kind(BackendErrorKind::Sqlx(error)),
+                _ => Self::new_internal(
+                    format!("Sqlx database error: {db_error}"),
+                    BackendErrorKind::Sqlx(error),
+                ),
+            },
+            error => Self::new_internal(
+                format!("Sqlx error: {error}"),
+                BackendErrorKind::Sqlx(error),
+            ),
+        }
     }
 }
 
@@ -182,9 +241,21 @@ backend_error_template! {
     // Minimum / Maximum number of ... reached
     // The first error (3000) can be used for the general / unknown 3xxx error.
     (HTTP_CODE_BAD_REQUEST, Some(3000), ReachedEdge, "Minimum or maximum reached");
+    (HTTP_CODE_BAD_REQUEST, Some(3001), UserPasswordTooShort, "User password is too short");
+    (HTTP_CODE_BAD_REQUEST, Some(3002), UserPasswordTooLong, "User password is too long");
+    (HTTP_CODE_BAD_REQUEST, Some(3003), UserEmailTooShort, "User email is too short");
+    (HTTP_CODE_BAD_REQUEST, Some(3004), UserEmailTooLong, "User email is too long");
+    (HTTP_CODE_BAD_REQUEST, Some(3005), FirstNameTooShort, "First name is too short");
+    (HTTP_CODE_BAD_REQUEST, Some(3006), FirstNameTooLong, "First name is too long");
+    (HTTP_CODE_BAD_REQUEST, Some(3007), LastNameTooShort, "Last name is too short");
+    (HTTP_CODE_BAD_REQUEST, Some(3008), LastNameTooLong, "Last name is too long");
 
     // Invalid body or something else
     // The first error (4000) is virtually, the same as the standard 400 HTTP error.
     // It can be used for the general / unknown 4xxx error.
     (HTTP_CODE_BAD_REQUEST, Some(4000), InvalidRequest, "Invalid request");
+    (HTTP_CODE_BAD_REQUEST, Some(4001), BadEmail, "Bad email");
+    (HTTP_CODE_FORBIDDEN, Some(4002), LoggedInRestriction, "This action cannot be performed while you are logged in");
+    (HTTP_CODE_BAD_REQUEST, Some(4003), AlreadyRegistered, "Account with this email already registered");
+    (HTTP_CODE_BAD_REQUEST, Some(4004), BadLoginCredentials, "Bad login credentials");
 }

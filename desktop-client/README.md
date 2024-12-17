@@ -20,6 +20,8 @@ Desktop Client module of the Contrel Project
 
 [IXWebSocket]: https://github.com/machinezone/IXWebSocket
 
+[Keychain]: https://github.com/hrantzsch/keychain
+
 [LunaSVG]: https://github.com/sammycage/lunasvg
 
 [mbedtls]: https://github.com/Mbed-TLS/mbedtls
@@ -33,6 +35,7 @@ Desktop Client module of the Contrel Project
 - [GLFW] — 3.4
 - [Dear ImGui] — v1.91.6
 - [IXWebSocket] — v11.4.5
+- [Keychain] — v1.3.0
 - [LunaSVG] — v3.0.1
 - [mbedtls] — mbedtls-2.28.9
 - [msgpack] — cpp-7.0.0

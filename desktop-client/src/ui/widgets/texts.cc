@@ -29,7 +29,7 @@ void TextEx(const char *fmt, va_list args, widgets::Alignment alignment) {
   float offset = (ImGui::GetContentRegionAvail().x -
                   ImGui::CalcTextSize(text_start, text_end).x) *
                  offset_factor;
-  if (offset > 0.0f) ImGui::SetCursorPosX(ImGui::GetCursorPosX() + offset);
+  if (offset > 0.0) ImGui::SetCursorPosX(ImGui::GetCursorPosX() + offset);
 
   ImGui::TextV(fmt, args);
 }
@@ -50,6 +50,13 @@ void BodyText(const char *fmt, ...) {
   va_list args;
   va_start(args, fmt);
   BodyTextEx(fmt, args, widgets::Alignment::kLeft);
+  va_end(args);
+}
+
+void BodyTextCenter(const char *fmt, ...) {
+  va_list args;
+  va_start(args, fmt);
+  BodyTextEx(fmt, args, widgets::Alignment::kCenter);
   va_end(args);
 }
 

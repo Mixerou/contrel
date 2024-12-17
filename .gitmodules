@@ -22,3 +22,6 @@
 [submodule "desktop-client/libs/mbedtls"]
 	path = desktop-client/libs/mbedtls
 	url = https://github.com/Mbed-TLS/mbedtls
+[submodule "desktop-client/libs/keychain"]
+	path = desktop-client/libs/keychain
+	url = https://github.com/hrantzsch/keychain

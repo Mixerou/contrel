@@ -8,13 +8,19 @@ use actix_web::{web, App, HttpServer};
 use dotenv::dotenv;
 
 mod constants;
+mod db;
 mod error;
 mod services;
+mod snowflake_generator;
+mod utils;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     dotenv().ok();
     env_logger::init();
+
+    db::init().await;
+    snowflake_generator::init();
 
     let ip = env::var("BACKEND_IP").unwrap_or_else(|_| "127.0.0.1".to_string());
     let port = env::var("BACKEND_PORT").unwrap_or_else(|_| "5000".to_string());
@@ -26,6 +32,8 @@ async fn main() -> std::io::Result<()> {
         App::new().service(
             web::scope(api_path.as_str())
                 .wrap(NormalizePath::new(TrailingSlash::Trim))
+                .wrap(services::session::middleware::CheckSession)
+                .configure(services::auth::init_routes)
                 .configure(services::system::init_routes),
         )
     })
