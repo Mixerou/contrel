@@ -44,6 +44,7 @@ async fn main() -> std::io::Result<()> {
             .service(
                 web::scope(api_path.as_str())
                     .configure(services::auth::init_routes)
+                    .configure(services::hotel::init_routes)
                     .configure(services::system::init_routes)
                     .wrap(services::session::middleware::CheckSession),
             )

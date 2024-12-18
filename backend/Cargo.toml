@@ -23,7 +23,7 @@ rs-snowflake = "0.6.0"
 serde = { version = "1.0.216", features = ["derive"] }
 serde_repr = "0.1.19"
 sqlx = { version = "0.8.2", default-features = false, features = ["runtime-tokio", "tls-rustls", "postgres", "macros", "time"] }
-time = "0.3.37"
+time = { version = "0.3.37", features = ["serde"] }
 tokio = { version = "1.42.0", default-features = false, features = ["rt", "time", "macros"] }
 paste = "1.0.15"
 rmpv = { version = "1.3.0", features = ["with-serde"] }

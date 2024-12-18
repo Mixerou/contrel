@@ -260,6 +260,9 @@ backend_error_template! {
     (HTTP_CODE_BAD_REQUEST, Some(3006), FirstNameTooLong, "First name is too long");
     (HTTP_CODE_BAD_REQUEST, Some(3007), LastNameTooShort, "Last name is too short");
     (HTTP_CODE_BAD_REQUEST, Some(3008), LastNameTooLong, "Last name is too long");
+    (HTTP_CODE_BAD_REQUEST, Some(3009), HotelNameTooShort, "Hotel name is too short");
+    (HTTP_CODE_BAD_REQUEST, Some(3010), HotelNameTooLong, "Hotel name is too long");
+    (HTTP_CODE_BAD_REQUEST, Some(3011), HotelAlreadyExists, "You already have a hotel with that name");
 
     // Invalid body or something else
     // The first error (4000) is virtually, the same as the standard 400 HTTP error.
