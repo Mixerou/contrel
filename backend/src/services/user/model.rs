@@ -1,17 +1,21 @@
+use serde::Serialize;
 use sqlx::{query_as, FromRow};
 use time::PrimitiveDateTime;
 
 use crate::error::{BackendError, BackendErrorTemplate};
+use crate::utils::time::serialize_primitive_date_time_as_unix_timestamp;
 use crate::{db, snowflake_generator};
 
-#[derive(Clone, FromRow)]
+#[derive(Clone, FromRow, Serialize)]
 #[allow(dead_code)]
 pub struct User {
     pub id: i64,
     pub email: String,
+    #[serde(skip)]
     pub password_hash: String,
     pub first_name: String,
     pub last_name: String,
+    #[serde(serialize_with = "serialize_primitive_date_time_as_unix_timestamp")]
     pub created_at: PrimitiveDateTime,
 }
 
@@ -37,6 +41,24 @@ impl User {
             password_hash,
             first_name,
             last_name,
+        )
+        .fetch_one(connection)
+        .await?;
+
+        Ok(user)
+    }
+
+    pub async fn find(id: &i64) -> Result<Self, BackendError> {
+        let connection = db::get_connection();
+
+        let user = query_as!(
+            Self,
+            r#"
+                SELECT *
+                FROM users
+                WHERE id = $1
+            "#,
+            id,
         )
         .fetch_one(connection)
         .await?;

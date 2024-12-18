@@ -7,12 +7,13 @@
 
 namespace layouts {
 // App Layout
-void BeginAppLayout();
+bool BeginAppLayout(const char *screen_heading);  // true, if made a transition
+                                                  // from another screen
 
-void EndAppLayout();
+bool EndAppLayout();  // true, if need to prepare the screen before unmounting
 
 // Auth Layout
-void BeginAuthLayout();
+bool BeginAuthLayout();
 
 void EndAuthLayout();
 }  // namespace layouts

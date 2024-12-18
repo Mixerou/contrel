@@ -8,10 +8,12 @@
 #define DESKTOP_CLIENT_BACKEND_H
 
 #include <iostream>
+#include <vector>
 
 #include <msgpack.hpp>
 
 #include "app.h"
+#include "entities.h"
 
 namespace backend {
 enum class Layer {
@@ -79,6 +81,27 @@ BackendRequest Register(RegisterRequestPayload payload);
 
 // Logout
 BackendRequest Logout();
+
+// Get Me
+typedef entities::User get_me_response_t;
+
+BackendRequest GetMe();
+
+// Create Hotel
+struct CreateHotelRequestPayload {
+  std::string name;
+
+  MSGPACK_DEFINE(name);
+};
+
+typedef entities::Hotel create_hotel_response_t;
+
+BackendRequest CreateHotel(CreateHotelRequestPayload payload);
+
+// Get All Hotels
+typedef std::vector<entities::Hotel> get_all_hotels_response_t;
+
+BackendRequest GetAllHotels();
 
 template <typename T>
 ResponseStatus GetResponse(BackendRequest &request, T &response_reference) {

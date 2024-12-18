@@ -13,8 +13,19 @@
 
 using namespace constants;
 
+enum class RequestStatus {
+  kAuth,
+  kGetMe,
+  kNoRequest,
+};
+
 namespace screens {
 void LoginScreen() {
+  if (!layouts::BeginAuthLayout()) {
+    layouts::EndAuthLayout();
+    return;
+  }
+
   // I know these buffers are larger that the backend accepts
   static char first_name[128] = "";
   static char last_name[128] = "";
@@ -22,12 +33,10 @@ void LoginScreen() {
   static char password[128] = "";
   static char password_confirmation[128] = "";
   static bool is_registration = false;
-  static bool is_requesting = false;
+  static RequestStatus request_status = RequestStatus::kNoRequest;
   static std::string error = "";
   static backend::BackendRequest request;
   auto style = ImGui::GetStyle();
-
-  layouts::BeginAuthLayout();
 
   // Heading
   {
@@ -38,8 +47,8 @@ void LoginScreen() {
 
   // Error Text
   {
-    ImGui::PushStyleColor(ImGuiCol_Text, kColorDanger500);
-    if (error != "") widgets::BodyTextCenter(error.c_str());
+    ImGui::PushStyleColor(ImGuiCol_Text, kColorErrorText);
+    if (!error.empty()) widgets::BodyTextCenter(error.c_str());
     ImGui::PopStyleColor();
   }
 
@@ -87,11 +96,13 @@ void LoginScreen() {
     const char *left_button_text = is_registration ? "Back" : "Register";
     const char *right_button_text = is_registration ? "Continue" : "Login";
 
-    bool left_button_clicked = widgets::Button(
-        left_button_text, ImVec2(button_width, 0.0), is_requesting);
+    bool left_button_clicked =
+        widgets::Button(left_button_text, ImVec2(button_width, 0.0),
+                        request_status != RequestStatus::kNoRequest);
     widgets::SameLine();
-    bool right_button_clicked = widgets::Button(
-        right_button_text, ImVec2(button_width, 0.0), is_requesting);
+    bool right_button_clicked =
+        widgets::Button(right_button_text, ImVec2(button_width, 0.0),
+                        request_status != RequestStatus::kNoRequest);
 
     if (left_button_clicked) {
       is_registration = !is_registration;
@@ -102,21 +113,35 @@ void LoginScreen() {
 
     if (right_button_clicked && is_registration) {
       if (std::strcmp(password, password_confirmation) == 0) {
-        is_requesting = true;
+        request_status = RequestStatus::kAuth;
         request = backend::Register({email, password, first_name, last_name});
       } else
         error = "Passwords are not identical";
     }
 
     if (right_button_clicked && !is_registration) {
-      is_requesting = true;
+      request_status = RequestStatus::kAuth;
       request = backend::Login({email, password});
     }
   }
 
-  if (is_requesting) {
+  if (request_status == RequestStatus::kAuth) {
     backend::EmptyResponse empty_response;
     auto response = backend::GetResponse(request, empty_response);
+
+    if (response == backend::ResponseStatus::kCompleted) {
+      request_status = RequestStatus::kGetMe;
+      request = backend::GetMe();
+    } else if (response == backend::ResponseStatus::kCompetedWithError) {
+      request_status = RequestStatus::kNoRequest;
+      error = request.error_response.message;
+    } else if (response == backend::ResponseStatus::kError) {
+      request_status = RequestStatus::kNoRequest;
+      error = "Something went wrong";
+    }
+  } else if (request_status == RequestStatus::kGetMe) {
+    backend::get_me_response_t get_me_response;
+    auto response = backend::GetResponse(request, get_me_response);
 
     if (response == backend::ResponseStatus::kCompleted) {
       first_name[0] = '\0';
@@ -125,15 +150,19 @@ void LoginScreen() {
       password[0] = '\0';
       password_confirmation[0] = '\0';
       is_registration = false;
-      is_requesting = false;
       error = "";
+
       app::states::system.current_screen = app::states::System::Screen::kHotels;
+      app::states::system.user_id = get_me_response.id;
+      app::states::data.users[get_me_response.id] = get_me_response;
     } else if (response == backend::ResponseStatus::kCompetedWithError) {
-      is_requesting = false;
       error = request.error_response.message;
     } else if (response == backend::ResponseStatus::kError) {
-      is_requesting = false;
       error = "Something went wrong";
+    }
+
+    if (response != backend::ResponseStatus::kInProcess) {
+      request_status = RequestStatus::kNoRequest;
     }
   }
 

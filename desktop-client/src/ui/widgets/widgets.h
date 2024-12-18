@@ -37,14 +37,59 @@ bool MetaInputText(const char *label, char *buf, size_t buf_size,
 // Layout
 void SameLine(const float spacing = 0.0);
 
+// Tables
+struct TableCellScreenPosition {
+  ImVec2 top_left;
+  ImVec2 bottom_right;
+
+  TableCellScreenPosition(ImVec2 top_left, ImVec2 bottom_right)
+      : top_left(top_left), bottom_right(bottom_right) {}
+};
+
+TableCellScreenPosition BeginTableBodyCell(const char *id,
+                                           const float widgets_height);
+
+void EndTableCell();
+
+TableCellScreenPosition BeginTableBodyCell(const char *id,
+                                           const float widgets_height);
+
+void EndTableBodyCell();
+
+TableCellScreenPosition BeginTableHeaderCell(const char *id,
+                                             const float widgets_height);
+
+void EndTableHeaderCell();
+
+TableCellScreenPosition TableHeaderCellText(const char *text);
+
+TableCellScreenPosition TableCellText(const char *text,
+                                      const bool is_dimmed = false);
+
+void DrawTableHeaderBackground(const TableCellScreenPosition position);
+
+void DrawTableBodyBackground(const TableCellScreenPosition position);
+
 // Texts
+ImVec2 CalculateBodyText(const char *text);
+
 void BodyText(const char *fmt, ...);
 
+void BodyTextDimmed(const char *fmt, ...);
+
 void BodyTextCenter(const char *fmt, ...);
+
+ImVec2 CalculateHeadingXlText(const char *text);
 
 void HeadingXlText(const char *fmt, ...);
 
 void HeadingXlTextCenter(const char *fmt, ...);
+
+ImVec2 CalculateHeadingLargeText(const char *text);
+
+void HeadingLargeText(const char *fmt, ...);
+
+void HeadingLargeTextCenter(const char *fmt, ...);
 
 // Application Status Badges
 void ErrorAppBadge(const char *fmt,
