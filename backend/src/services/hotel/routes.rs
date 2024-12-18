@@ -1,5 +1,5 @@
 use actix_web::web::{Bytes, ReqData, ServiceConfig};
-use actix_web::{post, HttpResponse};
+use actix_web::{get, post, HttpResponse};
 use serde::Deserialize;
 
 use crate::constants::{DEFAULT_CONTENT_TYPE, HTTP_CODE_CONFLICT};
@@ -36,6 +36,20 @@ async fn create(session: ReqData<Session>, payload: Bytes) -> Result<HttpRespons
         .body(rmp_serde::to_vec(&hotel)?))
 }
 
+#[get("/hotels")]
+async fn get_all(session: ReqData<Session>) -> Result<HttpResponse, BackendError> {
+    let Some(user_id) = session.user_id else {
+        return Err(BackendErrorTemplate::Forbidden.into());
+    };
+
+    let hotels = Hotel::find_all_by_owner_id(&user_id).await?;
+
+    Ok(HttpResponse::Created()
+        .content_type(DEFAULT_CONTENT_TYPE)
+        .body(rmp_serde::to_vec(&hotels)?))
+}
+
 pub fn init_routes(cfg: &mut ServiceConfig) {
     cfg.service(create);
+    cfg.service(get_all);
 }

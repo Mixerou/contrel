@@ -38,6 +38,24 @@ impl Hotel {
         Ok(user)
     }
 
+    pub async fn find_all_by_owner_id(owner_id: &i64) -> Result<Vec<Self>, BackendError> {
+        let connection = db::get_connection();
+
+        let hotels = query_as!(
+            Self,
+            r#"
+                SELECT *
+                FROM hotels
+                WHERE owner_id = $1
+            "#,
+            owner_id,
+        )
+        .fetch_all(connection)
+        .await?;
+
+        Ok(hotels)
+    }
+
     // Default implementations
     pub fn check_name(name: &str) -> Result<(), BackendError> {
         let name_length = name.chars().count();
