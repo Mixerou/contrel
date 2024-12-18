@@ -86,6 +86,8 @@ constexpr ImVec4 kColorWhite = kColorNeutral100;
 constexpr ImVec4 kColorDefaultText = kColorBlack;
 constexpr ImVec4 kColorDefaultBackground = kColorWhite;
 
+constexpr ImVec4 kColorErrorText = kColorDanger500;
+
 constexpr ImVec4 kColorTableHeader = kColorNeutral50;
 constexpr ImVec4 kColorTableBody = ImVec4(1.0, 1.0, 1.0, 1.0);
 

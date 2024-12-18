@@ -87,6 +87,17 @@ typedef entities::User get_me_response_t;
 
 BackendRequest GetMe();
 
+// Create Hotel
+struct CreateHotelRequestPayload {
+  std::string name;
+
+  MSGPACK_DEFINE(name);
+};
+
+typedef entities::Hotel create_hotel_response_t;
+
+BackendRequest CreateHotel(CreateHotelRequestPayload payload);
+
 // Get All Hotels
 typedef std::vector<entities::Hotel> get_all_hotels_response_t;
 

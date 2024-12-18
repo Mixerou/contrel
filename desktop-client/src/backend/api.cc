@@ -8,11 +8,13 @@
 #include "backend.h"
 
 namespace backend {
+// Ping
 BackendRequest Ping() {
   BackendRequest request(app::api_worker.Enqueue("/ping"), Layer::kApi);
   return request;
 }
 
+// Auth
 BackendRequest Login(LoginRequestPayload payload) {
   msgpack::sbuffer buffer;
   msgpack::pack(buffer, payload);
@@ -44,8 +46,21 @@ BackendRequest Logout() {
   return request;
 }
 
+// Users
 BackendRequest GetMe() {
   BackendRequest request(app::api_worker.Enqueue("/users/@me"), Layer::kApi);
+  return request;
+}
+
+// Hotels
+BackendRequest CreateHotel(CreateHotelRequestPayload payload) {
+  msgpack::sbuffer buffer;
+  msgpack::pack(buffer, payload);
+
+  BackendRequest request(
+      app::api_worker.Enqueue("/hotels", ix::HttpClient::kPost, buffer.data()),
+      Layer::kApi);
+
   return request;
 }
 

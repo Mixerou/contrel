@@ -47,8 +47,8 @@ void LoginScreen() {
 
   // Error Text
   {
-    ImGui::PushStyleColor(ImGuiCol_Text, kColorDanger500);
-    if (error != "") widgets::BodyTextCenter(error.c_str());
+    ImGui::PushStyleColor(ImGuiCol_Text, kColorErrorText);
+    if (!error.empty()) widgets::BodyTextCenter(error.c_str());
     ImGui::PopStyleColor();
   }
 
