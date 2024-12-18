@@ -34,8 +34,8 @@ struct System {
   };
 
   Screen current_screen;
-  std::optional<entities::hotel_id_t> opened_hotel_id;
   entities::user_id_t user_id;
+  std::optional<entities::hotel_id_t> opened_hotel_id;
   bool is_online;
 
   System();
@@ -45,6 +45,8 @@ struct System {
   void SetSessionToken(std::string session_token);
 
   entities::User GetUser();
+
+  std::optional<entities::Hotel> GetHotel();
 
   // This method doesn't make a logout backend request
   void Logout();

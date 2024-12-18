@@ -96,7 +96,14 @@ void System::SetSessionToken(std::string session_token) {
 
 entities::User System::GetUser() { return data.users[user_id]; }
 
+std::optional<entities::Hotel> System::GetHotel() {
+  if (opened_hotel_id.has_value()) return data.hotels[opened_hotel_id.value()];
+
+  return std::nullopt;
+}
+
 void System::Logout() {
+  opened_hotel_id = std::nullopt;
   current_screen = app::states::System::Screen::kAuth;
   user_id = 0;
   data.Clear();

@@ -16,6 +16,8 @@ enum class Alignment {
 
 enum class ColorAccent {
   kPrimary,
+  kPrimaryLight,
+  kPrimaryBlank,
   kDanger,
 };
 
