@@ -38,13 +38,23 @@ bool MetaInputText(const char *label, char *buf, size_t buf_size,
 void SameLine(const float spacing = 0.0);
 
 // Texts
+ImVec2 CalculateBodyText(const char *text);
+
 void BodyText(const char *fmt, ...);
 
 void BodyTextCenter(const char *fmt, ...);
 
+ImVec2 CalculateHeadingXlText(const char *text);
+
 void HeadingXlText(const char *fmt, ...);
 
 void HeadingXlTextCenter(const char *fmt, ...);
+
+ImVec2 CalculateHeadingLargeText(const char *text);
+
+void HeadingLargeText(const char *fmt, ...);
+
+void HeadingLargeTextCenter(const char *fmt, ...);
 
 // Application Status Badges
 void ErrorAppBadge(const char *fmt,

@@ -7,7 +7,7 @@
 
 namespace layouts {
 // App Layout
-void BeginAppLayout();
+void BeginAppLayout(const char *screen_heading);
 
 void EndAppLayout();
 

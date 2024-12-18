@@ -5,7 +5,6 @@
 #include <imgui.h>
 
 #include "app.h"
-#include "backend.h"
 #include "constants.h"
 #include "layouts.h"
 #include "screens.h"
@@ -15,42 +14,22 @@ using namespace constants;
 
 namespace screens {
 void HotelsScreen() {
-  layouts::BeginAppLayout();
+  layouts::BeginAppLayout("Yor Hotels | WiP");
 
-  const auto center = ImGui::GetMainViewport()->GetWorkCenter();
-  static bool is_requesting = false;
-  static backend::BackendRequest request;
+  auto available_region = ImGui::GetContentRegionAvail();
+  auto viewport_work_size = ImGui::GetMainViewport()->WorkSize;
+  auto occupied_size = ImVec2(viewport_work_size.x - available_region.x,
+                              viewport_work_size.y - available_region.y);
 
-  ImGui::SetNextWindowPos(ImVec2(center.x, center.y), ImGuiCond_Always,
-                          ImVec2(0.5, 0.5));
+  ImGui::SetNextWindowPos(
+      ImVec2(viewport_work_size.x / 2.0 + occupied_size.x / 2.0,
+             viewport_work_size.y / 2.0 + occupied_size.y / 2.0),
+      ImGuiCond_Always, ImVec2(0.5, 0.5));
   ImGui::BeginChild("hotels", ImVec2(0.0, 0.0), kChildWindowFitContent);
 
-  auto user_first_name =
-      app::states::data.users[app::states::system.user_id].first_name;
+  auto user_first_name = app::states::system.GetUser().first_name;
   widgets::HeadingXlTextCenter("Welcome to Contrel, %s",
                                user_first_name.c_str());
-
-  const auto available_region = ImGui::GetContentRegionAvail();
-  const float button_width =
-      ImGui::CalcTextSize("Logout").x + kStyleButtonPadding.x * 2;
-  ImGui::SetCursorPosX(available_region.x / 2.0 - button_width / 2.0);
-  auto logout_button = widgets::Button(
-      "Logout", ImVec2(0.0, 0.0), is_requesting, widgets::ColorAccent::kDanger);
-
-  if (logout_button) {
-    is_requesting = true;
-    request = backend::Logout();
-  }
-
-  if (is_requesting) {
-    backend::EmptyResponse empty_response;
-    auto response = backend::GetResponse(request, empty_response);
-
-    if (response == backend::ResponseStatus::kCompleted)
-      app::states::system.Logout();
-
-    if (response != backend::ResponseStatus::kInProcess) is_requesting = false;
-  }
 
   ImGui::EndChild();
 

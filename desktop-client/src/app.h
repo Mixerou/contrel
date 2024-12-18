@@ -16,6 +16,7 @@
 namespace app {
 extern ImFont *body_font;
 extern ImFont *heading_xl_font;
+extern ImFont *heading_large_font;
 
 extern workers::ApiWorker api_worker;
 
@@ -39,6 +40,8 @@ struct System {
   std::string GetSessionToken();
 
   void SetSessionToken(std::string session_token);
+
+  entities::User GetUser();
 
   // This method doesn't make a logout backend request
   void Logout();

@@ -78,6 +78,7 @@ constexpr ImVec4 kColorDefaultBackground = kColorWhite;
 
 // Style
 constexpr ImVec2 kStyleItemSpacing = ImVec2(8.0, 8.0);
+constexpr ImVec2 kStyleScreenPadding = ImVec2(16.0, 0.0);
 
 constexpr ImVec2 kStyleButtonPadding = ImVec2(24.0, 8.0);
 constexpr float kStyleButtonRounding = 12.0;

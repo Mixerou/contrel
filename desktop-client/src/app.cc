@@ -16,6 +16,7 @@ using namespace constants;
 namespace app {
 ImFont *body_font = nullptr;
 ImFont *heading_xl_font = nullptr;
+ImFont *heading_large_font = nullptr;
 
 workers::ApiWorker api_worker;
 
@@ -33,6 +34,12 @@ void InitFonts() {
       io.Fonts->GetGlyphRangesCyrillic());
   heading_xl_font->Scale = kFontScaleFactor;
   IM_ASSERT(heading_xl_font != nullptr);
+
+  heading_large_font = io.Fonts->AddFontFromFileTTF(
+      "assets/fonts/nunito-sans-semi-bold.ttf", 28.0 * kFontSizeFactor, nullptr,
+      io.Fonts->GetGlyphRangesCyrillic());
+  heading_large_font->Scale = kFontScaleFactor;
+  IM_ASSERT(heading_large_font != nullptr);
 
   io.Fonts->Build();
 }
@@ -78,6 +85,8 @@ void System::SetSessionToken(std::string session_token) {
   keychain::setPassword("dev.mixero.contrel", "desktop-client", "",
                         session_token, error);
 }
+
+entities::User System::GetUser() { return data.users[user_id]; }
 
 void System::Logout() {
   current_screen = app::states::System::Screen::kAuth;

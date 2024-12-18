@@ -45,7 +45,17 @@ void HeadingXlTextEx(const char *fmt, va_list args,
   ImGui::PopFont();
 }
 
+void HeadingLargeTextEx(const char *fmt, va_list args,
+                        widgets::Alignment alignment) {
+  ImGui::PushFont(app::heading_large_font);
+  TextEx(fmt, args, alignment);
+  ImGui::PopFont();
+}
+
 namespace widgets {
+// Body Text
+ImVec2 CalculateBodyText(const char *text) { return ImGui::CalcTextSize(text); }
+
 void BodyText(const char *fmt, ...) {
   va_list args;
   va_start(args, fmt);
@@ -60,6 +70,15 @@ void BodyTextCenter(const char *fmt, ...) {
   va_end(args);
 }
 
+// Heading XL
+ImVec2 CalculateHeadingXlText(const char *text) {
+  ImGui::PushFont(app::heading_xl_font);
+  auto size = ImGui::CalcTextSize(text);
+  ImGui::PopFont();
+
+  return size;
+}
+
 void HeadingXlText(const char *fmt, ...) {
   va_list args;
   va_start(args, fmt);
@@ -71,6 +90,29 @@ void HeadingXlTextCenter(const char *fmt, ...) {
   va_list args;
   va_start(args, fmt);
   HeadingXlTextEx(fmt, args, widgets::Alignment::kCenter);
+  va_end(args);
+}
+
+// Heading Large
+ImVec2 CalculateHeadingLargeText(const char *text) {
+  ImGui::PushFont(app::heading_large_font);
+  auto size = ImGui::CalcTextSize(text);
+  ImGui::PopFont();
+
+  return size;
+}
+
+void HeadingLargeText(const char *fmt, ...) {
+  va_list args;
+  va_start(args, fmt);
+  HeadingLargeTextEx(fmt, args, widgets::Alignment::kLeft);
+  va_end(args);
+}
+
+void HeadingLargeTextCenter(const char *fmt, ...) {
+  va_list args;
+  va_start(args, fmt);
+  HeadingLargeTextEx(fmt, args, widgets::Alignment::kCenter);
   va_end(args);
 }
 }  // namespace widgets
