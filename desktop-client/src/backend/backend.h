@@ -12,6 +12,7 @@
 #include <msgpack.hpp>
 
 #include "app.h"
+#include "entities.h"
 
 namespace backend {
 enum class Layer {
@@ -79,6 +80,11 @@ BackendRequest Register(RegisterRequestPayload payload);
 
 // Logout
 BackendRequest Logout();
+
+// Get Me
+typedef entities::User get_me_response_t;
+
+BackendRequest GetMe();
 
 template <typename T>
 ResponseStatus GetResponse(BackendRequest &request, T &response_reference) {

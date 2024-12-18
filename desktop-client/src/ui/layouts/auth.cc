@@ -4,14 +4,41 @@
 
 #include <imgui.h>
 
+#include "backend.h"
 #include "constants.h"
 #include "layouts.h"
 #include "utils.h"
+#include "widgets.h"
 
 using namespace constants;
 
 namespace layouts {
-void BeginAuthLayout() {
+bool BeginAuthLayout() {
+  static bool is_requesting = false;
+  static bool is_request_made = false;
+  static backend::BackendRequest request;
+
+  if (app::states::system.GetSessionToken().empty()) {
+    is_request_made = true;
+  } else if (!is_request_made) {
+    is_requesting = true;
+    is_request_made = true;
+    request = backend::GetMe();
+  }
+
+  if (is_requesting) {
+    backend::get_me_response_t get_me_response;
+    auto response = backend::GetResponse(request, get_me_response);
+
+    if (response == backend::ResponseStatus::kCompleted) {
+      app::states::system.user_id = get_me_response.id;
+      app::states::data.users[get_me_response.id] = get_me_response;
+      app::states::system.current_screen = app::states::System::Screen::kHotels;
+    }
+
+    if (response != backend::ResponseStatus::kInProcess) is_requesting = false;
+  }
+
   ImGui::SetNextWindowPos(ImVec2(0.0, 0.0));
   ImGui::SetNextWindowSize(ImGui::GetMainViewport()->Size);
   ImGui::Begin("auth_layout", nullptr, kWindowDefaultFlags);
@@ -74,6 +101,10 @@ void BeginAuthLayout() {
     ImGui::BeginChild("auth_layout_right_side", ImVec2(0.0, 0.0),
                       kChildWindowFitContent);
   }
+
+  if (is_requesting) widgets::HeadingXlTextCenter("Welcome Back");
+
+  return !is_requesting;
 }
 
 void EndAuthLayout() {

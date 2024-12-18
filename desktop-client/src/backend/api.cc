@@ -43,4 +43,9 @@ BackendRequest Logout() {
       Layer::kApi);
   return request;
 }
+
+BackendRequest GetMe() {
+  BackendRequest request(app::api_worker.Enqueue("/users/@me"), Layer::kApi);
+  return request;
+}
 }  // namespace backend

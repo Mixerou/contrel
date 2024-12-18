@@ -4,6 +4,7 @@
 
 #include <imgui.h>
 
+#include "app.h"
 #include "backend.h"
 #include "constants.h"
 #include "layouts.h"
@@ -24,7 +25,10 @@ void HotelsScreen() {
                           ImVec2(0.5, 0.5));
   ImGui::BeginChild("hotels", ImVec2(0.0, 0.0), kChildWindowFitContent);
 
-  widgets::HeadingXlTextCenter("Welcome to Contrel");
+  auto user_first_name =
+      app::states::data.users[app::states::system.user_id].first_name;
+  widgets::HeadingXlTextCenter("Welcome to Contrel, %s",
+                               user_first_name.c_str());
 
   const auto available_region = ImGui::GetContentRegionAvail();
   const float button_width =
@@ -42,12 +46,10 @@ void HotelsScreen() {
     backend::EmptyResponse empty_response;
     auto response = backend::GetResponse(request, empty_response);
 
-    if (response == backend::ResponseStatus::kCompleted) {
-      is_requesting = false;
-      app::states::system.current_screen = app::states::System::Screen::kAuth;
-    } else if (response != backend::ResponseStatus::kInProcess) {
-      is_requesting = false;
-    }
+    if (response == backend::ResponseStatus::kCompleted)
+      app::states::system.Logout();
+
+    if (response != backend::ResponseStatus::kInProcess) is_requesting = false;
   }
 
   ImGui::EndChild();

@@ -5,8 +5,12 @@
 #ifndef DESKTOP_CLIENT_APP_H
 #define DESKTOP_CLIENT_APP_H
 
-#include <imgui.h>
+#include <unordered_map>
 
+#include <imgui.h>
+#include <msgpack.hpp>
+
+#include "entities.h"
 #include "workers.h"
 
 namespace app {
@@ -27,6 +31,7 @@ struct System {
   };
 
   Screen current_screen;
+  entities::user_id_t user_id;
   bool is_online;
 
   System();
@@ -35,12 +40,22 @@ struct System {
 
   void SetSessionToken(std::string session_token);
 
+  // This method doesn't make a logout backend request
+  void Logout();
+
  private:
   std::string session_token_;
   std::mutex session_token_mutex_;
 };
 
+struct Data {
+  std::unordered_map<entities::user_id_t, entities::User> users;
+
+  void Clear();
+};
+
 extern System system;
+extern Data data;
 }  // namespace states
 }  // namespace app
 

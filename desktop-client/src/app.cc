@@ -79,5 +79,17 @@ void System::SetSessionToken(std::string session_token) {
                         session_token, error);
 }
 
+void System::Logout() {
+  current_screen = app::states::System::Screen::kAuth;
+  user_id = 0;
+  data.Clear();
+}
+
 System system;
+}  // namespace app::states
+
+namespace app::states {
+void Data::Clear() { users.clear(); }
+
+Data data;
 }  // namespace app::states
