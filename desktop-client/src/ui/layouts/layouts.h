@@ -12,7 +12,7 @@ void BeginAppLayout();
 void EndAppLayout();
 
 // Auth Layout
-void BeginAuthLayout();
+bool BeginAuthLayout();
 
 void EndAuthLayout();
 }  // namespace layouts

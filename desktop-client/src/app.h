@@ -14,6 +14,7 @@ extern ImFont *body_font;
 extern ImFont *heading_xl_font;
 
 extern workers::ApiWorker api_worker;
+extern workers::WebSocketWorker web_socket_worker;
 
 void InitFonts();
 
@@ -35,9 +36,16 @@ struct System {
 
   void SetSessionToken(std::string session_token);
 
+  bool IsWebSocketWorkerReadyState();
+
+  void SetWebSocketWorkerReadyState(bool is_ready);
+
  private:
   std::string session_token_;
   std::mutex session_token_mutex_;
+
+  bool is_web_socket_worker_ready_;
+  std::mutex is_web_socket_worker_ready_mutex_;
 };
 
 extern System system;

@@ -87,6 +87,7 @@ constexpr float kStyleInputRounding = 12.0;
 
 // Backend-related
 constexpr std::string_view kBackendApiUrl = "https://contrel.mixero.dev/api";
+constexpr std::string_view kBackendWebSocketUrl = "wss://contrel.mixero.dev/ws";
 }  // namespace constants
 
 #endif  // DESKTOP_CLIENT_CONSTANTS_H

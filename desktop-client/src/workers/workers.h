@@ -10,6 +10,7 @@
 #include <unordered_map>
 
 #include <ixwebsocket/IXHttpClient.h>
+#include <ixwebsocket/IXWebSocket.h>
 
 namespace workers {
 struct ApiRequest {
@@ -42,6 +43,48 @@ class ApiWorker {
               std::string body = "");
 
   std::optional<std::shared_ptr<ix::HttpResponse>> GetResponse(int request_id);
+};
+
+class WebSocketWorker {
+ private:
+  std::thread worker_;
+
+  ix::WebSocket* web_socket_;
+  std::mutex web_socket_mutex_;
+
+  std::queue<std::string> requests_;
+  std::mutex requests_mutex_;
+  std::condition_variable request_condition_;
+
+  std::unordered_map<int64_t, std::string> responses_;
+  std::mutex response_mutex_;
+
+  bool is_ready_;
+  std::mutex is_ready_mutex_;
+
+  bool need_stop_;
+  std::mutex need_stop_mutex_;
+
+  int next_message_id_;
+
+  void Loop();
+
+  void ReallyStop();
+
+ public:
+  WebSocketWorker();
+
+  ~WebSocketWorker();
+
+  void Start();
+
+  void Stop();
+
+  bool IsStarted();
+
+  void Enqueue(const std::string& message);
+
+  std::optional<std::string> GetResponse(int message_id);
 };
 }  // namespace workers
 

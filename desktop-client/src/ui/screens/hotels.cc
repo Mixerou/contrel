@@ -45,6 +45,7 @@ void HotelsScreen() {
     if (response == backend::ResponseStatus::kCompleted) {
       is_requesting = false;
       app::states::system.current_screen = app::states::System::Screen::kAuth;
+      app::web_socket_worker.Stop();
     } else if (response != backend::ResponseStatus::kInProcess) {
       is_requesting = false;
     }

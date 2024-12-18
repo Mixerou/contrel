@@ -15,6 +15,11 @@ using namespace constants;
 
 namespace screens {
 void LoginScreen() {
+  if (!layouts::BeginAuthLayout()) {
+    layouts::EndAuthLayout();
+    return;
+  }
+
   // I know these buffers are larger that the backend accepts
   static char first_name[128] = "";
   static char last_name[128] = "";
@@ -26,8 +31,6 @@ void LoginScreen() {
   static std::string error = "";
   static backend::BackendRequest request;
   auto style = ImGui::GetStyle();
-
-  layouts::BeginAuthLayout();
 
   // Heading
   {
@@ -127,7 +130,7 @@ void LoginScreen() {
       is_registration = false;
       is_requesting = false;
       error = "";
-      app::states::system.current_screen = app::states::System::Screen::kHotels;
+      app::web_socket_worker.Start();
     } else if (response == backend::ResponseStatus::kCompetedWithError) {
       is_requesting = false;
       error = request.error_response.message;

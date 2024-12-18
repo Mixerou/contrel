@@ -4,14 +4,25 @@
 
 #include <imgui.h>
 
+#include "app.h"
 #include "constants.h"
 #include "layouts.h"
 #include "utils.h"
+#include "widgets.h"
 
 using namespace constants;
 
 namespace layouts {
-void BeginAuthLayout() {
+bool BeginAuthLayout() {
+  auto is_web_socket_worker_started = app::web_socket_worker.IsStarted();
+  auto is_web_socket_worker_ready =
+      app::states::system.IsWebSocketWorkerReadyState();
+  auto is_loading_template =
+      is_web_socket_worker_started && !is_web_socket_worker_ready;
+
+  if (is_web_socket_worker_started && is_web_socket_worker_ready)
+    app::states::system.current_screen = app::states::System::Screen::kHotels;
+
   ImGui::SetNextWindowPos(ImVec2(0.0, 0.0));
   ImGui::SetNextWindowSize(ImGui::GetMainViewport()->Size);
   ImGui::Begin("auth_layout", nullptr, kWindowDefaultFlags);
@@ -74,6 +85,10 @@ void BeginAuthLayout() {
     ImGui::BeginChild("auth_layout_right_side", ImVec2(0.0, 0.0),
                       kChildWindowFitContent);
   }
+
+  if (is_loading_template) widgets::HeadingXlTextCenter("Welcome Back");
+
+  return !is_loading_template;
 }
 
 void EndAuthLayout() {

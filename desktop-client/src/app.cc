@@ -18,6 +18,7 @@ ImFont *body_font = nullptr;
 ImFont *heading_xl_font = nullptr;
 
 workers::ApiWorker api_worker;
+workers::WebSocketWorker web_socket_worker;
 
 void InitFonts() {
   auto io = ImGui::GetIO();
@@ -61,6 +62,8 @@ System::System() : is_online(true), current_screen(Screen::kAuth) {
 
   session_token_ =
       keychain::getPassword("dev.mixero.contrel", "desktop-client", "", error);
+
+  if (!session_token_.empty()) web_socket_worker.Start();
 }
 
 std::string System::GetSessionToken() {
@@ -77,6 +80,16 @@ void System::SetSessionToken(std::string session_token) {
   keychain::Error error;
   keychain::setPassword("dev.mixero.contrel", "desktop-client", "",
                         session_token, error);
+}
+
+bool System::IsWebSocketWorkerReadyState() {
+  std::lock_guard<std::mutex> lock(is_web_socket_worker_ready_mutex_);
+  return is_web_socket_worker_ready_;
+}
+
+void System::SetWebSocketWorkerReadyState(bool is_ready) {
+  std::lock_guard<std::mutex> lock(is_web_socket_worker_ready_mutex_);
+  is_web_socket_worker_ready_ = is_ready;
 }
 
 System system;

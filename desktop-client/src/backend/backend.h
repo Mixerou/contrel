@@ -50,6 +50,30 @@ struct EmptyResponse {
   MSGPACK_DEFINE();
 };
 
+enum class WebSocketOpcode : uint8_t {
+  kHeartBeat = 0,
+  kRequest = 1,
+  kResponse = 2,
+  kError = 3,
+  kAuthorize = 4,
+};
+
+template <typename T>
+struct WebSocketMessage {
+  int id;
+  int opcode;
+  T payload;
+
+  WebSocketMessage(int id, WebSocketOpcode opcode, T payload)
+      : id(id), opcode(static_cast<int>(opcode)), payload(payload) {}
+  WebSocketMessage(int id, T payload)
+      : id(id),
+        opcode(static_cast<int>(WebSocketOpcode::kRequest)),
+        payload(payload) {}
+
+  MSGPACK_DEFINE(id, opcode, payload);
+};
+
 // Ping
 typedef std::string ping_response_t;
 
@@ -79,6 +103,17 @@ BackendRequest Register(RegisterRequestPayload payload);
 
 // Logout
 BackendRequest Logout();
+
+// WS Authorise
+struct WebSocketAuthorizationPayload {
+  int payload_type;
+  std::string token;
+
+  WebSocketAuthorizationPayload(std::string token)
+      : payload_type(300), token(token) {}
+
+  MSGPACK_DEFINE(payload_type, token);
+};
 
 template <typename T>
 ResponseStatus GetResponse(BackendRequest &request, T &response_reference) {

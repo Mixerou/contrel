@@ -67,6 +67,7 @@ set(SOURCES
 
         # Backend
         src/backend/api.cc
+        src/backend/web_socket.cc
 
         # UI Layouts
         src/ui/layouts/app.cc
@@ -89,6 +90,7 @@ set(SOURCES
 
         # Workers
         src/workers/api.cc
+        src/workers/web_socket.cc
 )
 
 # Definitions
