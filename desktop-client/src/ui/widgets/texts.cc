@@ -6,7 +6,10 @@
 #include <imgui_internal.h>
 
 #include "app.h"
+#include "constants.h"
 #include "widgets.h"
+
+using namespace constants;
 
 void TextEx(const char *fmt, va_list args, widgets::Alignment alignment) {
   float offset_factor;
@@ -61,6 +64,17 @@ void BodyText(const char *fmt, ...) {
   va_start(args, fmt);
   BodyTextEx(fmt, args, widgets::Alignment::kLeft);
   va_end(args);
+}
+
+void BodyTextDimmed(const char *fmt, ...) {
+  ImGui::PushStyleColor(ImGuiCol_Text, kColorNeutral700);
+
+  va_list args;
+  va_start(args, fmt);
+  BodyTextEx(fmt, args, widgets::Alignment::kLeft);
+  va_end(args);
+
+  ImGui::PopStyleColor();
 }
 
 void BodyTextCenter(const char *fmt, ...) {

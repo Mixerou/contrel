@@ -35,6 +35,16 @@ constexpr ImGuiChildFlags kChildWindowFitContent =
     ImGuiChildFlags_AutoResizeX | ImGuiChildFlags_AutoResizeY |
     ImGuiChildFlags_AlwaysAutoResize;
 
+// Table Flags
+constexpr ImGuiTableFlags kDefaultTableFlags =
+    ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_RowBg |
+    ImGuiTableFlags_BordersInnerH | ImGuiTableFlags_SizingFixedFit |
+    ImGuiTableFlags_NoHostExtendX;
+constexpr ImGuiTableColumnFlags kDefaultTableColumnFlags =
+    ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize |
+    ImGuiTableColumnFlags_NoReorder | ImGuiTableColumnFlags_NoHide |
+    ImGuiTableColumnFlags_NoHeaderLabel;
+
 // Colors
 constexpr ImVec4 kColorPrimary50 = ImVec4(0.9, 0.94, 0.93, 1.0);
 constexpr ImVec4 kColorPrimary100 = ImVec4(0.8, 0.88, 0.86, 1.0);
@@ -76,15 +86,23 @@ constexpr ImVec4 kColorWhite = kColorNeutral100;
 constexpr ImVec4 kColorDefaultText = kColorBlack;
 constexpr ImVec4 kColorDefaultBackground = kColorWhite;
 
+constexpr ImVec4 kColorTableHeader = kColorNeutral50;
+constexpr ImVec4 kColorTableBody = ImVec4(1.0, 1.0, 1.0, 1.0);
+
 // Style
 constexpr ImVec2 kStyleItemSpacing = ImVec2(8.0, 8.0);
-constexpr ImVec2 kStyleScreenPadding = ImVec2(16.0, 0.0);
+constexpr ImVec2 kStyleScreenPadding = ImVec2(16.0, 8.0);
 
 constexpr ImVec2 kStyleButtonPadding = ImVec2(24.0, 8.0);
 constexpr float kStyleButtonRounding = 12.0;
 
 constexpr ImVec2 kStyleInputPadding = ImVec2(16.0, 8.0);
 constexpr float kStyleInputRounding = 12.0;
+
+constexpr float kTableHeaderCellHeight = 32.0;
+constexpr float kTableBodyCellHeight = 44.0;
+constexpr float kTableCellPaddingX = 20.0;
+constexpr float kTableRounding = 12.0;
 
 // Backend-related
 constexpr std::string_view kBackendApiUrl = "https://contrel.mixero.dev/api";

@@ -50,6 +50,8 @@ class Texture {
 };
 
 bool StringEndsWith(std::string const &str, std::string const &ending);
+
+std::string FormatUnixTimestampToHumanReadable(int64_t timestamp);
 }  // namespace utils
 
 #endif

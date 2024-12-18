@@ -74,6 +74,7 @@ set(SOURCES
 
         # UI Screens
         src/ui/screens/auth.cc
+        src/ui/screens/dashboard.cc
         src/ui/screens/hotels.cc
 
         # UI Widgets
@@ -81,11 +82,13 @@ set(SOURCES
         src/ui/widgets/buttons.cc
         src/ui/widgets/inputs.cc
         src/ui/widgets/layout.cc
+        src/ui/widgets/tables.cc
         src/ui/widgets/texts.cc
 
         # Utils
         src/utils/string.cc
         src/utils/texture.cc
+        src/utils/time.cc
 
         # Workers
         src/workers/api.cc

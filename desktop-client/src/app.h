@@ -5,6 +5,7 @@
 #ifndef DESKTOP_CLIENT_APP_H
 #define DESKTOP_CLIENT_APP_H
 
+#include <optional>
 #include <unordered_map>
 
 #include <imgui.h>
@@ -28,10 +29,12 @@ namespace states {
 struct System {
   enum class Screen {
     kAuth,
+    kDashboard,
     kHotels,
   };
 
   Screen current_screen;
+  std::optional<entities::hotel_id_t> opened_hotel_id;
   entities::user_id_t user_id;
   bool is_online;
 
@@ -53,6 +56,7 @@ struct System {
 
 struct Data {
   std::unordered_map<entities::user_id_t, entities::User> users;
+  std::unordered_map<entities::hotel_id_t, entities::Hotel> hotels;
 
   void Clear();
 };

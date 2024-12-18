@@ -50,12 +50,20 @@ void InitStyle() {
   style.WindowPadding = ImVec2(0.0, 0.0);
   style.WindowBorderSize = 0.0;
   style.ChildBorderSize = 0.0;
+
   style.FrameBorderSize = 0.0;
+  style.FrameRounding = 16.0;
 
   style.ItemSpacing = kStyleItemSpacing;
 
   style.Colors[ImGuiCol_Text] = kColorDefaultText;
   style.Colors[ImGuiCol_WindowBg] = kColorDefaultBackground;
+
+  style.Colors[ImGuiCol_TableHeaderBg] = ImVec4(0.0, 0.0, 0.0, 0.0);
+  style.Colors[ImGuiCol_TableRowBg] = ImVec4(0.0, 0.0, 0.0, 0.0);
+  style.Colors[ImGuiCol_TableRowBgAlt] = ImVec4(0.0, 0.0, 0.0, 0.0);
+  style.Colors[ImGuiCol_TableBorderStrong] = kColorNeutral50;
+  style.Colors[ImGuiCol_TableBorderLight] = kColorNeutral50;
 
   style.Colors[ImGuiCol_NavCursor] = ImVec4(0.0, 0.0, 0.0, 0.0);
 }
@@ -98,7 +106,10 @@ System system;
 }  // namespace app::states
 
 namespace app::states {
-void Data::Clear() { users.clear(); }
+void Data::Clear() {
+  users.clear();
+  hotels.clear();
+}
 
 Data data;
 }  // namespace app::states

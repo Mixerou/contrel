@@ -14,6 +14,9 @@
 
 using namespace constants;
 
+static bool is_prepare_unmount = false;
+static std::string last_screen_heading;
+
 void AppBar(const char *screen_heading, const float &height,
             const float &nav_bar_width) {
   static bool is_requesting = false;
@@ -84,8 +87,10 @@ void AppBar(const char *screen_heading, const float &height,
     backend::EmptyResponse empty_response;
     auto response = backend::GetResponse(request, empty_response);
 
-    if (response == backend::ResponseStatus::kCompleted)
+    if (response == backend::ResponseStatus::kCompleted) {
+      is_prepare_unmount = true;
       app::states::system.Logout();
+    }
 
     if (response != backend::ResponseStatus::kInProcess) is_requesting = false;
   }
@@ -95,7 +100,7 @@ void AppBar(const char *screen_heading, const float &height,
 }
 
 namespace layouts {
-void BeginAppLayout(const char *screen_heading) {
+bool BeginAppLayout(const char *screen_heading) {
   ImGui::SetNextWindowPos(ImVec2(0.0, 0.0));
   ImGui::SetNextWindowSize(ImGui::GetMainViewport()->Size);
   ImGui::Begin("app_layout", nullptr, kWindowDefaultFlags);
@@ -115,10 +120,20 @@ void BeginAppLayout(const char *screen_heading) {
 
     ImGui::BeginChild("app_layout_screen");
   }
+
+  const auto last_screen_heading_temp = last_screen_heading;
+  last_screen_heading = std::string(screen_heading);
+
+  return last_screen_heading != last_screen_heading_temp;
 }
 
-void EndAppLayout() {
+bool EndAppLayout() {
   ImGui::EndChild();
   ImGui::End();
+
+  const auto is_prepare_unmount_temp = is_prepare_unmount;
+  is_prepare_unmount = false;
+
+  return is_prepare_unmount_temp;
 }
 }  // namespace layouts

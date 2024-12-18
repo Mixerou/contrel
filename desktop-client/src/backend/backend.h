@@ -8,6 +8,7 @@
 #define DESKTOP_CLIENT_BACKEND_H
 
 #include <iostream>
+#include <vector>
 
 #include <msgpack.hpp>
 
@@ -85,6 +86,11 @@ BackendRequest Logout();
 typedef entities::User get_me_response_t;
 
 BackendRequest GetMe();
+
+// Get All Hotels
+typedef std::vector<entities::Hotel> get_all_hotels_response_t;
+
+BackendRequest GetAllHotels();
 
 template <typename T>
 ResponseStatus GetResponse(BackendRequest &request, T &response_reference) {

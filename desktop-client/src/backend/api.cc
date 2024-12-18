@@ -48,4 +48,9 @@ BackendRequest GetMe() {
   BackendRequest request(app::api_worker.Enqueue("/users/@me"), Layer::kApi);
   return request;
 }
+
+BackendRequest GetAllHotels() {
+  BackendRequest request(app::api_worker.Enqueue("/hotels"), Layer::kApi);
+  return request;
+}
 }  // namespace backend
