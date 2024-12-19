@@ -97,6 +97,37 @@ impl Guest {
 
         Ok(user)
     }
+
+    pub async fn find_all_by_hotel_id(hotel_id: &i64) -> Result<Vec<Self>, BackendError> {
+        let connection = db::get_connection();
+
+        let guests = query_as!(
+            Self,
+            r#"
+                SELECT id,
+                       first_name,
+                       last_name,
+                       date_of_birth,
+                       gender AS "gender: Gender",
+                       phone_number,
+                       email,
+                       document_type AS "document_type: DocumentType",
+                       document_number,
+                       document_country AS "document_country: Country",
+                       document_valid_until,
+                       notes,
+                       hotel_id,
+                       created_at
+                FROM guests
+                WHERE hotel_id = $1
+            "#,
+            hotel_id,
+        )
+        .fetch_all(connection)
+        .await?;
+
+        Ok(guests)
+    }
 }
 
 #[derive(Clone, Eq, PartialEq, Hash, Deserialize_repr, Serialize_repr, Type)]
