@@ -17,6 +17,7 @@ mod db;
 mod error;
 mod services;
 mod snowflake_generator;
+mod types;
 mod utils;
 mod web_socket;
 
@@ -44,6 +45,7 @@ async fn main() -> std::io::Result<()> {
             .service(
                 web::scope(api_path.as_str())
                     .configure(services::auth::init_routes)
+                    .configure(services::guest::init_routes)
                     .configure(services::hotel::init_routes)
                     .configure(services::system::init_routes)
                     .configure(services::user::init_routes)
