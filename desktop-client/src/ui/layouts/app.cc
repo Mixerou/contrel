@@ -157,14 +157,15 @@ void NavBar(const float width) {
   // Navigation Buttons
   {
     const auto current_screen = app::states::system.current_screen;
+
     ImGui::SetCursorPosX(kStyleScreenPadding.x);
-    const auto dashboard = widgets::Button(
+    const auto is_dashboard_button = widgets::Button(
         "Dashboard", ImVec2(button_width, 0.0), false,
         current_screen == app::states::System::Screen::kDashboard
             ? widgets::ColorAccent::kPrimaryLight
             : widgets::ColorAccent::kPrimaryBlank);
 
-    if (dashboard)
+    if (is_dashboard_button)
       app::states::system.current_screen =
           app::states::System::Screen::kDashboard;
 
@@ -177,8 +178,14 @@ void NavBar(const float width) {
                     widgets::ColorAccent::kPrimaryBlank);
 
     ImGui::SetCursorPosX(kStyleScreenPadding.x);
-    widgets::Button("Guests", ImVec2(button_width, 0.0), false,
-                    widgets::ColorAccent::kPrimaryBlank);
+    const auto is_guests_button =
+        widgets::Button("Guests", ImVec2(button_width, 0.0), false,
+                        current_screen == app::states::System::Screen::kGuests
+                            ? widgets::ColorAccent::kPrimaryLight
+                            : widgets::ColorAccent::kPrimaryBlank);
+
+    if (is_guests_button)
+      app::states::system.current_screen = app::states::System::Screen::kGuests;
   }
 
   ImGui::EndChild();

@@ -26,6 +26,12 @@ bool Button(const char *label, const ImVec2 &size = ImVec2(0, 0),
             const bool is_disabled = false,
             const ColorAccent color_accent = ColorAccent::kPrimary);
 
+// Combos
+bool BeginCombo(const char *label, const char *preview_value,
+                ImGuiComboFlags flags = 0);
+
+void EndCombo(bool begin_combo_state);
+
 // Inputs
 bool InputText(const char *label, char *buf, size_t buf_size,
                ImGuiInputTextFlags flags = 0,
@@ -35,6 +41,10 @@ bool MetaInputText(const char *label, char *buf, size_t buf_size,
                    ImGuiInputTextFlags flags = 0,
                    ImGuiInputTextCallback callback = NULL,
                    void *user_data = NULL);
+
+int FilterInputPhoneNumber(ImGuiInputTextCallbackData *data);
+
+int FilterInputDate(ImGuiInputTextCallbackData *data);
 
 // Layout
 void SameLine(const float spacing = 0.0);

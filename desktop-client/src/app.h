@@ -30,6 +30,7 @@ struct System {
   enum class Screen {
     kAuth,
     kDashboard,
+    kGuests,
     kHotels,
   };
 
@@ -59,6 +60,7 @@ struct System {
 struct Data {
   std::unordered_map<entities::user_id_t, entities::User> users;
   std::unordered_map<entities::hotel_id_t, entities::Hotel> hotels;
+  std::unordered_map<entities::guest_id_t, entities::Guest> guests;
 
   void Clear();
 };

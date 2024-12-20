@@ -8,6 +8,7 @@
 #define DESKTOP_CLIENT_BACKEND_H
 
 #include <iostream>
+#include <utility>
 #include <vector>
 
 #include <msgpack.hpp>
@@ -102,6 +103,82 @@ BackendRequest CreateHotel(CreateHotelRequestPayload payload);
 typedef std::vector<entities::Hotel> get_all_hotels_response_t;
 
 BackendRequest GetAllHotels();
+
+// For Guest Requests
+struct GetGuestResponse {
+  entities::guest_id_t id;
+  std::string first_name;
+  std::string last_name;
+  int64_t date_of_birth;
+  int16_t gender;
+  std::string phone_number;
+  std::string email;
+  int16_t document_type;
+  std::string document_number;
+  int16_t document_country;
+  int64_t document_valid_until;
+  std::string notes;
+  entities::hotel_id_t hotel_id;
+  int64_t created_at;
+
+  entities::Guest ToGuest() const {
+    return entities::Guest{id,
+                           first_name,
+                           last_name,
+                           date_of_birth,
+                           static_cast<entities::Gender>(gender),
+                           phone_number,
+                           email,
+                           static_cast<entities::DocumentType>(document_type),
+                           document_number,
+                           static_cast<entities::Country>(document_country),
+                           document_valid_until,
+                           notes,
+                           hotel_id,
+                           created_at};
+  }
+
+  MSGPACK_DEFINE(id, first_name, last_name, date_of_birth, gender, phone_number,
+                 email, document_type, document_number, document_country,
+                 document_valid_until, notes, hotel_id, created_at);
+};
+
+// Create Guest
+struct CreateGuestRequestPayload {
+  std::string first_name;
+  std::string last_name;
+  int64_t date_of_birth;
+  int16_t gender;
+  std::string phone_number;
+  std::string email;
+  int16_t document_type;
+  std::string document_number;
+  int16_t document_country;
+  int64_t document_valid_until;
+  std::string notes;
+
+  CreateGuestRequestPayload(std::string first_name, std::string last_name,
+                            int64_t date_of_birth, entities::Gender gender,
+                            std::string phone_number, std::string email,
+                            entities::DocumentType document_type,
+                            std::string document_number,
+                            entities::Country document_country,
+                            int64_t document_valid_until, std::string notes);
+
+  MSGPACK_DEFINE(first_name, last_name, date_of_birth, gender, phone_number,
+                 email, document_type, document_number, document_country,
+                 document_valid_until, notes);
+};
+
+typedef GetGuestResponse create_guest_response_t;
+
+BackendRequest CreateGuest(entities::hotel_id_t hotel_id,
+                           const CreateGuestRequestPayload &payload);
+
+// Get All Guests
+typedef std::vector<GetGuestResponse> get_all_guests_response_t;
+
+BackendRequest GetAllGuests(entities::hotel_id_t hotel_id);
 
 template <typename T>
 ResponseStatus GetResponse(BackendRequest &request, T &response_reference) {
