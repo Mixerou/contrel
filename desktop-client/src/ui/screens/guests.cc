@@ -1,0 +1,629 @@
+//
+// Created by Mixerou on 19.12.2024.
+//
+
+#include <format>
+
+#include <imgui.h>
+
+#include "app.h"
+#include "backend.h"
+#include "constants.h"
+#include "layouts.h"
+#include "screens.h"
+#include "utils.h"
+#include "widgets.h"
+
+using namespace constants;
+
+enum class ScreenView {
+  kGuestsTable,
+  kGuestCreation,
+  kGuestView,
+};
+
+struct NewGuest {
+  char first_name[128];
+  char last_name[128];
+  char date_of_birth[11];
+  entities::Gender gender;
+  char phone_number[32];
+  char email[128];
+  entities::DocumentType document_type;
+  char document_number[128];
+  entities::Country document_country;
+  char document_valid_until[11];
+  char notes[128];
+
+  NewGuest()
+      : first_name(""),
+        last_name(""),
+        date_of_birth(""),
+        gender(entities::Gender::kMale),
+        phone_number(""),
+        email(""),
+        document_type(entities::DocumentType::kPassport),
+        document_number(""),
+        document_country(entities::Country::kIrelandRepublic),
+        document_valid_until(""),
+        notes("") {}
+
+  backend::CreateGuestRequestPayload ToBackendCreateGuestRequestPayload() {
+    return {std::string(first_name),
+            std::string(last_name),
+            utils::ConvertHumanReadableTimestampToUnix(date_of_birth),
+            gender,
+            std::string(phone_number),
+            std::string(email),
+            document_type,
+            std::string(document_number),
+            document_country,
+            utils::ConvertHumanReadableTimestampToUnix(document_valid_until),
+            std::string(notes)};
+  }
+};
+
+struct ScreenState {
+  ScreenView view;
+  entities::guest_id_t guest_to_view_id;
+  NewGuest new_guest;
+  std::string creation_error;
+  bool is_requesting = false;
+  bool is_guests_retrieved = false;
+  backend::BackendRequest request;
+
+  ScreenState()
+      : view(ScreenView::kGuestsTable),
+        guest_to_view_id(0),
+        new_guest(NewGuest()) {}
+};
+
+static auto state = ScreenState();
+
+void TopBar() {
+  ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(1.0, 1.0, 1.0, 1.0));
+  ImGui::SetNextWindowSize(ImVec2(ImGui::GetContentRegionAvail().x, 44.0));
+  ImGui::BeginChild("top_bar");
+
+  const auto available_region = ImGui::GetContentRegionAvail();
+  std::string text;
+  std::string button_text;
+
+  if (state.view == ScreenView::kGuestsTable &&
+      app::states::data.guests.empty()) {
+    text = "Add you first hotel guest";
+    button_text = "Add guest";
+  } else if (state.view == ScreenView::kGuestsTable) {
+    text = "Check existing guest or create a new one";
+    button_text = "Add guest";
+  } else if (state.view == ScreenView::kGuestCreation) {
+    text = "Add a new person";
+    button_text = "Cancel";
+  } else if (state.view == ScreenView::kGuestView) {
+    text = "Detailed person view";
+    button_text = "Cancel";
+  }
+
+  const auto text_size = widgets::CalculateBodyText(text.c_str());
+  const auto text_position = ImVec2(
+      kStyleScreenPadding.x, available_region.y / 2.0 - text_size.y / 2.0);
+
+  const auto button_text_size = widgets::CalculateBodyText(button_text.c_str());
+  const auto button_size =
+      ImVec2(button_text_size.x + kStyleButtonPadding.x * 2,
+             button_text_size.y + kStyleButtonPadding.y * 2);
+  const auto button_position =
+      ImVec2(available_region.x - kStyleScreenPadding.x - button_size.x,
+             available_region.y / 2.0 - button_size.y / 2.0);
+
+  ImGui::SetCursorPos(text_position);
+  widgets::BodyTextDimmed(text.c_str());
+
+  ImGui::SetCursorPos(button_position);
+  if (widgets::Button(button_text.c_str(), ImVec2(0.0, 0.0),
+                      state.is_requesting)) {
+    state.new_guest = NewGuest();
+    state.creation_error = "";
+
+    if (state.view == ScreenView::kGuestsTable)
+      state.view = ScreenView::kGuestCreation;
+    else if (state.view == ScreenView::kGuestCreation)
+      state.view = ScreenView::kGuestsTable;
+    else if (state.view == ScreenView::kGuestView) {
+      state.view = ScreenView::kGuestsTable;
+      state.guest_to_view_id = 0;
+    }
+  }
+
+  ImGui::EndChild();
+  ImGui::PopStyleColor();
+}
+
+void GuestsTable() {
+  if (!app::states::system.opened_hotel_id.has_value()) return;
+
+  const auto hotel_id = app::states::system.opened_hotel_id.value();
+  const auto available_region = ImGui::GetContentRegionAvail();
+  const float hardcoded_table_width = 884.0;
+
+  ImGui::SetCursorPosX(available_region.x / 2.0 - hardcoded_table_width / 2.0);
+
+  ImVec2 top_left_header_point;
+  ImVec2 bottom_right_header_point;
+  ImVec2 top_left_body_point;
+  ImVec2 bottom_right_body_point;
+
+  if (ImGui::BeginTable("guests", 6, kDefaultTableFlags)) {
+    ImGui::TableSetupColumn("", kDefaultTableColumnFlags, 128.0);
+    ImGui::TableSetupColumn("", kDefaultTableColumnFlags, 128.0);
+    ImGui::TableSetupColumn("", kDefaultTableColumnFlags, 128.0);
+    ImGui::TableSetupColumn("", kDefaultTableColumnFlags, 224.0);
+    ImGui::TableSetupColumn("", kDefaultTableColumnFlags, 160.0);
+    ImGui::TableSetupColumn("", kDefaultTableColumnFlags, 116.0);
+
+    ImGui::TableHeadersRow();
+
+    ImGui::TableSetColumnIndex(0);
+    top_left_header_point = widgets::TableHeaderCellText("First name").top_left;
+
+    ImGui::TableSetColumnIndex(1);
+    widgets::TableHeaderCellText("Last name");
+
+    ImGui::TableSetColumnIndex(2);
+    widgets::TableHeaderCellText("Phone number");
+
+    ImGui::TableSetColumnIndex(3);
+    widgets::TableHeaderCellText("Email");
+
+    ImGui::TableSetColumnIndex(4);
+    widgets::TableHeaderCellText("Citizen of");
+
+    ImGui::TableSetColumnIndex(5);
+    bottom_right_header_point = widgets::TableHeaderCellText("").bottom_right;
+
+    int index = 0;
+    for (const auto& [guest_id, guest] : app::states::data.guests) {
+      if (guest.hotel_id != hotel_id) continue;
+
+      ImGui::PushID(std::format("guest{}", guest_id).c_str());
+      ImGui::TableNextRow();
+
+      ImGui::TableSetColumnIndex(0);
+      const auto first_cell_points =
+          widgets::TableCellText(guest.first_name.c_str());
+
+      if (index == 0) top_left_body_point = first_cell_points.top_left;
+
+      ImGui::TableSetColumnIndex(1);
+      widgets::TableCellText(guest.last_name.c_str());
+
+      ImGui::TableSetColumnIndex(2);
+      widgets::TableCellText(guest.phone_number.c_str());
+
+      ImGui::TableSetColumnIndex(3);
+      widgets::TableCellText(guest.email.c_str());
+
+      ImGui::TableSetColumnIndex(4);
+      widgets::TableCellText(
+          entities::kAllCountries[static_cast<int16_t>(guest.document_country)]
+              .second);
+
+      ImGui::TableSetColumnIndex(5);
+      const auto button_text = "View";
+      const auto button_height =
+          widgets::CalculateBodyText(button_text).y + kStyleButtonPadding.y * 2;
+      const auto second_cell_points =
+          widgets::BeginTableBodyCell(button_text, button_height);
+      const auto is_open_button = widgets::Button(button_text);
+      widgets::EndTableBodyCell();
+
+      if (is_open_button) {
+        state.view = ScreenView::kGuestView;
+        state.guest_to_view_id = guest_id;
+      }
+
+      // TODO: do not mutate every iteration
+      bottom_right_body_point = second_cell_points.bottom_right;
+
+      ImGui::PopID();
+
+      ++index;
+    }
+
+    ImGui::EndTable();
+  }
+
+  DrawTableHeaderBackground(widgets::TableCellScreenPosition(
+      top_left_header_point, bottom_right_header_point));
+  DrawTableBodyBackground(widgets::TableCellScreenPosition(
+      top_left_body_point, bottom_right_body_point));
+}
+
+void CreationView() {
+  auto available_region = ImGui::GetContentRegionAvail();
+  auto viewport_work_size = ImGui::GetMainViewport()->WorkSize;
+  auto occupied_size = ImVec2(viewport_work_size.x - available_region.x,
+                              viewport_work_size.y - available_region.y);
+
+  ImGui::SetNextWindowPos(
+      ImVec2(viewport_work_size.x / 2.0 + occupied_size.x / 2.0,
+             viewport_work_size.y / 2.0 + occupied_size.y / 2.0),
+      ImGuiCond_Always, ImVec2(0.5, 0.5));
+  ImGui::BeginChild("creation", ImVec2(0.0, 0.0), kChildWindowFitContent);
+
+  // Inputs
+  {
+    const auto style = ImGui::GetStyle();
+    const float items_width = 384.0;
+
+    ImGui::PushItemWidth(items_width);
+    ImGui::BeginGroup();
+
+    // First name and last name in one row
+    {
+      const float items_width_half =
+          items_width / 2.0 - style.ItemSpacing.x / 2.0;
+      const ImVec2 cursor_screen_position = ImGui::GetCursorScreenPos();
+
+      ImGui::PushItemWidth(items_width_half);
+
+      ImGui::BeginGroup();
+      widgets::MetaInputText("First name", state.new_guest.first_name,
+                             IM_ARRAYSIZE(state.new_guest.first_name));
+      ImGui::EndGroup();
+
+      ImGui::SetCursorScreenPos(ImVec2(
+          cursor_screen_position.x + items_width_half + style.ItemSpacing.x,
+          cursor_screen_position.y));
+      ImGui::BeginGroup();
+      widgets::MetaInputText("Last name", state.new_guest.last_name,
+                             IM_ARRAYSIZE(state.new_guest.last_name));
+      ImGui::EndGroup();
+
+      ImGui::PopItemWidth();
+    }
+
+    // Date of birth and gender in one row
+    {
+      const float items_width_half =
+          items_width / 2.0 - style.ItemSpacing.x / 2.0;
+      const ImVec2 cursor_screen_position = ImGui::GetCursorScreenPos();
+
+      ImGui::PushItemWidth(items_width_half);
+
+      ImGui::BeginGroup();
+      widgets::MetaInputText("Date of birth", state.new_guest.date_of_birth,
+                             IM_ARRAYSIZE(state.new_guest.date_of_birth),
+                             ImGuiInputTextFlags_CallbackAlways,
+                             widgets::FilterInputDate);
+      ImGui::EndGroup();
+
+      ImGui::SetCursorScreenPos(ImVec2(
+          cursor_screen_position.x + items_width_half + style.ItemSpacing.x,
+          cursor_screen_position.y));
+      ImGui::BeginGroup();
+
+      // Gender
+      {
+        const auto preview_gender =
+            entities::kAllGenders[static_cast<int>(state.new_guest.gender)]
+                .second;
+        const auto gender_combo = widgets::BeginCombo("Gender", preview_gender);
+
+        if (gender_combo) {
+          for (const auto& [gender_type, gender_name] : entities::kAllGenders) {
+            const bool is_selected = (state.new_guest.gender == gender_type);
+
+            if (ImGui::Selectable(gender_name, is_selected))
+              state.new_guest.gender = gender_type;
+            if (is_selected) ImGui::SetItemDefaultFocus();
+          }
+        }
+
+        widgets::EndCombo(gender_combo);
+      }
+
+      ImGui::EndGroup();
+
+      ImGui::PopItemWidth();
+    }
+
+    // Contact info in one row
+    {
+      const float items_width_half =
+          items_width / 2.0 - style.ItemSpacing.x / 2.0;
+      const ImVec2 cursor_screen_position = ImGui::GetCursorScreenPos();
+
+      ImGui::PushItemWidth(items_width_half);
+
+      ImGui::BeginGroup();
+      widgets::MetaInputText("Phone number", state.new_guest.phone_number,
+                             IM_ARRAYSIZE(state.new_guest.phone_number),
+                             ImGuiInputTextFlags_CallbackAlways,
+                             widgets::FilterInputPhoneNumber);
+      ImGui::EndGroup();
+
+      ImGui::SetCursorScreenPos(ImVec2(
+          cursor_screen_position.x + items_width_half + style.ItemSpacing.x,
+          cursor_screen_position.y));
+      ImGui::BeginGroup();
+      widgets::MetaInputText("Email", state.new_guest.email,
+                             IM_ARRAYSIZE(state.new_guest.email),
+                             ImGuiInputTextFlags_CharsNoBlank);
+      ImGui::EndGroup();
+
+      ImGui::PopItemWidth();
+    }
+
+    // Main document meta in one row
+    {
+      const float items_width_half =
+          items_width / 2.0 - style.ItemSpacing.x / 2.0;
+      const ImVec2 cursor_screen_position = ImGui::GetCursorScreenPos();
+
+      ImGui::PushItemWidth(items_width_half);
+
+      ImGui::BeginGroup();
+
+      // Document Type
+      {
+        const auto preview_document_type =
+            entities::kAllDocumentTypes[static_cast<int>(
+                                            state.new_guest.document_type)]
+                .second;
+        const auto document_type_combo =
+            widgets::BeginCombo("Document type", preview_document_type);
+
+        if (document_type_combo) {
+          for (const auto& [document_type, document_name] :
+               entities::kAllDocumentTypes) {
+            const bool is_selected =
+                (state.new_guest.document_type == document_type);
+
+            if (ImGui::Selectable(document_name, is_selected))
+              state.new_guest.document_type = document_type;
+            if (is_selected) ImGui::SetItemDefaultFocus();
+          }
+        }
+
+        widgets::EndCombo(document_type_combo);
+      }
+
+      ImGui::EndGroup();
+
+      ImGui::SetCursorScreenPos(ImVec2(
+          cursor_screen_position.x + items_width_half + style.ItemSpacing.x,
+          cursor_screen_position.y));
+      ImGui::BeginGroup();
+
+      // Document Country
+      {
+        const auto preview_document_country =
+            entities::kAllCountries[static_cast<int>(
+                                        state.new_guest.document_country)]
+                .second;
+        const auto document_country_combo =
+            widgets::BeginCombo("Document country", preview_document_country,
+                                ImGuiComboFlags_HeightLargest);
+
+        if (document_country_combo) {
+          for (const auto& [document_country_type, document_country_name] :
+               entities::kAllCountries) {
+            const bool is_selected =
+                (state.new_guest.document_country == document_country_type);
+
+            if (ImGui::Selectable(document_country_name, is_selected))
+              state.new_guest.document_country = document_country_type;
+            if (is_selected) ImGui::SetItemDefaultFocus();
+          }
+        }
+
+        widgets::EndCombo(document_country_combo);
+      }
+
+      ImGui::EndGroup();
+
+      ImGui::PopItemWidth();
+    }
+
+    // Date of birth and gender in one row
+    {
+      const float items_width_half =
+          items_width / 2.0 - style.ItemSpacing.x / 2.0;
+      const ImVec2 cursor_screen_position = ImGui::GetCursorScreenPos();
+
+      ImGui::PushItemWidth(items_width_half);
+
+      ImGui::BeginGroup();
+      widgets::MetaInputText("Document number", state.new_guest.document_number,
+                             IM_ARRAYSIZE(state.new_guest.document_number));
+      ImGui::EndGroup();
+
+      ImGui::SetCursorScreenPos(ImVec2(
+          cursor_screen_position.x + items_width_half + style.ItemSpacing.x,
+          cursor_screen_position.y));
+      ImGui::BeginGroup();
+      widgets::MetaInputText(
+          "Document valid until", state.new_guest.document_valid_until,
+          IM_ARRAYSIZE(state.new_guest.document_valid_until),
+          ImGuiInputTextFlags_CallbackAlways, widgets::FilterInputDate);
+      ImGui::EndGroup();
+
+      ImGui::PopItemWidth();
+    }
+
+    widgets::MetaInputText("Notes", state.new_guest.notes,
+                           IM_ARRAYSIZE(state.new_guest.notes));
+
+    ImGui::EndGroup();
+    ImGui::PopItemWidth();
+  }
+
+  // Error
+  {
+    ImGui::PushStyleColor(ImGuiCol_Text, kColorErrorText);
+    if (!state.creation_error.empty())
+      widgets::BodyTextCenter(state.creation_error.c_str());
+    ImGui::PopStyleColor();
+  }
+
+  ImGui::Spacing();
+
+  // Button
+  {
+    const auto is_create_button =
+        widgets::Button("Add", ImVec2(384.0, 0.0), state.is_requesting);
+
+    if (is_create_button) {
+      state.is_requesting = true;
+      state.request =
+          CreateGuest(app::states::system.opened_hotel_id.value(),
+                      state.new_guest.ToBackendCreateGuestRequestPayload());
+    }
+  }
+
+  ImGui::EndChild();
+}
+
+void GuestView() {
+  const auto available_region = ImGui::GetContentRegionAvail();
+  const auto viewport_work_size = ImGui::GetMainViewport()->WorkSize;
+  const auto occupied_size = ImVec2(viewport_work_size.x - available_region.x,
+                                    viewport_work_size.y - available_region.y);
+
+  const auto guest = app::states::data.guests[state.guest_to_view_id];
+  const auto gender =
+      entities::kAllGenders[static_cast<int16_t>(guest.gender)].second;
+  const auto date_of_birth =
+      utils::FormatUnixTimestampToHumanReadable(guest.date_of_birth);
+  const auto document_type =
+      entities::kAllDocumentTypes[static_cast<int16_t>(guest.document_type)]
+          .second;
+  const auto document_country =
+      entities::kAllCountries[static_cast<int16_t>(guest.document_country)]
+          .second;
+  const auto document_valid_until =
+      utils::FormatUnixTimestampToHumanReadable(guest.document_valid_until);
+
+  ImGui::SetNextWindowPos(
+      ImVec2(viewport_work_size.x / 2.0 + occupied_size.x / 2.0,
+             viewport_work_size.y / 2.0 + occupied_size.y / 2.0),
+      ImGuiCond_Always, ImVec2(0.5, 0.5));
+  ImGui::BeginChild("creation", ImVec2(0.0, 0.0), kChildWindowFitContent);
+
+  ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(16.0, 16.0));
+  ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 16.0);
+  ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(1.0, 1.0, 1.0, 1.0));
+
+  // Guest Information
+  {
+    ImGui::BeginChild("guest_information", ImVec2(0.0, 0.0),
+                      ImGuiChildFlags_FrameStyle | ImGuiChildFlags_AutoResizeX |
+                          ImGuiChildFlags_AutoResizeY);
+
+    widgets::HeadingLargeText(
+        std::format("{} {}", guest.first_name, guest.last_name).c_str());
+
+    widgets::BodyText(
+        std::format("Phone number: {}", guest.phone_number).c_str());
+    widgets::BodyText(std::format("Email: {}", guest.email).c_str());
+    widgets::BodyText(std::format("{} | {}", gender, date_of_birth).c_str());
+    widgets::BodyText(std::format("From {}", document_country).c_str());
+    widgets::BodyText(
+        std::format("{} number: {}", document_type, guest.document_number)
+            .c_str());
+    widgets::BodyText(
+        std::format("Document valid until {}", document_valid_until).c_str());
+
+    if (guest.notes.empty()) widgets::BodyTextDimmed("There are no notes");
+
+    ImGui::EndChild();
+  }
+
+  widgets::SameLine();
+
+  // Notes
+  if (!guest.notes.empty()) {
+    ImGui::BeginChild("guest_notes", ImVec2(0.0, 0.0),
+                      ImGuiChildFlags_FrameStyle | ImGuiChildFlags_AutoResizeX |
+                          ImGuiChildFlags_AutoResizeY);
+
+    widgets::HeadingLargeText("Notes");
+    widgets::BodyText(guest.notes.c_str());
+
+    ImGui::EndChild();
+  }
+
+  ImGui::PopStyleColor();
+  ImGui::PopStyleVar(2);
+
+  ImGui::EndChild();
+}
+
+namespace screens {
+void GuestsScreen() {
+  if (layouts::BeginAppLayout("Hotel Guests")) {
+    state = ScreenState();
+  }
+
+  if (!state.is_guests_retrieved) {
+    state.is_requesting = true;
+    state.is_guests_retrieved = true;
+    state.request =
+        backend::GetAllGuests(app::states::system.opened_hotel_id.value());
+  }
+
+  if (state.is_requesting && state.view == ScreenView::kGuestsTable) {
+    backend::get_all_guests_response_t get_all_guests_response;
+    auto response = GetResponse(state.request, get_all_guests_response);
+
+    if (response == backend::ResponseStatus::kCompleted) {
+      app::states::data.guests.clear();
+
+      for (const auto& guest : get_all_guests_response)
+        app::states::data.guests[guest.id] = guest.ToGuest();
+    }
+
+    if (response != backend::ResponseStatus::kInProcess)
+      state.is_requesting = false;
+  } else if (state.is_requesting && state.view == ScreenView::kGuestCreation) {
+    backend::create_guest_response_t create_guest_response;
+    auto response = GetResponse(state.request, create_guest_response);
+
+    if (response == backend::ResponseStatus::kCompleted) {
+      state.new_guest = NewGuest();
+      state.creation_error = "";
+      state.view = ScreenView::kGuestsTable;
+
+      app::states::data.guests[create_guest_response.id] =
+          create_guest_response.ToGuest();
+
+      state.request =
+          backend::GetAllGuests(app::states::system.opened_hotel_id.value());
+    } else if (response == backend::ResponseStatus::kCompetedWithError) {
+      state.creation_error = state.request.error_response.message;
+      state.is_requesting = false;
+    } else if (response == backend::ResponseStatus::kError) {
+      state.creation_error = "Something went wrong";
+      state.is_requesting = false;
+    }
+  }
+
+  TopBar();
+
+  if (state.view == ScreenView::kGuestsTable &&
+      !app::states::data.guests.empty()) {
+    ImGui::Spacing();
+    GuestsTable();
+    ImGui::Spacing();
+  } else if (state.view == ScreenView::kGuestCreation) {
+    CreationView();
+  } else if (state.view == ScreenView::kGuestView) {
+    GuestView();
+  }
+
+  if (layouts::EndAppLayout()) {
+    state = ScreenState();
+  }
+}
+}  // namespace screens

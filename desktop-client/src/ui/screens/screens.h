@@ -10,6 +10,8 @@ void LoginScreen();
 
 void DashboardScreen();
 
+void GuestsScreen();
+
 void HotelsScreen();
 }  // namespace screens
 

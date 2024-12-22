@@ -101,6 +101,10 @@ constexpr float kStyleButtonRounding = 12.0;
 constexpr ImVec2 kStyleInputPadding = ImVec2(16.0, 8.0);
 constexpr float kStyleInputRounding = 12.0;
 
+constexpr ImVec2 kStyleComboPadding = ImVec2(16.0, 8.0);
+constexpr float kStyleComboRounding = 12.0;
+constexpr float kStyleComboPopupRounding = 12.0;
+
 constexpr float kTableHeaderCellHeight = 32.0;
 constexpr float kTableBodyCellHeight = 44.0;
 constexpr float kTableCellPaddingX = 20.0;

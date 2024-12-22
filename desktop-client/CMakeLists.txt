@@ -75,11 +75,13 @@ set(SOURCES
         # UI Screens
         src/ui/screens/auth.cc
         src/ui/screens/dashboard.cc
+        src/ui/screens/guests.cc
         src/ui/screens/hotels.cc
 
         # UI Widgets
         src/ui/widgets/app_badges.cc
         src/ui/widgets/buttons.cc
+        src/ui/widgets/combos.cc
         src/ui/widgets/inputs.cc
         src/ui/widgets/layout.cc
         src/ui/widgets/tables.cc

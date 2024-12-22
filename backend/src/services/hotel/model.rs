@@ -38,6 +38,24 @@ impl Hotel {
         Ok(user)
     }
 
+    pub async fn find(id: &i64) -> Result<Self, BackendError> {
+        let connection = db::get_connection();
+
+        let hotel = query_as!(
+            Self,
+            r#"
+                SELECT *
+                FROM hotels
+                WHERE id = $1
+            "#,
+            id,
+        )
+        .fetch_one(connection)
+        .await?;
+
+        Ok(hotel)
+    }
+
     pub async fn find_all_by_owner_id(owner_id: &i64) -> Result<Vec<Self>, BackendError> {
         let connection = db::get_connection();
 
