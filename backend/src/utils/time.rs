@@ -26,3 +26,9 @@ where
     let unix_timestamp = date.assume_utc().unix_timestamp();
     serializer.serialize_i64(unix_timestamp)
 }
+
+pub fn get_current_primitive_date_time() -> PrimitiveDateTime {
+    let now = OffsetDateTime::now_utc();
+
+    PrimitiveDateTime::new(now.date(), now.time())
+}

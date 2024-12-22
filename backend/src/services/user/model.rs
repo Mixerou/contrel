@@ -122,8 +122,8 @@ impl User {
         let first_name_length = first_name.chars().count();
 
         match first_name_length {
-            number if number < 3 => return Err(BackendErrorTemplate::FirstNameTooShort.into()),
-            number if number > 32 => return Err(BackendErrorTemplate::FirstNameTooLong.into()),
+            number if number < 3 => return Err(BackendErrorTemplate::UserFirstNameTooShort.into()),
+            number if number > 32 => return Err(BackendErrorTemplate::UserFirstNameTooLong.into()),
             _ => {}
         };
 
@@ -134,8 +134,8 @@ impl User {
         let last_name_length = last_name.chars().count();
 
         match last_name_length {
-            number if number < 3 => return Err(BackendErrorTemplate::LastNameTooShort.into()),
-            number if number > 32 => return Err(BackendErrorTemplate::LastNameTooLong.into()),
+            number if number < 3 => return Err(BackendErrorTemplate::UserLastNameTooShort.into()),
+            number if number > 32 => return Err(BackendErrorTemplate::UserLastNameTooLong.into()),
             _ => {}
         };
 

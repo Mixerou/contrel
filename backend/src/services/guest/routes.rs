@@ -51,7 +51,15 @@ async fn create(
         return Err(BackendErrorTemplate::BadRequest.into());
     };
 
-    // TODO: add checks
+    Guest::check_first_name(&guest.first_name)?;
+    Guest::check_last_name(&guest.last_name)?;
+    Guest::check_date_of_birth(&guest.date_of_birth)?;
+    Guest::check_phone_number(&guest.phone_number)?;
+    Guest::check_email(&guest.email)?;
+    Guest::check_document_number(&guest.document_number)?;
+    Guest::check_document_valid_until(&guest.document_valid_until)?;
+    Guest::check_notes(&guest.notes)?;
+
     let guest = Guest::create(
         guest.first_name,
         guest.last_name,
