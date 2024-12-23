@@ -273,7 +273,7 @@ backend_error_template! {
     (HTTP_CODE_BAD_REQUEST, Some(3019), GuestEmailTooLong, "Guest email is too long");
     (HTTP_CODE_BAD_REQUEST, Some(3020), GuestDocumentNumberTooShort, "Guest document number is too short");
     (HTTP_CODE_BAD_REQUEST, Some(3021), GuestDocumentNumberTooLong, "Guest document number is too long");
-    (HTTP_CODE_BAD_REQUEST, Some(3021), GuestNotesTooLong, "Guest notes are too long");
+    (HTTP_CODE_BAD_REQUEST, Some(3022), GuestNotesTooLong, "Guest notes are too long");
 
     // Invalid body or something else
     // The first error (4000) is virtually, the same as the standard 400 HTTP error.
@@ -284,8 +284,8 @@ backend_error_template! {
     (HTTP_CODE_BAD_REQUEST, Some(4003), AlreadyRegistered, "Account with this email already registered");
     (HTTP_CODE_BAD_REQUEST, Some(4004), BadLoginCredentials, "Bad login credentials");
     (HTTP_CODE_BAD_REQUEST, Some(4005), FutureDateOfBirth, "The date of birth can't be in the future");
-    (HTTP_CODE_BAD_REQUEST, Some(4005), GuestPastDocumentValidUntil, "The document valid date can't be in the past");
-    (HTTP_CODE_BAD_REQUEST, Some(4006), BadPhoneNumber, "Bad phone number");
+    (HTTP_CODE_BAD_REQUEST, Some(4006), GuestPastDocumentValidUntil, "The document valid date can't be in the past");
+    (HTTP_CODE_BAD_REQUEST, Some(4007), BadPhoneNumber, "Bad phone number");
 }
 
 macro_rules! websocket_close_error {
