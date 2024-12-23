@@ -44,6 +44,24 @@ impl Room {
         Ok(room)
     }
 
+    pub async fn find_all_by_hotel_id(hotel_id: &i64) -> Result<Vec<Self>, BackendError> {
+        let connection = db::get_connection();
+
+        let rooms = query_as!(
+            Self,
+            r#"
+                SELECT *
+                FROM rooms
+                WHERE hotel_id = $1
+            "#,
+            hotel_id,
+        )
+        .fetch_all(connection)
+        .await?;
+
+        Ok(rooms)
+    }
+
     // Default implementations
     pub fn check_number(number: &str) -> Result<(), BackendError> {
         let number_length = number.chars().count();

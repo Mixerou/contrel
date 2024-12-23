@@ -1,5 +1,5 @@
 use actix_web::web::{Bytes, Path, ReqData, ServiceConfig};
-use actix_web::{post, HttpResponse};
+use actix_web::{get, post, HttpResponse};
 use serde::Deserialize;
 
 use crate::constants::DEFAULT_CONTENT_TYPE;
@@ -47,6 +47,32 @@ async fn create(
         .body(rmp_serde::to_vec(&room)?))
 }
 
+#[derive(Deserialize)]
+struct GetRoomsPath {
+    hotel_id: i64,
+}
+
+#[get("/hotels/{hotel_id}/rooms")]
+async fn get_all(
+    session: ReqData<Session>,
+    path: Path<GetRoomsPath>,
+) -> Result<HttpResponse, BackendError> {
+    let Some(user_id) = session.user_id else {
+        return Err(BackendErrorTemplate::Forbidden.into());
+    };
+
+    if Hotel::find(&path.hotel_id).await?.owner_id.ne(&user_id) {
+        return Err(BackendErrorTemplate::NotFound.into());
+    }
+
+    let rooms = Room::find_all_by_hotel_id(&path.hotel_id).await?;
+
+    Ok(HttpResponse::Created()
+        .content_type(DEFAULT_CONTENT_TYPE)
+        .body(rmp_serde::to_vec(&rooms)?))
+}
+
 pub fn init_routes(cfg: &mut ServiceConfig) {
     cfg.service(create);
+    cfg.service(get_all);
 }
