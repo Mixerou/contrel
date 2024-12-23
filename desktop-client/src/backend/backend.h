@@ -163,7 +163,18 @@ struct CreateGuestRequestPayload {
                             entities::DocumentType document_type,
                             std::string document_number,
                             entities::Country document_country,
-                            int64_t document_valid_until, std::string notes);
+                            int64_t document_valid_until, std::string notes)
+      : first_name(std::move(first_name)),
+        last_name(std::move(last_name)),
+        date_of_birth(date_of_birth),
+        gender(static_cast<int16_t>(gender)),
+        phone_number(std::move(phone_number)),
+        email(std::move(email)),
+        document_type(static_cast<int16_t>(document_type)),
+        document_number(std::move(document_number)),
+        document_country(static_cast<int16_t>(document_country)),
+        document_valid_until(document_valid_until),
+        notes(std::move(notes)) {}
 
   MSGPACK_DEFINE(first_name, last_name, date_of_birth, gender, phone_number,
                  email, document_type, document_number, document_country,
