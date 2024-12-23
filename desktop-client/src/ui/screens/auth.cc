@@ -33,7 +33,7 @@ void LoginScreen() {
   static char password[128] = "";
   static char password_confirmation[128] = "";
   static bool is_registration = false;
-  static RequestStatus request_status = RequestStatus::kNoRequest;
+  static auto request_status = RequestStatus::kNoRequest;
   static std::string error = "";
   static backend::BackendRequest request;
   auto style = ImGui::GetStyle();
@@ -56,7 +56,7 @@ void LoginScreen() {
   {
     if (is_registration) {
       const float input_group_width =
-          ImGui::GetContentRegionAvail().x / 2.0 - style.ItemSpacing.x / 2.0;
+          ImGui::GetContentRegionAvail().x / 2.f - style.ItemSpacing.x / 2.f;
       const ImVec2 cursor_screen_position = ImGui::GetCursorScreenPos();
 
       ImGui::PushItemWidth(input_group_width);
@@ -92,16 +92,16 @@ void LoginScreen() {
   // Buttons
   {
     float button_width =
-        ImGui::GetContentRegionAvail().x / 2.0 - style.ItemSpacing.x / 2.0;
+        ImGui::GetContentRegionAvail().x / 2.f - style.ItemSpacing.x / 2.f;
     const char *left_button_text = is_registration ? "Back" : "Register";
     const char *right_button_text = is_registration ? "Continue" : "Login";
 
     bool left_button_clicked =
-        widgets::Button(left_button_text, ImVec2(button_width, 0.0),
+        widgets::Button(left_button_text, ImVec2(button_width, 0.f),
                         request_status != RequestStatus::kNoRequest);
     widgets::SameLine();
     bool right_button_clicked =
-        widgets::Button(right_button_text, ImVec2(button_width, 0.0),
+        widgets::Button(right_button_text, ImVec2(button_width, 0.f),
                         request_status != RequestStatus::kNoRequest);
 
     if (left_button_clicked) {
@@ -127,9 +127,9 @@ void LoginScreen() {
 
   if (request_status == RequestStatus::kAuth) {
     backend::EmptyResponse empty_response;
-    auto response = backend::GetResponse(request, empty_response);
 
-    if (response == backend::ResponseStatus::kCompleted) {
+    if (const auto response = GetResponse(request, empty_response);
+        response == backend::ResponseStatus::kCompleted) {
       request_status = RequestStatus::kGetMe;
       request = backend::GetMe();
     } else if (response == backend::ResponseStatus::kCompetedWithError) {
@@ -141,7 +141,7 @@ void LoginScreen() {
     }
   } else if (request_status == RequestStatus::kGetMe) {
     backend::get_me_response_t get_me_response;
-    auto response = backend::GetResponse(request, get_me_response);
+    const auto response = GetResponse(request, get_me_response);
 
     if (response == backend::ResponseStatus::kCompleted) {
       first_name[0] = '\0';

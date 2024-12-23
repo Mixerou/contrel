@@ -25,17 +25,18 @@ void AppBar(const char *screen_heading, const float &height,
 
   const auto viewport_size = ImGui::GetMainViewport()->WorkSize;
 
-  ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(1.0, 1.0, 1.0, 1.0));
-  ImGui::SetNextWindowPos(ImVec2(nav_bar_width, 0.0), ImGuiCond_Always,
-                          ImVec2(0.0, 0.0));
+  ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(1.f, 1.f, 1.f, 1.f));
+  ImGui::SetNextWindowPos(ImVec2(nav_bar_width, 0.f), ImGuiCond_Always,
+                          ImVec2());
   ImGui::SetNextWindowSize(ImVec2(viewport_size.x - nav_bar_width, height));
   ImGui::BeginChild("app_layout_app_bar");
 
   // Left Side
   {
-    auto heading_size = widgets::CalculateHeadingLargeText(screen_heading);
-    auto heading_position =
-        ImVec2(kStyleScreenPadding.x, height / 2.0 - heading_size.y / 2.0);
+    const auto heading_size =
+        widgets::CalculateHeadingLargeText(screen_heading);
+    const auto heading_position =
+        ImVec2(kStyleScreenPadding.x, height / 2.f - heading_size.y / 2.f);
 
     ImGui::SetCursorPos(heading_position);
     widgets::HeadingLargeText(screen_heading);
@@ -43,26 +44,28 @@ void AppBar(const char *screen_heading, const float &height,
 
   // Right Side
   {
-    auto draw = ImGui::GetWindowDrawList();
+    const auto draw = ImGui::GetWindowDrawList();
 
     auto user = app::states::system.GetUser();
-    std::string user_name =
+    const std::string user_name =
         std::format("{} {}", user.first_name, user.last_name);
-    auto user_name_size = widgets::CalculateBodyText(user_name.c_str());
-    auto button_size = ImVec2(user_name_size.x + kStyleButtonPadding.x * 2,
-                              user_name_size.y + kStyleButtonPadding.y * 2);
-    auto button_start_position =
+    const auto user_name_size = widgets::CalculateBodyText(user_name.c_str());
+    const auto button_size =
+        ImVec2(user_name_size.x + kStyleButtonPadding.x * 2.f,
+               user_name_size.y + kStyleButtonPadding.y * 2.f);
+    const auto button_start_position =
         ImVec2(viewport_size.x - kStyleScreenPadding.x - button_size.x,
-               height / 2.0 - button_size.y / 2.0);
-    auto button_end_position = ImVec2(viewport_size.x - kStyleScreenPadding.x,
-                                      height / 2.0 + button_size.y / 2.0);
+               height / 2.f - button_size.y / 2.f);
+    const auto button_end_position =
+        ImVec2(viewport_size.x - kStyleScreenPadding.x,
+               height / 2.f + button_size.y / 2.f);
 
     if (ImGui::IsMouseHoveringRect(button_start_position,
                                    button_end_position)) {
       ImGui::SetCursorScreenPos(
           ImVec2(button_start_position.x, button_start_position.y));
-      is_logout_clicked = widgets::Button("Logout", button_size, false,
-                                          widgets::ColorAccent::kDanger);
+      is_logout_clicked =
+          Button("Logout", button_size, false, widgets::ColorAccent::kDanger);
     } else {
       draw->AddRectFilled(button_start_position, button_end_position,
                           ImGui::ColorConvertFloat4ToU32(kColorNeutral200),
@@ -82,7 +85,7 @@ void AppBar(const char *screen_heading, const float &height,
 
   if (is_requesting) {
     backend::EmptyResponse empty_response;
-    auto response = backend::GetResponse(request, empty_response);
+    const auto response = GetResponse(request, empty_response);
 
     if (response == backend::ResponseStatus::kCompleted) {
       is_prepare_unmount = true;
@@ -99,25 +102,26 @@ void AppBar(const char *screen_heading, const float &height,
 void NavBar(const float width) {
   const auto viewport_size = ImGui::GetMainViewport()->WorkSize;
 
-  ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(1.0, 1.0, 1.0, 1.0));
-  ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.0, 0.5));
-  ImGui::SetNextWindowPos(ImVec2(0.0, 0.0), ImGuiCond_Always, ImVec2(0.0, 0.0));
+  ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(1.f, 1.f, 1.f, 1.f));
+  ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.f, 0.5f));
+  ImGui::SetNextWindowPos(ImVec2(), ImGuiCond_Always, ImVec2());
   ImGui::BeginChild("app_layout_nav_bar", ImVec2(width, viewport_size.y));
 
   const auto available_region = ImGui::GetContentRegionAvail();
-  const float button_width = available_region.x - kStyleScreenPadding.x * 2;
+  const float button_width = available_region.x - kStyleScreenPadding.x * 2.f;
 
   // Hotel Top Button
   const auto hotel = app::states::system.GetHotel();
-  auto draw = ImGui::GetWindowDrawList();
+  const auto draw = ImGui::GetWindowDrawList();
 
   if (hotel.has_value()) {
-    auto hotel_name_size = widgets::CalculateBodyText(hotel->name.c_str());
-    auto button_size =
-        ImVec2(button_width, hotel_name_size.y + kStyleButtonPadding.y * 2);
-    auto button_start_position = ImVec2(kStyleScreenPadding.x, 12.0);
-    auto button_end_position = ImVec2(
-        available_region.x - kStyleScreenPadding.x, 12.0 + button_size.y);
+    const auto hotel_name_size =
+        widgets::CalculateBodyText(hotel->name.c_str());
+    const auto button_size =
+        ImVec2(button_width, hotel_name_size.y + kStyleButtonPadding.y * 2.f);
+    const auto button_start_position = ImVec2(kStyleScreenPadding.x, 12.f);
+    const auto button_end_position = ImVec2(
+        available_region.x - kStyleScreenPadding.x, 12.f + button_size.y);
 
     if (ImGui::IsMouseHoveringRect(button_start_position,
                                    button_end_position)) {
@@ -134,7 +138,7 @@ void NavBar(const float width) {
     } else {
       //       I don't really like any of this
       draw->AddRect(button_start_position, button_end_position,
-                    ImGui::ColorConvertFloat4ToU32(ImVec4(0.0, 0.0, 0.0, 0.0)),
+                    ImGui::ColorConvertFloat4ToU32(ImVec4()),
                     kStyleButtonRounding);
       //      draw->AddRect(button_start_position, button_end_position,
       //                          ImGui::ColorConvertFloat4ToU32(kColorPrimary500),
@@ -159,30 +163,30 @@ void NavBar(const float width) {
     const auto current_screen = app::states::system.current_screen;
 
     ImGui::SetCursorPosX(kStyleScreenPadding.x);
-    const auto is_dashboard_button = widgets::Button(
-        "Dashboard", ImVec2(button_width, 0.0), false,
-        current_screen == app::states::System::Screen::kDashboard
-            ? widgets::ColorAccent::kPrimaryLight
-            : widgets::ColorAccent::kPrimaryBlank);
+    const auto is_dashboard_button =
+        Button("Dashboard", ImVec2(button_width, 0.f), false,
+               current_screen == app::states::System::Screen::kDashboard
+                   ? widgets::ColorAccent::kPrimaryLight
+                   : widgets::ColorAccent::kPrimaryBlank);
 
     if (is_dashboard_button)
       app::states::system.current_screen =
           app::states::System::Screen::kDashboard;
 
     ImGui::SetCursorPosX(kStyleScreenPadding.x);
-    widgets::Button("Bookings", ImVec2(button_width, 0.0), false,
-                    widgets::ColorAccent::kPrimaryBlank);
+    Button("Bookings", ImVec2(button_width, 0.f), false,
+           widgets::ColorAccent::kPrimaryBlank);
 
     ImGui::SetCursorPosX(kStyleScreenPadding.x);
-    widgets::Button("Rooms", ImVec2(button_width, 0.0), false,
-                    widgets::ColorAccent::kPrimaryBlank);
+    Button("Rooms", ImVec2(button_width, 0.f), false,
+           widgets::ColorAccent::kPrimaryBlank);
 
     ImGui::SetCursorPosX(kStyleScreenPadding.x);
     const auto is_guests_button =
-        widgets::Button("Guests", ImVec2(button_width, 0.0), false,
-                        current_screen == app::states::System::Screen::kGuests
-                            ? widgets::ColorAccent::kPrimaryLight
-                            : widgets::ColorAccent::kPrimaryBlank);
+        Button("Guests", ImVec2(button_width, 0.f), false,
+               current_screen == app::states::System::Screen::kGuests
+                   ? widgets::ColorAccent::kPrimaryLight
+                   : widgets::ColorAccent::kPrimaryBlank);
 
     if (is_guests_button)
       app::states::system.current_screen = app::states::System::Screen::kGuests;
@@ -195,14 +199,14 @@ void NavBar(const float width) {
 
 namespace layouts {
 bool BeginAppLayout(const char *screen_heading) {
-  ImGui::SetNextWindowPos(ImVec2(0.0, 0.0));
+  ImGui::SetNextWindowPos(ImVec2());
   ImGui::SetNextWindowSize(ImGui::GetMainViewport()->Size);
   ImGui::Begin("app_layout", nullptr, kWindowDefaultFlags);
 
   const auto opened_hotel_id = app::states::system.opened_hotel_id;
   const auto viewport_size = ImGui::GetMainViewport()->WorkSize;
-  const float nav_bar_width = opened_hotel_id == std::nullopt ? 0.0 : 192.0;
-  const float app_bar_height = 56.0;
+  const float nav_bar_width = opened_hotel_id == std::nullopt ? 0.f : 192.f;
+  const float app_bar_height = 56.f;
 
   AppBar(screen_heading, app_bar_height, nav_bar_width);
 
@@ -212,7 +216,7 @@ bool BeginAppLayout(const char *screen_heading) {
   // Screen Content
   {
     ImGui::SetNextWindowPos(ImVec2(nav_bar_width, app_bar_height),
-                            ImGuiCond_Always, ImVec2(0.0, 0.0));
+                            ImGuiCond_Always, ImVec2());
     ImGui::SetNextWindowSize(ImVec2(viewport_size.x - nav_bar_width,
                                     viewport_size.y - app_bar_height));
 

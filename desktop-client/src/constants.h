@@ -11,14 +11,14 @@
 
 namespace constants {
 // Scale
-constexpr float kFontScaleFactor = 1.0;
-constexpr float kFontSizeFactor = 1.0;
-constexpr float kVectorTextureScaleFactor = 1.0;
+constexpr float kFontScaleFactor = 1.f;
+constexpr float kFontSizeFactor = 1.f;
+constexpr float kVectorTextureScaleFactor = 1.F;
 
 // Scale (for the HiDPI monitors)
-// constexpr float kFontScaleFactor = 0.5;
-// constexpr float kFontSizeFactor = 2.0;
-// constexpr float kVectorTextureScaleFactor = 2.0;
+// constexpr float kFontScaleFactor = 0.5f;
+// constexpr float kFontSizeFactor = 2.f;
+// constexpr float kVectorTextureScaleFactor = 2.f;
 
 // Window Flags
 constexpr ImGuiWindowFlags kWindowDefaultFlags =
@@ -46,69 +46,69 @@ constexpr ImGuiTableColumnFlags kDefaultTableColumnFlags =
     ImGuiTableColumnFlags_NoHeaderLabel;
 
 // Colors
-constexpr ImVec4 kColorPrimary50 = ImVec4(0.9, 0.94, 0.93, 1.0);
-constexpr ImVec4 kColorPrimary100 = ImVec4(0.8, 0.88, 0.86, 1.0);
-constexpr ImVec4 kColorPrimary200 = ImVec4(0.6, 0.77, 0.71, 1.0);
-constexpr ImVec4 kColorPrimary300 = ImVec4(0.4, 0.65, 0.57, 1.0);
-constexpr ImVec4 kColorPrimary400 = ImVec4(0.21, 0.54, 0.42, 1.0);
-constexpr ImVec4 kColorPrimary500 = ImVec4(0.01, 0.42, 0.28, 1.0);
-constexpr ImVec4 kColorPrimary600 = ImVec4(0.01, 0.34, 0.22, 1.0);
-constexpr ImVec4 kColorPrimary700 = ImVec4(0.0, 0.25, 0.17, 1.0);
-constexpr ImVec4 kColorPrimary800 = ImVec4(0.0, 0.17, 0.11, 1.0);
-constexpr ImVec4 kColorPrimary900 = ImVec4(0.0, 0.08, 0.05, 1.0);
+constexpr auto kColorPrimary50 = ImVec4(0.9f, 0.94f, 0.93f, 1.f);
+constexpr auto kColorPrimary100 = ImVec4(0.8f, 0.88f, 0.86f, 1.f);
+constexpr auto kColorPrimary200 = ImVec4(0.6f, 0.77f, 0.71f, 1.f);
+constexpr auto kColorPrimary300 = ImVec4(0.4f, 0.65f, 0.57f, 1.f);
+constexpr auto kColorPrimary400 = ImVec4(0.21f, 0.54f, 0.42f, 1.f);
+constexpr auto kColorPrimary500 = ImVec4(0.01f, 0.42f, 0.28f, 1.f);
+constexpr auto kColorPrimary600 = ImVec4(0.01f, 0.34f, 0.22f, 1.f);
+constexpr auto kColorPrimary700 = ImVec4(0.f, 0.25f, 0.17f, 1.f);
+constexpr auto kColorPrimary800 = ImVec4(0.f, 0.17f, 0.11f, 1.f);
+constexpr auto kColorPrimary900 = ImVec4(0.f, 0.08f, 0.05f, 1.f);
 
-constexpr ImVec4 kColorDanger50 = ImVec4(0.94, 0.9, 0.9, 1.0);
-constexpr ImVec4 kColorDanger100 = ImVec4(0.88, 0.8, 0.8, 1.0);
-constexpr ImVec4 kColorDanger200 = ImVec4(0.77, 0.6, 0.6, 1.0);
-constexpr ImVec4 kColorDanger300 = ImVec4(0.65, 0.4, 0.4, 1.0);
-constexpr ImVec4 kColorDanger400 = ImVec4(0.54, 0.21, 0.21, 1.0);
-constexpr ImVec4 kColorDanger500 = ImVec4(0.43, 0.01, 0.01, 1.0);
-constexpr ImVec4 kColorDanger600 = ImVec4(0.34, 0.01, 0.01, 1.0);
-constexpr ImVec4 kColorDanger700 = ImVec4(0.25, 0.0, 0.0, 1.0);
-constexpr ImVec4 kColorDanger800 = ImVec4(0.17, 0.0, 0.0, 1.0);
-constexpr ImVec4 kColorDanger900 = ImVec4(0.08, 0.0, 0.0, 1.0);
+constexpr auto kColorDanger50 = ImVec4(0.94f, 0.9f, 0.9f, 1.f);
+constexpr auto kColorDanger100 = ImVec4(0.88f, 0.8f, 0.8f, 1.f);
+constexpr auto kColorDanger200 = ImVec4(0.77f, 0.6f, 0.6f, 1.f);
+constexpr auto kColorDanger300 = ImVec4(0.65f, 0.4f, 0.4f, 1.f);
+constexpr auto kColorDanger400 = ImVec4(0.54f, 0.21f, 0.21f, 1.f);
+constexpr auto kColorDanger500 = ImVec4(0.43f, 0.01f, 0.01f, 1.f);
+constexpr auto kColorDanger600 = ImVec4(0.34f, 0.01f, 0.01f, 1.f);
+constexpr auto kColorDanger700 = ImVec4(0.25f, 0.f, 0.f, 1.f);
+constexpr auto kColorDanger800 = ImVec4(0.17f, 0.f, 0.f, 1.f);
+constexpr auto kColorDanger900 = ImVec4(0.08f, 0.f, 0.f, 1.f);
 
-constexpr ImVec4 kColorNeutral50 = ImVec4(0.98, 0.98, 0.98, 1.0);
-constexpr ImVec4 kColorNeutral100 = ImVec4(0.96, 0.96, 0.96, 1.0);
-constexpr ImVec4 kColorNeutral200 = ImVec4(0.90, 0.90, 0.90, 1.0);
-constexpr ImVec4 kColorNeutral300 = ImVec4(0.83, 0.83, 0.83, 1.0);
-constexpr ImVec4 kColorNeutral400 = ImVec4(0.64, 0.64, 0.64, 1.0);
-constexpr ImVec4 kColorNeutral500 = ImVec4(0.45, 0.45, 0.45, 1.0);
-constexpr ImVec4 kColorNeutral600 = ImVec4(0.32, 0.32, 0.32, 1.0);
-constexpr ImVec4 kColorNeutral700 = ImVec4(0.25, 0.25, 0.25, 1.0);
-constexpr ImVec4 kColorNeutral800 = ImVec4(0.15, 0.15, 0.15, 1.0);
-constexpr ImVec4 kColorNeutral900 = ImVec4(0.09, 0.09, 0.09, 1.0);
-constexpr ImVec4 kColorNeutral1000 = ImVec4(0.04, 0.04, 0.04, 1.0);
+constexpr auto kColorNeutral50 = ImVec4(0.98f, 0.98f, 0.98f, 1.f);
+constexpr auto kColorNeutral100 = ImVec4(0.96f, 0.96f, 0.96f, 1.f);
+constexpr auto kColorNeutral200 = ImVec4(0.90f, 0.90f, 0.90f, 1.f);
+constexpr auto kColorNeutral300 = ImVec4(0.83f, 0.83f, 0.83f, 1.f);
+constexpr auto kColorNeutral400 = ImVec4(0.64f, 0.64f, 0.64f, 1.f);
+constexpr auto kColorNeutral500 = ImVec4(0.45f, 0.45f, 0.45f, 1.f);
+constexpr auto kColorNeutral600 = ImVec4(0.32f, 0.32f, 0.32f, 1.f);
+constexpr auto kColorNeutral700 = ImVec4(0.25f, 0.25f, 0.25f, 1.f);
+constexpr auto kColorNeutral800 = ImVec4(0.15f, 0.15f, 0.15f, 1.f);
+constexpr auto kColorNeutral900 = ImVec4(0.09f, 0.09f, 0.09f, 1.f);
+constexpr auto kColorNeutral1000 = ImVec4(0.04f, 0.04f, 0.04f, 1.f);
 
-constexpr ImVec4 kColorBlack = ImVec4(0.04, 0.04, 0.04, 1.0);
-constexpr ImVec4 kColorWhite = kColorNeutral100;
+constexpr auto kColorBlack = ImVec4(0.04f, 0.04f, 0.04f, 1.f);
+constexpr auto kColorWhite = kColorNeutral100;
 
-constexpr ImVec4 kColorDefaultText = kColorBlack;
-constexpr ImVec4 kColorDefaultBackground = kColorWhite;
+constexpr auto kColorDefaultText = kColorBlack;
+constexpr auto kColorDefaultBackground = kColorWhite;
 
-constexpr ImVec4 kColorErrorText = kColorDanger500;
+constexpr auto kColorErrorText = kColorDanger500;
 
-constexpr ImVec4 kColorTableHeader = kColorNeutral50;
-constexpr ImVec4 kColorTableBody = ImVec4(1.0, 1.0, 1.0, 1.0);
+constexpr auto kColorTableHeader = kColorNeutral50;
+constexpr auto kColorTableBody = ImVec4(1.f, 1.f, 1.f, 1.f);
 
 // Style
-constexpr ImVec2 kStyleItemSpacing = ImVec2(8.0, 8.0);
-constexpr ImVec2 kStyleScreenPadding = ImVec2(16.0, 8.0);
+constexpr auto kStyleItemSpacing = ImVec2(8.f, 8.f);
+constexpr auto kStyleScreenPadding = ImVec2(16.f, 8.f);
 
-constexpr ImVec2 kStyleButtonPadding = ImVec2(24.0, 8.0);
-constexpr float kStyleButtonRounding = 12.0;
+constexpr auto kStyleButtonPadding = ImVec2(24.f, 8.f);
+constexpr float kStyleButtonRounding = 12.f;
 
-constexpr ImVec2 kStyleInputPadding = ImVec2(16.0, 8.0);
-constexpr float kStyleInputRounding = 12.0;
+constexpr auto kStyleInputPadding = ImVec2(16.f, 8.f);
+constexpr float kStyleInputRounding = 12.f;
 
-constexpr ImVec2 kStyleComboPadding = ImVec2(16.0, 8.0);
-constexpr float kStyleComboRounding = 12.0;
-constexpr float kStyleComboPopupRounding = 12.0;
+constexpr auto kStyleComboPadding = ImVec2(16.f, 8.f);
+constexpr float kStyleComboRounding = 12.f;
+constexpr float kStyleComboPopupRounding = 12.f;
 
-constexpr float kTableHeaderCellHeight = 32.0;
-constexpr float kTableBodyCellHeight = 44.0;
-constexpr float kTableCellPaddingX = 20.0;
-constexpr float kTableRounding = 12.0;
+constexpr float kTableHeaderCellHeight = 32.f;
+constexpr float kTableBodyCellHeight = 44.f;
+constexpr float kTableCellPaddingX = 20.f;
+constexpr float kTableRounding = 12.f;
 
 // Backend-related
 constexpr std::string_view kBackendApiUrl = "https://contrel.mixero.dev/api";

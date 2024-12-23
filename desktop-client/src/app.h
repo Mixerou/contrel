@@ -43,11 +43,11 @@ struct System {
 
   std::string GetSessionToken();
 
-  void SetSessionToken(std::string session_token);
+  void SetSessionToken(const std::string &session_token);
 
-  entities::User GetUser();
+  entities::User GetUser() const;
 
-  std::optional<entities::Hotel> GetHotel();
+  std::optional<entities::Hotel> GetHotel() const;
 
   // This method doesn't make a logout backend request
   void Logout();

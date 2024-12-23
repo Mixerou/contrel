@@ -21,7 +21,7 @@ TableCellScreenPosition BeginTableBodyCell(const char *id,
              top_left_point.y + kTableBodyCellHeight);
 
   ImGui::SetCursorPos(ImVec2(
-      kTableCellPaddingX, kTableBodyCellHeight / 2.0 - widgets_height / 2.0));
+      kTableCellPaddingX, kTableBodyCellHeight / 2.f - widgets_height / 2.f));
 
   return TableCellScreenPosition(top_left_point, bottom_right_point);
 }
@@ -41,7 +41,7 @@ TableCellScreenPosition BeginTableHeaderCell(const char *id,
              top_left_point.y + kTableHeaderCellHeight);
 
   ImGui::SetCursorPos(ImVec2(
-      kTableCellPaddingX, kTableHeaderCellHeight / 2.0 - widgets_height / 2.0));
+      kTableCellPaddingX, kTableHeaderCellHeight / 2.f - widgets_height / 2.f));
 
   return TableCellScreenPosition(top_left_point, bottom_right_point);
 }
@@ -49,10 +49,10 @@ TableCellScreenPosition BeginTableHeaderCell(const char *id,
 void EndTableHeaderCell() { ImGui::EndChild(); }
 
 TableCellScreenPosition TableHeaderCellText(const char *text) {
-  const auto text_size = widgets::CalculateBodyText(text);
+  const auto text_size = CalculateBodyText(text);
   const auto screen_position = BeginTableHeaderCell(text, text_size.y);
 
-  widgets::BodyTextDimmed(text);
+  BodyTextDimmed(text);
 
   EndTableBodyCell();
 
@@ -60,13 +60,13 @@ TableCellScreenPosition TableHeaderCellText(const char *text) {
 }
 
 TableCellScreenPosition TableCellText(const char *text, const bool is_dimmed) {
-  const auto text_size = widgets::CalculateBodyText(text);
+  const auto text_size = CalculateBodyText(text);
   const auto screen_position = BeginTableBodyCell(text, text_size.y);
 
   if (is_dimmed)
-    widgets::BodyTextDimmed(text);
+    BodyTextDimmed(text);
   else
-    widgets::BodyText(text);
+    BodyText(text);
 
   EndTableBodyCell();
 
@@ -74,14 +74,14 @@ TableCellScreenPosition TableCellText(const char *text, const bool is_dimmed) {
 }
 
 void DrawTableHeaderBackground(const TableCellScreenPosition position) {
-  auto draw_list = ImGui::GetWindowDrawList();
+  const auto draw_list = ImGui::GetWindowDrawList();
   draw_list->AddRectFilled(position.top_left, position.bottom_right,
                            ImGui::ColorConvertFloat4ToU32(kColorTableHeader),
                            kTableRounding, ImDrawFlags_RoundCornersTop);
 }
 
 void DrawTableBodyBackground(const TableCellScreenPosition position) {
-  auto draw_list = ImGui::GetWindowDrawList();
+  const auto draw_list = ImGui::GetWindowDrawList();
   draw_list->AddRectFilled(position.top_left, position.bottom_right,
                            ImGui::ColorConvertFloat4ToU32(kColorTableBody),
                            kTableRounding, ImDrawFlags_RoundCornersBottom);

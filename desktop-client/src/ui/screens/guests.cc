@@ -81,8 +81,8 @@ struct ScreenState {
 static auto state = ScreenState();
 
 void TopBar() {
-  ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(1.0, 1.0, 1.0, 1.0));
-  ImGui::SetNextWindowSize(ImVec2(ImGui::GetContentRegionAvail().x, 44.0));
+  ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(1.f, 1.f, 1.f, 1.f));
+  ImGui::SetNextWindowSize(ImVec2(ImGui::GetContentRegionAvail().x, 44.f));
   ImGui::BeginChild("top_bar");
 
   const auto available_region = ImGui::GetContentRegionAvail();
@@ -106,22 +106,21 @@ void TopBar() {
 
   const auto text_size = widgets::CalculateBodyText(text.c_str());
   const auto text_position = ImVec2(
-      kStyleScreenPadding.x, available_region.y / 2.0 - text_size.y / 2.0);
+      kStyleScreenPadding.x, available_region.y / 2.f - text_size.y / 2.f);
 
   const auto button_text_size = widgets::CalculateBodyText(button_text.c_str());
   const auto button_size =
-      ImVec2(button_text_size.x + kStyleButtonPadding.x * 2,
-             button_text_size.y + kStyleButtonPadding.y * 2);
+      ImVec2(button_text_size.x + kStyleButtonPadding.x * 2.f,
+             button_text_size.y + kStyleButtonPadding.y * 2.f);
   const auto button_position =
       ImVec2(available_region.x - kStyleScreenPadding.x - button_size.x,
-             available_region.y / 2.0 - button_size.y / 2.0);
+             available_region.y / 2.f - button_size.y / 2.f);
 
   ImGui::SetCursorPos(text_position);
   widgets::BodyTextDimmed(text.c_str());
 
   ImGui::SetCursorPos(button_position);
-  if (widgets::Button(button_text.c_str(), ImVec2(0.0, 0.0),
-                      state.is_requesting)) {
+  if (widgets::Button(button_text.c_str(), ImVec2(), state.is_requesting)) {
     state.new_guest = NewGuest();
     state.creation_error = "";
 
@@ -131,7 +130,7 @@ void TopBar() {
       state.view = ScreenView::kGuestsTable;
     else if (state.view == ScreenView::kGuestView) {
       state.view = ScreenView::kGuestsTable;
-      state.guest_to_view_id = 0;
+      state.guest_to_view_id = 0.f;
     }
   }
 
@@ -144,9 +143,9 @@ void GuestsTable() {
 
   const auto hotel_id = app::states::system.opened_hotel_id.value();
   const auto available_region = ImGui::GetContentRegionAvail();
-  const float hardcoded_table_width = 884.0;
+  const float hardcoded_table_width = 884.f;
 
-  ImGui::SetCursorPosX(available_region.x / 2.0 - hardcoded_table_width / 2.0);
+  ImGui::SetCursorPosX(available_region.x / 2.f - hardcoded_table_width / 2.f);
 
   ImVec2 top_left_header_point;
   ImVec2 bottom_right_header_point;
@@ -154,12 +153,12 @@ void GuestsTable() {
   ImVec2 bottom_right_body_point;
 
   if (ImGui::BeginTable("guests", 6, kDefaultTableFlags)) {
-    ImGui::TableSetupColumn("", kDefaultTableColumnFlags, 128.0);
-    ImGui::TableSetupColumn("", kDefaultTableColumnFlags, 128.0);
-    ImGui::TableSetupColumn("", kDefaultTableColumnFlags, 128.0);
-    ImGui::TableSetupColumn("", kDefaultTableColumnFlags, 224.0);
-    ImGui::TableSetupColumn("", kDefaultTableColumnFlags, 160.0);
-    ImGui::TableSetupColumn("", kDefaultTableColumnFlags, 116.0);
+    ImGui::TableSetupColumn("", kDefaultTableColumnFlags, 128.f);
+    ImGui::TableSetupColumn("", kDefaultTableColumnFlags, 128.f);
+    ImGui::TableSetupColumn("", kDefaultTableColumnFlags, 128.f);
+    ImGui::TableSetupColumn("", kDefaultTableColumnFlags, 224.f);
+    ImGui::TableSetupColumn("", kDefaultTableColumnFlags, 160.f);
+    ImGui::TableSetupColumn("", kDefaultTableColumnFlags, 116.f);
 
     ImGui::TableHeadersRow();
 
@@ -210,8 +209,8 @@ void GuestsTable() {
 
       ImGui::TableSetColumnIndex(5);
       const auto button_text = "View";
-      const auto button_height =
-          widgets::CalculateBodyText(button_text).y + kStyleButtonPadding.y * 2;
+      const auto button_height = widgets::CalculateBodyText(button_text).y +
+                                 kStyleButtonPadding.y * 2.f;
       const auto second_cell_points =
           widgets::BeginTableBodyCell(button_text, button_height);
       const auto is_open_button = widgets::Button(button_text);
@@ -246,15 +245,15 @@ void CreationView() {
                               viewport_work_size.y - available_region.y);
 
   ImGui::SetNextWindowPos(
-      ImVec2(viewport_work_size.x / 2.0 + occupied_size.x / 2.0,
-             viewport_work_size.y / 2.0 + occupied_size.y / 2.0),
-      ImGuiCond_Always, ImVec2(0.5, 0.5));
-  ImGui::BeginChild("creation", ImVec2(0.0, 0.0), kChildWindowFitContent);
+      ImVec2(viewport_work_size.x / 2.f + occupied_size.x / 2.f,
+             viewport_work_size.y / 2.f + occupied_size.y / 2.f),
+      ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+  ImGui::BeginChild("creation", ImVec2(), kChildWindowFitContent);
 
   // Inputs
   {
     const auto style = ImGui::GetStyle();
-    const float items_width = 384.0;
+    const float items_width = 384.f;
 
     ImGui::PushItemWidth(items_width);
     ImGui::BeginGroup();
@@ -262,7 +261,7 @@ void CreationView() {
     // First name and last name in one row
     {
       const float items_width_half =
-          items_width / 2.0 - style.ItemSpacing.x / 2.0;
+          items_width / 2.f - style.ItemSpacing.x / 2.f;
       const ImVec2 cursor_screen_position = ImGui::GetCursorScreenPos();
 
       ImGui::PushItemWidth(items_width_half);
@@ -286,7 +285,7 @@ void CreationView() {
     // Date of birth and gender in one row
     {
       const float items_width_half =
-          items_width / 2.0 - style.ItemSpacing.x / 2.0;
+          items_width / 2.f - style.ItemSpacing.x / 2.f;
       const ImVec2 cursor_screen_position = ImGui::GetCursorScreenPos();
 
       ImGui::PushItemWidth(items_width_half);
@@ -331,7 +330,7 @@ void CreationView() {
     // Contact info in one row
     {
       const float items_width_half =
-          items_width / 2.0 - style.ItemSpacing.x / 2.0;
+          items_width / 2.F - style.ItemSpacing.x / 2.f;
       const ImVec2 cursor_screen_position = ImGui::GetCursorScreenPos();
 
       ImGui::PushItemWidth(items_width_half);
@@ -358,7 +357,7 @@ void CreationView() {
     // Main document meta in one row
     {
       const float items_width_half =
-          items_width / 2.0 - style.ItemSpacing.x / 2.0;
+          items_width / 2.f - style.ItemSpacing.x / 2.f;
       const ImVec2 cursor_screen_position = ImGui::GetCursorScreenPos();
 
       ImGui::PushItemWidth(items_width_half);
@@ -429,7 +428,7 @@ void CreationView() {
     // Date of birth and gender in one row
     {
       const float items_width_half =
-          items_width / 2.0 - style.ItemSpacing.x / 2.0;
+          items_width / 2.f - style.ItemSpacing.x / 2.f;
       const ImVec2 cursor_screen_position = ImGui::GetCursorScreenPos();
 
       ImGui::PushItemWidth(items_width_half);
@@ -472,7 +471,7 @@ void CreationView() {
   // Button
   {
     const auto is_create_button =
-        widgets::Button("Add", ImVec2(384.0, 0.0), state.is_requesting);
+        widgets::Button("Add", ImVec2(384.f, 0.f), state.is_requesting);
 
     if (is_create_button) {
       state.is_requesting = true;
@@ -506,18 +505,18 @@ void GuestView() {
       utils::FormatUnixTimestampToHumanReadable(guest.document_valid_until);
 
   ImGui::SetNextWindowPos(
-      ImVec2(viewport_work_size.x / 2.0 + occupied_size.x / 2.0,
-             viewport_work_size.y / 2.0 + occupied_size.y / 2.0),
-      ImGuiCond_Always, ImVec2(0.5, 0.5));
-  ImGui::BeginChild("creation", ImVec2(0.0, 0.0), kChildWindowFitContent);
+      ImVec2(viewport_work_size.x / 2.f + occupied_size.x / 2.f,
+             viewport_work_size.y / 2.f + occupied_size.y / 2.f),
+      ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+  ImGui::BeginChild("creation", ImVec2(), kChildWindowFitContent);
 
-  ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(16.0, 16.0));
-  ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 16.0);
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(1.0, 1.0, 1.0, 1.0));
+  ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(16.f, 16.f));
+  ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 16.f);
+  ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(1.f, 1.f, 1.f, 1.f));
 
   // Guest Information
   {
-    ImGui::BeginChild("guest_information", ImVec2(0.0, 0.0),
+    ImGui::BeginChild("guest_information", ImVec2(),
                       ImGuiChildFlags_FrameStyle | ImGuiChildFlags_AutoResizeX |
                           ImGuiChildFlags_AutoResizeY);
 
@@ -544,7 +543,7 @@ void GuestView() {
 
   // Notes
   if (!guest.notes.empty()) {
-    ImGui::BeginChild("guest_notes", ImVec2(0.0, 0.0),
+    ImGui::BeginChild("guest_notes", ImVec2(),
                       ImGuiChildFlags_FrameStyle | ImGuiChildFlags_AutoResizeX |
                           ImGuiChildFlags_AutoResizeY);
 
@@ -575,7 +574,7 @@ void GuestsScreen() {
 
   if (state.is_requesting && state.view == ScreenView::kGuestsTable) {
     backend::get_all_guests_response_t get_all_guests_response;
-    auto response = GetResponse(state.request, get_all_guests_response);
+    const auto response = GetResponse(state.request, get_all_guests_response);
 
     if (response == backend::ResponseStatus::kCompleted) {
       app::states::data.guests.clear();
@@ -588,9 +587,9 @@ void GuestsScreen() {
       state.is_requesting = false;
   } else if (state.is_requesting && state.view == ScreenView::kGuestCreation) {
     backend::create_guest_response_t create_guest_response;
-    auto response = GetResponse(state.request, create_guest_response);
 
-    if (response == backend::ResponseStatus::kCompleted) {
+    if (const auto response = GetResponse(state.request, create_guest_response);
+        response == backend::ResponseStatus::kCompleted) {
       state.new_guest = NewGuest();
       state.creation_error = "";
       state.view = ScreenView::kGuestsTable;

@@ -12,7 +12,6 @@
 
 namespace utils {
 class Texture {
- private:
   ImVec2 size_;
   ImVec2 original_size_;
   GLuint texture_;
@@ -20,19 +19,18 @@ class Texture {
   bool is_loaded_ = false;
   bool is_vector_ = false;
 
-  void Load(const unsigned char *data, int &width, int &height);
+  void Load(const unsigned char *data, const int &width, const int &height);
 
   void LoadVectorFromFile(const char *file_name, const ImVec2 &size);
 
   void LoadRasterFromFile(const char *file_name);
 
  public:
-  Texture(const char *file_name, const ImVec2 &size = ImVec2(0.0, 0.0));
+  explicit Texture(const char *file_name, const ImVec2 &size = ImVec2());
 
   ~Texture();
 
-  void LoadAnother(const char *file_name,
-                   const ImVec2 &size = ImVec2(0.0, 0.0));
+  void LoadAnother(const char *file_name, const ImVec2 &size = ImVec2());
 
   void Unload();
 

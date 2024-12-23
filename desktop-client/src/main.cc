@@ -17,7 +17,7 @@
 
 using namespace constants;
 
-static void GlfwErrorCallback(int error, const char *description) {
+static void GlfwErrorCallback(const int error, const char *description) {
   fprintf(stderr, "GLFW Error %d: %s\n", error, description);
 }
 
@@ -27,7 +27,7 @@ int main(int, char **) {
   glfwSetErrorCallback(GlfwErrorCallback);
   if (!glfwInit()) return EXIT_FAILURE;
 
-  const char *glsl_version = "#version 150";
+  const auto glsl_version = "#version 150";
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -76,7 +76,7 @@ int main(int, char **) {
       if (is_debug_session) {
         ImGui::Begin("Debug", nullptr, ImGuiWindowFlags_NoResize);
 
-        ImGui::Text("AVG:  %.3f ms/frame | FPS: %.1f", 1000.0 / io.Framerate,
+        ImGui::Text("AVG:  %.3f ms/frame | FPS: %.1f", 1000.f / io.Framerate,
                     io.Framerate);
         ImGui::Checkbox("Show demo window", &show_demo_window);
 
@@ -93,9 +93,9 @@ int main(int, char **) {
 
       if (is_ping_requested) {
         backend::ping_response_t response_body;
-        auto response = backend::GetResponse(request, response_body);
 
-        if (response == backend::ResponseStatus::kCompleted) {
+        if (const auto response = GetResponse(request, response_body);
+            response == backend::ResponseStatus::kCompleted) {
           is_ping_requested = false;
           app::states::system.is_online = true;
         } else if (response != backend::ResponseStatus::kInProcess) {
@@ -108,8 +108,7 @@ int main(int, char **) {
       }
 
       if (!app::states::system.is_online)
-        widgets::ErrorAppBadge("We're currently offline",
-                               widgets::ColorAccent::kDanger);
+        ErrorAppBadge("We're currently offline", widgets::ColorAccent::kDanger);
     }
 
     switch (app::states::system.current_screen) {
@@ -134,7 +133,7 @@ int main(int, char **) {
     glfwGetFramebufferSize(window, &display_width, &display_height);
     glViewport(0, 0, display_width, display_height);
 
-    ImVec4 clear_color = ImGui::GetStyleColorVec4(ImGuiCol_WindowBg);
+    const auto clear_color = ImGui::GetStyleColorVec4(ImGuiCol_WindowBg);
     glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w,
                  clear_color.z * clear_color.w, clear_color.w);
     glClear(GL_COLOR_BUFFER_BIT);

@@ -18,7 +18,8 @@
 using namespace constants;
 
 namespace utils {
-void Texture::Load(const unsigned char *data, int &width, int &height) {
+void Texture::Load(const unsigned char *data, const int &width,
+                   const int &height) {
   glGenTextures(1, &texture_);
   glBindTexture(GL_TEXTURE_2D, texture_);
 
@@ -39,16 +40,16 @@ void Texture::Load(const unsigned char *data, int &width, int &height) {
 void Texture::LoadVectorFromFile(const char *file_name, const ImVec2 &size) {
   is_vector_ = true;
 
-  auto document = lunasvg::Document::loadFromFile(file_name);
+  const auto document = lunasvg::Document::loadFromFile(file_name);
   if (!document) return;
 
   auto bitmap = document->renderToBitmap(
-      size.x == 0.0 ? -1 : size.x * kVectorTextureScaleFactor,
-      size.y == 0 ? -1 : size.y * kVectorTextureScaleFactor);
+      size.x == 0.f ? -1.f : size.x * kVectorTextureScaleFactor,
+      size.y == 0.f ? -1.f : size.y * kVectorTextureScaleFactor);
   if (bitmap.isNull()) return;
 
-  int width = bitmap.width();
-  int height = bitmap.height();
+  const int width = bitmap.width();
+  const int height = bitmap.height();
   bitmap.convertToRGBA();
 
   Load(bitmap.data(), width, height);
@@ -60,7 +61,7 @@ void Texture::LoadRasterFromFile(const char *file_name) {
 
   fseek(file, 0, SEEK_END);
 
-  size_t file_size = (size_t)ftell(file);
+  const size_t file_size = static_cast<size_t>(ftell(file));
   if (file_size == -1) return;
 
   fseek(file, 0, SEEK_SET);
@@ -70,9 +71,9 @@ void Texture::LoadRasterFromFile(const char *file_name) {
 
   int width = 0;
   int height = 0;
-  unsigned char *image_data =
-      stbi_load_from_memory((const unsigned char *)file_data, (int)file_size,
-                            &width, &height, NULL, 4);
+  unsigned char *image_data = stbi_load_from_memory(
+      static_cast<const unsigned char *>(file_data),
+      static_cast<int>(file_size), &width, &height, nullptr, 4);
   if (!image_data) return;
 
   Load(image_data, width, height);
@@ -100,7 +101,7 @@ void Texture::LoadAnother(const char *file_name, const ImVec2 &size) {
 }
 
 void Texture::Unload() {
-  original_size_ = ImVec2(0.0, 0.0);
+  original_size_ = ImVec2();
   is_loaded_ = false;
   is_vector_ = false;
 
@@ -108,11 +109,11 @@ void Texture::Unload() {
 }
 
 void Texture::CheckSize(const ImVec2 &expected_size) {
-  if (expected_size.x == 0.0 && expected_size.y == 0.0 &&
+  if (expected_size.x == 0.f && expected_size.y == 0.f &&
       size_.x != original_size_.x && size_.y != original_size_.y)
-    SetSize(ImVec2(0.0, 0.0));
-  if ((expected_size.x != 0.0 && expected_size.x != size_.x) ||
-      (expected_size.y != 0.0 && expected_size.y != size_.y))
+    SetSize(ImVec2());
+  if ((expected_size.x != 0.f && expected_size.x != size_.x) ||
+      (expected_size.y != 0.f && expected_size.y != size_.y))
     SetSize(expected_size);
 }
 
@@ -127,12 +128,12 @@ bool Texture::IsLoaded() const { return is_loaded_; }
 void Texture::SetSize(const ImVec2 &new_size, const bool &reload_if_needed) {
   if (is_vector_ && reload_if_needed) return LoadAnother(file_name_, new_size);
 
-  if (new_size.x == 0.0 && new_size.y == 0.0)
+  if (new_size.x == 0.f && new_size.y == 0.f)
     size_ = original_size_;
-  else if (new_size.x == 0.0 && new_size.y != 0.0)
+  else if (new_size.x == 0.f && new_size.y != 0.f)
     size_ =
         ImVec2(original_size_.x * (new_size.y / original_size_.y), new_size.y);
-  else if (new_size.x != 0.0 && new_size.y == 0.0)
+  else if (new_size.x != 0.f && new_size.y == 0.f)
     size_ =
         ImVec2(new_size.x, original_size_.y * (new_size.x / original_size_.x));
   else

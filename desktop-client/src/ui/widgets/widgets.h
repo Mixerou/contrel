@@ -22,9 +22,9 @@ enum class ColorAccent {
 };
 
 // Buttons
-bool Button(const char *label, const ImVec2 &size = ImVec2(0, 0),
-            const bool is_disabled = false,
-            const ColorAccent color_accent = ColorAccent::kPrimary);
+bool Button(const char *label, const ImVec2 &size = ImVec2(),
+            bool is_disabled = false,
+            ColorAccent color_accent = ColorAccent::kPrimary);
 
 // Combos
 bool BeginCombo(const char *label, const char *preview_value,
@@ -35,52 +35,52 @@ void EndCombo(bool begin_combo_state);
 // Inputs
 bool InputText(const char *label, char *buf, size_t buf_size,
                ImGuiInputTextFlags flags = 0,
-               ImGuiInputTextCallback callback = NULL, void *user_data = NULL);
+               ImGuiInputTextCallback callback = nullptr,
+               void *user_data = nullptr);
 
 bool MetaInputText(const char *label, char *buf, size_t buf_size,
                    ImGuiInputTextFlags flags = 0,
-                   ImGuiInputTextCallback callback = NULL,
-                   void *user_data = NULL);
+                   ImGuiInputTextCallback callback = nullptr,
+                   void *user_data = nullptr);
 
 int FilterInputPhoneNumber(ImGuiInputTextCallbackData *data);
 
 int FilterInputDate(ImGuiInputTextCallbackData *data);
 
 // Layout
-void SameLine(const float spacing = 0.0);
+void SameLine(float spacing = 0.f);
 
 // Tables
 struct TableCellScreenPosition {
   ImVec2 top_left;
   ImVec2 bottom_right;
 
-  TableCellScreenPosition(ImVec2 top_left, ImVec2 bottom_right)
+  TableCellScreenPosition(const ImVec2 top_left, const ImVec2 bottom_right)
       : top_left(top_left), bottom_right(bottom_right) {}
 };
 
 TableCellScreenPosition BeginTableBodyCell(const char *id,
-                                           const float widgets_height);
+                                           float widgets_height);
 
 void EndTableCell();
 
 TableCellScreenPosition BeginTableBodyCell(const char *id,
-                                           const float widgets_height);
+                                           float widgets_height);
 
 void EndTableBodyCell();
 
 TableCellScreenPosition BeginTableHeaderCell(const char *id,
-                                             const float widgets_height);
+                                             float widgets_height);
 
 void EndTableHeaderCell();
 
 TableCellScreenPosition TableHeaderCellText(const char *text);
 
-TableCellScreenPosition TableCellText(const char *text,
-                                      const bool is_dimmed = false);
+TableCellScreenPosition TableCellText(const char *text, bool is_dimmed = false);
 
-void DrawTableHeaderBackground(const TableCellScreenPosition position);
+void DrawTableHeaderBackground(TableCellScreenPosition position);
 
-void DrawTableBodyBackground(const TableCellScreenPosition position);
+void DrawTableBodyBackground(TableCellScreenPosition position);
 
 // Texts
 ImVec2 CalculateBodyText(const char *text);
@@ -105,7 +105,7 @@ void HeadingLargeTextCenter(const char *fmt, ...);
 
 // Application Status Badges
 void ErrorAppBadge(const char *fmt,
-                   const ColorAccent color_accent = ColorAccent::kPrimary);
+                   ColorAccent color_accent = ColorAccent::kPrimary);
 }  // namespace widgets
 
 #endif  // DESKTOP_CLIENT_WIDGETS_H

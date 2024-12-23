@@ -21,7 +21,7 @@ bool Button(const char *label, const ImVec2 &size, const bool is_disabled,
         ImGui::PushStyleColor(ImGuiCol_Button, kColorDanger500);
         ImGui::PushStyleColor(ImGuiCol_ButtonHovered, kColorDanger600);
         ImGui::PushStyleColor(ImGuiCol_ButtonActive, kColorDanger700);
-        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0, 1.0, 1.0, 1.0));
+        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.f, 1.f, 1.f, 1.f));
         break;
       case ColorAccent::kPrimaryLight:
         ImGui::PushStyleColor(ImGuiCol_Button, kColorPrimary50);
@@ -39,7 +39,7 @@ bool Button(const char *label, const ImVec2 &size, const bool is_disabled,
         ImGui::PushStyleColor(ImGuiCol_Button, kColorPrimary500);
         ImGui::PushStyleColor(ImGuiCol_ButtonHovered, kColorPrimary600);
         ImGui::PushStyleColor(ImGuiCol_ButtonActive, kColorPrimary700);
-        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0, 1.0, 1.0, 1.0));
+        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.f, 1.f, 1.f, 1.f));
     }
   else
     switch (color_accent) {
@@ -47,7 +47,7 @@ bool Button(const char *label, const ImVec2 &size, const bool is_disabled,
         ImGui::PushStyleColor(ImGuiCol_Button, kColorDanger700);
         ImGui::PushStyleColor(ImGuiCol_ButtonHovered, kColorDanger700);
         ImGui::PushStyleColor(ImGuiCol_ButtonActive, kColorDanger700);
-        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0, 1.0, 1.0, 1.0));
+        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.f, 1.f, 1.f, 1.f));
         break;
       case ColorAccent::kPrimaryLight:
         ImGui::PushStyleColor(ImGuiCol_Button, kColorPrimary200);
@@ -56,18 +56,16 @@ bool Button(const char *label, const ImVec2 &size, const bool is_disabled,
         ImGui::PushStyleColor(ImGuiCol_Text, kColorPrimary600);
         break;
       case ColorAccent::kPrimaryBlank:
-        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0, 0.0, 0.0, 0.0));
-        ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
-                              ImVec4(0.0, 0.0, 0.0, 0.0));
-        ImGui::PushStyleColor(ImGuiCol_ButtonActive,
-                              ImVec4(0.0, 0.0, 0.0, 0.0));
+        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4());
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4());
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4());
         ImGui::PushStyleColor(ImGuiCol_Text, kColorNeutral400);
         break;
       default:
         ImGui::PushStyleColor(ImGuiCol_Button, kColorPrimary700);
         ImGui::PushStyleColor(ImGuiCol_ButtonHovered, kColorPrimary700);
         ImGui::PushStyleColor(ImGuiCol_ButtonActive, kColorPrimary700);
-        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0, 1.0, 1.0, 1.0));
+        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.f, 1.f, 1.f, 1.f));
     }
 
   bool button = ImGui::Button(label, size);

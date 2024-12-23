@@ -14,11 +14,11 @@ bool BeginCombo(const char* label, const char* preview_value,
                 const ImGuiComboFlags flags) {
   ImGui::PushID(label);
 
-  ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4.0, 4.0));
+  ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4.f, 4.f));
   ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, kStyleComboPadding);
   ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, kStyleComboRounding);
 
-  ImGui::PushStyleVar(ImGuiStyleVar_PopupBorderSize, 1.0);
+  ImGui::PushStyleVar(ImGuiStyleVar_PopupBorderSize, 1.f);
   ImGui::PushStyleVar(ImGuiStyleVar_PopupRounding, kStyleComboPopupRounding);
 
   ImGui::PushStyleColor(ImGuiCol_FrameBg, kColorNeutral200);

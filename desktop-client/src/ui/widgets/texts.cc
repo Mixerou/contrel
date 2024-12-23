@@ -11,45 +11,47 @@
 
 using namespace constants;
 
-void TextEx(const char *fmt, va_list args, widgets::Alignment alignment) {
+void TextEx(const char *fmt, const va_list args,
+            const widgets::Alignment alignment) {
   float offset_factor;
 
   switch (alignment) {
     case widgets::Alignment::kCenter:
-      offset_factor = 0.5;
+      offset_factor = 0.5f;
       break;
     case widgets::Alignment::kRight:
-      offset_factor = 1.0;
+      offset_factor = 1.f;
       break;
     default:
-      offset_factor = 0.0;
+      offset_factor = 0.f;
       break;
   }
 
   const char *text_start, *text_end;
   ImFormatStringToTempBufferV(&text_start, &text_end, fmt, args);
 
-  float offset = (ImGui::GetContentRegionAvail().x -
-                  ImGui::CalcTextSize(text_start, text_end).x) *
-                 offset_factor;
-  if (offset > 0.0) ImGui::SetCursorPosX(ImGui::GetCursorPosX() + offset);
+  const float offset = (ImGui::GetContentRegionAvail().x -
+                        ImGui::CalcTextSize(text_start, text_end).x) *
+                       offset_factor;
+  if (offset > 0.f) ImGui::SetCursorPosX(ImGui::GetCursorPosX() + offset);
 
   ImGui::TextV(fmt, args);
 }
 
-void BodyTextEx(const char *fmt, va_list args, widgets::Alignment alignment) {
+void BodyTextEx(const char *fmt, const va_list args,
+                const widgets::Alignment alignment) {
   TextEx(fmt, args, alignment);
 }
 
-void HeadingXlTextEx(const char *fmt, va_list args,
-                     widgets::Alignment alignment) {
+void HeadingXlTextEx(const char *fmt, const va_list args,
+                     const widgets::Alignment alignment) {
   ImGui::PushFont(app::heading_xl_font);
   TextEx(fmt, args, alignment);
   ImGui::PopFont();
 }
 
-void HeadingLargeTextEx(const char *fmt, va_list args,
-                        widgets::Alignment alignment) {
+void HeadingLargeTextEx(const char *fmt, const va_list args,
+                        const widgets::Alignment alignment) {
   ImGui::PushFont(app::heading_large_font);
   TextEx(fmt, args, alignment);
   ImGui::PopFont();
@@ -62,7 +64,7 @@ ImVec2 CalculateBodyText(const char *text) { return ImGui::CalcTextSize(text); }
 void BodyText(const char *fmt, ...) {
   va_list args;
   va_start(args, fmt);
-  BodyTextEx(fmt, args, widgets::Alignment::kLeft);
+  BodyTextEx(fmt, args, Alignment::kLeft);
   va_end(args);
 }
 
@@ -71,7 +73,7 @@ void BodyTextDimmed(const char *fmt, ...) {
 
   va_list args;
   va_start(args, fmt);
-  BodyTextEx(fmt, args, widgets::Alignment::kLeft);
+  BodyTextEx(fmt, args, Alignment::kLeft);
   va_end(args);
 
   ImGui::PopStyleColor();
@@ -80,14 +82,14 @@ void BodyTextDimmed(const char *fmt, ...) {
 void BodyTextCenter(const char *fmt, ...) {
   va_list args;
   va_start(args, fmt);
-  BodyTextEx(fmt, args, widgets::Alignment::kCenter);
+  BodyTextEx(fmt, args, Alignment::kCenter);
   va_end(args);
 }
 
 // Heading XL
 ImVec2 CalculateHeadingXlText(const char *text) {
   ImGui::PushFont(app::heading_xl_font);
-  auto size = ImGui::CalcTextSize(text);
+  const auto size = ImGui::CalcTextSize(text);
   ImGui::PopFont();
 
   return size;
@@ -96,21 +98,21 @@ ImVec2 CalculateHeadingXlText(const char *text) {
 void HeadingXlText(const char *fmt, ...) {
   va_list args;
   va_start(args, fmt);
-  HeadingXlTextEx(fmt, args, widgets::Alignment::kLeft);
+  HeadingXlTextEx(fmt, args, Alignment::kLeft);
   va_end(args);
 }
 
 void HeadingXlTextCenter(const char *fmt, ...) {
   va_list args;
   va_start(args, fmt);
-  HeadingXlTextEx(fmt, args, widgets::Alignment::kCenter);
+  HeadingXlTextEx(fmt, args, Alignment::kCenter);
   va_end(args);
 }
 
 // Heading Large
 ImVec2 CalculateHeadingLargeText(const char *text) {
   ImGui::PushFont(app::heading_large_font);
-  auto size = ImGui::CalcTextSize(text);
+  const auto size = ImGui::CalcTextSize(text);
   ImGui::PopFont();
 
   return size;
@@ -119,14 +121,14 @@ ImVec2 CalculateHeadingLargeText(const char *text) {
 void HeadingLargeText(const char *fmt, ...) {
   va_list args;
   va_start(args, fmt);
-  HeadingLargeTextEx(fmt, args, widgets::Alignment::kLeft);
+  HeadingLargeTextEx(fmt, args, Alignment::kLeft);
   va_end(args);
 }
 
 void HeadingLargeTextCenter(const char *fmt, ...) {
   va_list args;
   va_start(args, fmt);
-  HeadingLargeTextEx(fmt, args, widgets::Alignment::kCenter);
+  HeadingLargeTextEx(fmt, args, Alignment::kCenter);
   va_end(args);
 }
 }  // namespace widgets

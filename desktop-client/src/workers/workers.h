@@ -21,7 +21,6 @@ struct ApiRequest {
 
 // This worker only works with the Contrel Backend API
 class ApiWorker {
- private:
   std::thread worker_;
   std::queue<ApiRequest> requests_;
   std::unordered_map<int, std::shared_ptr<ix::HttpResponse>> responses_;
@@ -38,8 +37,9 @@ class ApiWorker {
 
   ~ApiWorker();
 
-  int Enqueue(std::string path, std::string method = ix::HttpClient::kGet,
-              std::string body = "");
+  int Enqueue(const std::string &path,
+              const std::string &method = ix::HttpClient::kGet,
+              const std::string &body = "");
 
   std::optional<std::shared_ptr<ix::HttpResponse>> GetResponse(int request_id);
 };

@@ -16,7 +16,7 @@ BackendRequest Ping() {
 }
 
 // Auth
-BackendRequest Login(LoginRequestPayload payload) {
+BackendRequest Login(const LoginRequestPayload &payload) {
   msgpack::sbuffer buffer;
   msgpack::pack(buffer, payload);
 
@@ -28,7 +28,7 @@ BackendRequest Login(LoginRequestPayload payload) {
   return request;
 }
 
-BackendRequest Register(RegisterRequestPayload payload) {
+BackendRequest Register(const RegisterRequestPayload &payload) {
   msgpack::sbuffer buffer;
   msgpack::pack(buffer, payload);
 
@@ -54,7 +54,7 @@ BackendRequest GetMe() {
 }
 
 // Hotels
-BackendRequest CreateHotel(CreateHotelRequestPayload payload) {
+BackendRequest CreateHotel(const CreateHotelRequestPayload &payload) {
   msgpack::sbuffer buffer;
   msgpack::pack(buffer, payload);
 
@@ -102,7 +102,7 @@ BackendRequest CreateGuest(entities::hotel_id_t hotel_id,
   return request;
 }
 
-BackendRequest GetAllGuests(entities::hotel_id_t hotel_id) {
+BackendRequest GetAllGuests(const entities::hotel_id_t hotel_id) {
   BackendRequest request(
       app::api_worker.Enqueue(std::format("/hotels/{}/guests", hotel_id)),
       Layer::kApi);

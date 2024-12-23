@@ -25,7 +25,7 @@ struct ErrorResponse {
   int code;
   std::string message;
 
-  ErrorResponse() {}
+  ErrorResponse() : code(0) {}
   MSGPACK_DEFINE(code, message);
 };
 
@@ -34,9 +34,9 @@ struct BackendRequest {
   Layer layer;
   ErrorResponse error_response;
 
-  BackendRequest() {}
+  BackendRequest() : worker_request_id(-1), layer(Layer::kApi) {}
 
-  BackendRequest(int worker_request_id, Layer layer)
+  BackendRequest(const int worker_request_id, const Layer layer)
       : worker_request_id(worker_request_id), layer(layer) {}
 };
 
@@ -66,7 +66,7 @@ struct LoginRequestPayload {
   MSGPACK_DEFINE(email, password);
 };
 
-BackendRequest Login(LoginRequestPayload payload);
+BackendRequest Login(const LoginRequestPayload &payload);
 
 // Register
 struct RegisterRequestPayload {
@@ -78,7 +78,7 @@ struct RegisterRequestPayload {
   MSGPACK_DEFINE(email, password, first_name, last_name);
 };
 
-BackendRequest Register(RegisterRequestPayload payload);
+BackendRequest Register(const RegisterRequestPayload &payload);
 
 // Logout
 BackendRequest Logout();
@@ -97,7 +97,7 @@ struct CreateHotelRequestPayload {
 
 typedef entities::Hotel create_hotel_response_t;
 
-BackendRequest CreateHotel(CreateHotelRequestPayload payload);
+BackendRequest CreateHotel(const CreateHotelRequestPayload &payload);
 
 // Get All Hotels
 typedef std::vector<entities::Hotel> get_all_hotels_response_t;
