@@ -56,14 +56,20 @@ void InitStyle() {
 
   style.ItemSpacing = kStyleItemSpacing;
 
+  style.CellPadding.x = 0.f;
+
   style.Colors[ImGuiCol_Text] = kColorDefaultText;
   style.Colors[ImGuiCol_WindowBg] = kColorDefaultBackground;
+
+  style.Colors[ImGuiCol_Header] = ImVec4();
+  style.Colors[ImGuiCol_HeaderHovered] = ImVec4();
+  style.Colors[ImGuiCol_HeaderActive] = ImVec4();
 
   style.Colors[ImGuiCol_TableHeaderBg] = ImVec4();
   style.Colors[ImGuiCol_TableRowBg] = ImVec4();
   style.Colors[ImGuiCol_TableRowBgAlt] = ImVec4();
-  style.Colors[ImGuiCol_TableBorderStrong] = kColorNeutral50;
-  style.Colors[ImGuiCol_TableBorderLight] = kColorNeutral50;
+  style.Colors[ImGuiCol_TableBorderStrong] = ImVec4();
+  style.Colors[ImGuiCol_TableBorderLight] = ImVec4();
 
   style.Colors[ImGuiCol_NavCursor] = ImVec4();
 }
