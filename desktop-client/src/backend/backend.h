@@ -191,6 +191,19 @@ typedef std::vector<GetGuestResponse> get_all_guests_response_t;
 
 BackendRequest GetAllGuests(entities::hotel_id_t hotel_id);
 
+// Create Room
+struct CreateRoomRequestPayload {
+  std::string number;
+  std::string group_name;
+
+  MSGPACK_DEFINE(number, group_name);
+};
+
+typedef entities::Room create_room_response_t;
+
+BackendRequest CreateRoom(entities::hotel_id_t hotel_id,
+                          const CreateRoomRequestPayload &payload);
+
 // Get All Rooms
 typedef std::vector<entities::Room> get_all_rooms_response_t;
 

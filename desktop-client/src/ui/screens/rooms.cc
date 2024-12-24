@@ -18,15 +18,30 @@ using namespace constants;
 
 enum class RoomsScreenView {
   kRoomsTable,
+  kRoomCreation,
+};
+
+struct NewRoom {
+  char number[128];
+  char group_name[128];
+
+  NewRoom() : number(""), group_name("") {}
+
+  backend::CreateRoomRequestPayload ToBackendCreateRoomRequestPayload() {
+    return {std::string(number), std::string(group_name)};
+  }
 };
 
 struct RoomsScreenState {
   RoomsScreenView view;
+  NewRoom new_room;
+  std::string creation_error;
   bool is_requesting = false;
   bool is_rooms_retrieved = false;
   backend::BackendRequest request;
 
-  RoomsScreenState() : view(RoomsScreenView::kRoomsTable) {}
+  RoomsScreenState()
+      : view(RoomsScreenView::kRoomsTable), new_room(NewRoom()) {}
 };
 
 static auto rooms_screen_state = RoomsScreenState();
@@ -43,10 +58,13 @@ void RoomsTopBar() {
   if (rooms_screen_state.view == RoomsScreenView::kRoomsTable &&
       app::states::data.rooms.empty()) {
     text = "Create you first hotel room";
-    button_text = "Create room | unimplemented";
+    button_text = "Create room";
   } else if (rooms_screen_state.view == RoomsScreenView::kRoomsTable) {
     text = "Check existing room or create a new one";
-    button_text = "Create room | unimplemented";
+    button_text = "Create room";
+  } else if (rooms_screen_state.view == RoomsScreenView::kRoomCreation) {
+    text = "Create a new room";
+    button_text = "Cancel";
   }
 
   const auto text_size = widgets::CalculateBodyText(text.c_str());
@@ -67,6 +85,13 @@ void RoomsTopBar() {
   ImGui::SetCursorPos(button_position);
   if (widgets::Button(button_text.c_str(), ImVec2(),
                       rooms_screen_state.is_requesting)) {
+    rooms_screen_state.new_room = NewRoom();
+    rooms_screen_state.creation_error = "";
+
+    if (rooms_screen_state.view == RoomsScreenView::kRoomsTable) {
+      rooms_screen_state.view = RoomsScreenView::kRoomCreation;
+    } else if (rooms_screen_state.view == RoomsScreenView::kRoomCreation)
+      rooms_screen_state.view = RoomsScreenView::kRoomsTable;
   }
 
   ImGui::EndChild();
@@ -142,6 +167,81 @@ void RoomsTable() {
       top_left_body_point, bottom_right_body_point));
 }
 
+void RoomCreationView() {
+  auto available_region = ImGui::GetContentRegionAvail();
+  auto viewport_work_size = ImGui::GetMainViewport()->WorkSize;
+  auto occupied_size = ImVec2(viewport_work_size.x - available_region.x,
+                              viewport_work_size.y - available_region.y);
+
+  ImGui::SetNextWindowPos(
+      ImVec2(viewport_work_size.x / 2.f + occupied_size.x / 2.f,
+             viewport_work_size.y / 2.f + occupied_size.y / 2.f),
+      ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+  ImGui::BeginChild("creation", ImVec2(), kChildWindowFitContent);
+
+  // Inputs
+  {
+    const auto style = ImGui::GetStyle();
+    const float items_width = 384.f;
+
+    ImGui::PushItemWidth(items_width);
+    ImGui::BeginGroup();
+
+    // Number and group name in one row
+    {
+      const float items_width_half =
+          items_width / 2.f - style.ItemSpacing.x / 2.f;
+      const ImVec2 cursor_screen_position = ImGui::GetCursorScreenPos();
+
+      ImGui::PushItemWidth(items_width_half);
+
+      ImGui::BeginGroup();
+      widgets::MetaInputText("Room number", rooms_screen_state.new_room.number,
+                             IM_ARRAYSIZE(rooms_screen_state.new_room.number));
+      ImGui::EndGroup();
+
+      ImGui::SetCursorScreenPos(ImVec2(
+          cursor_screen_position.x + items_width_half + style.ItemSpacing.x,
+          cursor_screen_position.y));
+      ImGui::BeginGroup();
+      widgets::MetaInputText(
+          "Group name", rooms_screen_state.new_room.group_name,
+          IM_ARRAYSIZE(rooms_screen_state.new_room.group_name));
+      ImGui::EndGroup();
+
+      ImGui::PopItemWidth();
+    }
+
+    ImGui::EndGroup();
+    ImGui::PopItemWidth();
+  }
+
+  // Error
+  {
+    ImGui::PushStyleColor(ImGuiCol_Text, kColorErrorText);
+    if (!rooms_screen_state.creation_error.empty())
+      widgets::BodyTextCenter(rooms_screen_state.creation_error.c_str());
+    ImGui::PopStyleColor();
+  }
+
+  ImGui::Spacing();
+
+  // Button
+  {
+    const auto is_create_button = widgets::Button(
+        "Create", ImVec2(384.f, 0.f), rooms_screen_state.is_requesting);
+
+    if (is_create_button) {
+      rooms_screen_state.is_requesting = true;
+      rooms_screen_state.request = CreateRoom(
+          app::states::system.opened_hotel_id.value(),
+          rooms_screen_state.new_room.ToBackendCreateRoomRequestPayload());
+    }
+  }
+
+  ImGui::EndChild();
+}
+
 namespace screens {
 void RoomsScreen() {
   if (layouts::BeginAppLayout("Hotel Rooms")) {
@@ -169,6 +269,29 @@ void RoomsScreen() {
     if (response == backend::ResponseStatus::kCompleted)
       for (const auto& room : get_all_rooms_response)
         app::states::data.rooms[room.id] = room;
+  } else if (rooms_screen_state.is_requesting &&
+             rooms_screen_state.view == RoomsScreenView::kRoomCreation) {
+    backend::create_room_response_t create_room_response;
+
+    if (const auto response =
+            GetResponse(rooms_screen_state.request, create_room_response);
+        response == backend::ResponseStatus::kCompleted) {
+      rooms_screen_state.new_room = NewRoom();
+      rooms_screen_state.creation_error = "";
+      rooms_screen_state.view = RoomsScreenView::kRoomsTable;
+
+      app::states::data.rooms[create_room_response.id] = create_room_response;
+
+      rooms_screen_state.request =
+          backend::GetAllRooms(app::states::system.opened_hotel_id.value());
+    } else if (response == backend::ResponseStatus::kCompetedWithError) {
+      rooms_screen_state.creation_error =
+          rooms_screen_state.request.error_response.message;
+      rooms_screen_state.is_requesting = false;
+    } else if (response == backend::ResponseStatus::kError) {
+      rooms_screen_state.creation_error = "Something went wrong";
+      rooms_screen_state.is_requesting = false;
+    }
   }
 
   RoomsTopBar();
@@ -178,6 +301,8 @@ void RoomsScreen() {
     ImGui::Spacing();
     RoomsTable();
     ImGui::Spacing();
+  } else if (rooms_screen_state.view == RoomsScreenView::kRoomCreation) {
+    RoomCreationView();
   }
 
   if (layouts::EndAppLayout()) {
