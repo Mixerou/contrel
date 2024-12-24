@@ -191,6 +191,11 @@ typedef std::vector<GetGuestResponse> get_all_guests_response_t;
 
 BackendRequest GetAllGuests(entities::hotel_id_t hotel_id);
 
+// Get All Rooms
+typedef std::vector<entities::Room> get_all_rooms_response_t;
+
+BackendRequest GetAllRooms(entities::hotel_id_t hotel_id);
+
 template <typename T>
 ResponseStatus GetResponse(BackendRequest &request, T &response_reference) {
   switch (request.layer) {

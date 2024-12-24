@@ -32,6 +32,7 @@ struct System {
     kDashboard,
     kGuests,
     kHotels,
+    kRooms,
   };
 
   Screen current_screen;
@@ -61,6 +62,7 @@ struct Data {
   std::unordered_map<entities::user_id_t, entities::User> users;
   std::unordered_map<entities::hotel_id_t, entities::Hotel> hotels;
   std::unordered_map<entities::guest_id_t, entities::Guest> guests;
+  std::unordered_map<entities::room_id_t, entities::Room> rooms;
 
   void Clear();
 };

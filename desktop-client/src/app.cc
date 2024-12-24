@@ -122,6 +122,7 @@ namespace app::states {
 void Data::Clear() {
   users.clear();
   hotels.clear();
+  rooms.clear();
 }
 
 Data data;

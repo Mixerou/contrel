@@ -93,4 +93,12 @@ BackendRequest GetAllGuests(const entities::hotel_id_t hotel_id) {
   return request;
 }
 
+// Rooms
+BackendRequest GetAllRooms(const entities::hotel_id_t hotel_id) {
+  BackendRequest request(
+      app::api_worker.Enqueue(std::format("/hotels/{}/rooms", hotel_id)),
+      Layer::kApi);
+  return request;
+}
+
 }  // namespace backend

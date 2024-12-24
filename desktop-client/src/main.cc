@@ -124,6 +124,9 @@ int main(int, char **) {
       case app::states::System::Screen::kHotels:
         screens::HotelsScreen();
         break;
+      case app::states::System::Screen::kRooms:
+        screens::RoomsScreen();
+        break;
       default:
         break;
     }
