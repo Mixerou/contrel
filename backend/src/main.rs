@@ -45,6 +45,7 @@ async fn main() -> std::io::Result<()> {
             .service(
                 web::scope(api_path.as_str())
                     .configure(services::auth::init_routes)
+                    .configure(services::booking::init_routes)
                     .configure(services::guest::init_routes)
                     .configure(services::hotel::init_routes)
                     .configure(services::room::init_routes)
