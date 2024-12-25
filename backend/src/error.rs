@@ -274,6 +274,10 @@ backend_error_template! {
     (HTTP_CODE_BAD_REQUEST, Some(3020), GuestDocumentNumberTooShort, "Guest document number is too short");
     (HTTP_CODE_BAD_REQUEST, Some(3021), GuestDocumentNumberTooLong, "Guest document number is too long");
     (HTTP_CODE_BAD_REQUEST, Some(3022), GuestNotesTooLong, "Guest notes are too long");
+    (HTTP_CODE_BAD_REQUEST, Some(3023), RoomNumberTooShort, "Room number is too short");
+    (HTTP_CODE_BAD_REQUEST, Some(3024), RoomNumberTooLong, "Room number is too long");
+    (HTTP_CODE_BAD_REQUEST, Some(3025), RoomGroupNameTooShort, "Room group name is too short");
+    (HTTP_CODE_BAD_REQUEST, Some(3026), RoomGroupNameTooLong, "Room group name is too long");
 
     // Invalid body or something else
     // The first error (4000) is virtually, the same as the standard 400 HTTP error.

@@ -13,6 +13,8 @@ void DashboardScreen();
 void GuestsScreen();
 
 void HotelsScreen();
+
+void RoomsScreen();
 }  // namespace screens
 
 #endif  // DESKTOP_CLIENT_SCREENS_H

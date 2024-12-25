@@ -9,6 +9,7 @@ namespace entities {
 typedef int64_t user_id_t;
 typedef int64_t hotel_id_t;
 typedef int64_t guest_id_t;
+typedef int64_t room_id_t;
 
 // Copied from some gist
 enum class Country : int16_t {
@@ -463,6 +464,16 @@ struct Guest {
   std::string notes;
   hotel_id_t hotel_id;
   int64_t created_at;
+};
+
+struct Room {
+  room_id_t id;
+  std::string number;
+  std::string group_name;
+  hotel_id_t hotel_id;
+  int64_t created_at;
+
+  MSGPACK_DEFINE(id, number, group_name, hotel_id, created_at);
 };
 }  // namespace entities
 

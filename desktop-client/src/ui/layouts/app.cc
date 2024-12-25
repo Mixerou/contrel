@@ -178,8 +178,14 @@ void NavBar(const float width) {
            widgets::ColorAccent::kPrimaryBlank);
 
     ImGui::SetCursorPosX(kStyleScreenPadding.x);
-    Button("Rooms", ImVec2(button_width, 0.f), false,
-           widgets::ColorAccent::kPrimaryBlank);
+    const auto is_rooms_button =
+        Button("Rooms", ImVec2(button_width, 0.f), false,
+               current_screen == app::states::System::Screen::kRooms
+                   ? widgets::ColorAccent::kPrimaryLight
+                   : widgets::ColorAccent::kPrimaryBlank);
+
+    if (is_rooms_button)
+      app::states::system.current_screen = app::states::System::Screen::kRooms;
 
     ImGui::SetCursorPosX(kStyleScreenPadding.x);
     const auto is_guests_button =

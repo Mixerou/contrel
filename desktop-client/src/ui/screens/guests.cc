@@ -16,7 +16,7 @@
 
 using namespace constants;
 
-enum class ScreenView {
+enum class GuestsScreenView {
   kGuestsTable,
   kGuestCreation,
   kGuestView,
@@ -63,8 +63,8 @@ struct NewGuest {
   }
 };
 
-struct ScreenState {
-  ScreenView view;
+struct GuestsScreenState {
+  GuestsScreenView view;
   entities::guest_id_t guest_to_view_id;
   NewGuest new_guest;
   std::string creation_error;
@@ -72,15 +72,15 @@ struct ScreenState {
   bool is_guests_retrieved = false;
   backend::BackendRequest request;
 
-  ScreenState()
-      : view(ScreenView::kGuestsTable),
+  GuestsScreenState()
+      : view(GuestsScreenView::kGuestsTable),
         guest_to_view_id(0),
         new_guest(NewGuest()) {}
 };
 
-static auto state = ScreenState();
+static auto guests_screen_state = GuestsScreenState();
 
-void TopBar() {
+void GuestsTopBar() {
   ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(1.f, 1.f, 1.f, 1.f));
   ImGui::SetNextWindowSize(ImVec2(ImGui::GetContentRegionAvail().x, 44.f));
   ImGui::BeginChild("top_bar");
@@ -89,17 +89,17 @@ void TopBar() {
   std::string text;
   std::string button_text;
 
-  if (state.view == ScreenView::kGuestsTable &&
+  if (guests_screen_state.view == GuestsScreenView::kGuestsTable &&
       app::states::data.guests.empty()) {
     text = "Add you first hotel guest";
     button_text = "Add guest";
-  } else if (state.view == ScreenView::kGuestsTable) {
+  } else if (guests_screen_state.view == GuestsScreenView::kGuestsTable) {
     text = "Check existing guest or create a new one";
     button_text = "Add guest";
-  } else if (state.view == ScreenView::kGuestCreation) {
+  } else if (guests_screen_state.view == GuestsScreenView::kGuestCreation) {
     text = "Add a new person";
     button_text = "Cancel";
-  } else if (state.view == ScreenView::kGuestView) {
+  } else if (guests_screen_state.view == GuestsScreenView::kGuestView) {
     text = "Detailed person view";
     button_text = "Cancel";
   }
@@ -120,17 +120,18 @@ void TopBar() {
   widgets::BodyTextDimmed(text.c_str());
 
   ImGui::SetCursorPos(button_position);
-  if (widgets::Button(button_text.c_str(), ImVec2(), state.is_requesting)) {
-    state.new_guest = NewGuest();
-    state.creation_error = "";
+  if (widgets::Button(button_text.c_str(), ImVec2(),
+                      guests_screen_state.is_requesting)) {
+    guests_screen_state.new_guest = NewGuest();
+    guests_screen_state.creation_error = "";
 
-    if (state.view == ScreenView::kGuestsTable)
-      state.view = ScreenView::kGuestCreation;
-    else if (state.view == ScreenView::kGuestCreation)
-      state.view = ScreenView::kGuestsTable;
-    else if (state.view == ScreenView::kGuestView) {
-      state.view = ScreenView::kGuestsTable;
-      state.guest_to_view_id = 0.f;
+    if (guests_screen_state.view == GuestsScreenView::kGuestsTable)
+      guests_screen_state.view = GuestsScreenView::kGuestCreation;
+    else if (guests_screen_state.view == GuestsScreenView::kGuestCreation)
+      guests_screen_state.view = GuestsScreenView::kGuestsTable;
+    else if (guests_screen_state.view == GuestsScreenView::kGuestView) {
+      guests_screen_state.view = GuestsScreenView::kGuestsTable;
+      guests_screen_state.guest_to_view_id = 0.f;
     }
   }
 
@@ -217,8 +218,8 @@ void GuestsTable() {
       widgets::EndTableBodyCell();
 
       if (is_open_button) {
-        state.view = ScreenView::kGuestView;
-        state.guest_to_view_id = guest_id;
+        guests_screen_state.view = GuestsScreenView::kGuestView;
+        guests_screen_state.guest_to_view_id = guest_id;
       }
 
       // TODO: do not mutate every iteration
@@ -267,16 +268,18 @@ void CreationView() {
       ImGui::PushItemWidth(items_width_half);
 
       ImGui::BeginGroup();
-      widgets::MetaInputText("First name", state.new_guest.first_name,
-                             IM_ARRAYSIZE(state.new_guest.first_name));
+      widgets::MetaInputText(
+          "First name", guests_screen_state.new_guest.first_name,
+          IM_ARRAYSIZE(guests_screen_state.new_guest.first_name));
       ImGui::EndGroup();
 
       ImGui::SetCursorScreenPos(ImVec2(
           cursor_screen_position.x + items_width_half + style.ItemSpacing.x,
           cursor_screen_position.y));
       ImGui::BeginGroup();
-      widgets::MetaInputText("Last name", state.new_guest.last_name,
-                             IM_ARRAYSIZE(state.new_guest.last_name));
+      widgets::MetaInputText(
+          "Last name", guests_screen_state.new_guest.last_name,
+          IM_ARRAYSIZE(guests_screen_state.new_guest.last_name));
       ImGui::EndGroup();
 
       ImGui::PopItemWidth();
@@ -291,10 +294,10 @@ void CreationView() {
       ImGui::PushItemWidth(items_width_half);
 
       ImGui::BeginGroup();
-      widgets::MetaInputText("Date of birth", state.new_guest.date_of_birth,
-                             IM_ARRAYSIZE(state.new_guest.date_of_birth),
-                             ImGuiInputTextFlags_CallbackAlways,
-                             widgets::FilterInputDate);
+      widgets::MetaInputText(
+          "Date of birth", guests_screen_state.new_guest.date_of_birth,
+          IM_ARRAYSIZE(guests_screen_state.new_guest.date_of_birth),
+          ImGuiInputTextFlags_CallbackAlways, widgets::FilterInputDate);
       ImGui::EndGroup();
 
       ImGui::SetCursorScreenPos(ImVec2(
@@ -305,16 +308,18 @@ void CreationView() {
       // Gender
       {
         const auto preview_gender =
-            entities::kAllGenders[static_cast<int>(state.new_guest.gender)]
+            entities::kAllGenders[static_cast<int>(
+                                      guests_screen_state.new_guest.gender)]
                 .second;
         const auto gender_combo = widgets::BeginCombo("Gender", preview_gender);
 
         if (gender_combo) {
           for (const auto& [gender_type, gender_name] : entities::kAllGenders) {
-            const bool is_selected = (state.new_guest.gender == gender_type);
+            const bool is_selected =
+                (guests_screen_state.new_guest.gender == gender_type);
 
             if (ImGui::Selectable(gender_name, is_selected))
-              state.new_guest.gender = gender_type;
+              guests_screen_state.new_guest.gender = gender_type;
             if (is_selected) ImGui::SetItemDefaultFocus();
           }
         }
@@ -336,18 +341,18 @@ void CreationView() {
       ImGui::PushItemWidth(items_width_half);
 
       ImGui::BeginGroup();
-      widgets::MetaInputText("Phone number", state.new_guest.phone_number,
-                             IM_ARRAYSIZE(state.new_guest.phone_number),
-                             ImGuiInputTextFlags_CallbackAlways,
-                             widgets::FilterInputPhoneNumber);
+      widgets::MetaInputText(
+          "Phone number", guests_screen_state.new_guest.phone_number,
+          IM_ARRAYSIZE(guests_screen_state.new_guest.phone_number),
+          ImGuiInputTextFlags_CallbackAlways, widgets::FilterInputPhoneNumber);
       ImGui::EndGroup();
 
       ImGui::SetCursorScreenPos(ImVec2(
           cursor_screen_position.x + items_width_half + style.ItemSpacing.x,
           cursor_screen_position.y));
       ImGui::BeginGroup();
-      widgets::MetaInputText("Email", state.new_guest.email,
-                             IM_ARRAYSIZE(state.new_guest.email),
+      widgets::MetaInputText("Email", guests_screen_state.new_guest.email,
+                             IM_ARRAYSIZE(guests_screen_state.new_guest.email),
                              ImGuiInputTextFlags_CharsNoBlank);
       ImGui::EndGroup();
 
@@ -367,9 +372,9 @@ void CreationView() {
       // Document Type
       {
         const auto preview_document_type =
-            entities::kAllDocumentTypes[static_cast<int>(
-                                            state.new_guest.document_type)]
-                .second;
+            entities::kAllDocumentTypes
+                [static_cast<int>(guests_screen_state.new_guest.document_type)]
+                    .second;
         const auto document_type_combo =
             widgets::BeginCombo("Document type", preview_document_type);
 
@@ -377,10 +382,10 @@ void CreationView() {
           for (const auto& [document_type, document_name] :
                entities::kAllDocumentTypes) {
             const bool is_selected =
-                (state.new_guest.document_type == document_type);
+                (guests_screen_state.new_guest.document_type == document_type);
 
             if (ImGui::Selectable(document_name, is_selected))
-              state.new_guest.document_type = document_type;
+              guests_screen_state.new_guest.document_type = document_type;
             if (is_selected) ImGui::SetItemDefaultFocus();
           }
         }
@@ -399,7 +404,8 @@ void CreationView() {
       {
         const auto preview_document_country =
             entities::kAllCountries[static_cast<int>(
-                                        state.new_guest.document_country)]
+                                        guests_screen_state.new_guest
+                                            .document_country)]
                 .second;
         const auto document_country_combo =
             widgets::BeginCombo("Document country", preview_document_country,
@@ -409,10 +415,12 @@ void CreationView() {
           for (const auto& [document_country_type, document_country_name] :
                entities::kAllCountries) {
             const bool is_selected =
-                (state.new_guest.document_country == document_country_type);
+                (guests_screen_state.new_guest.document_country ==
+                 document_country_type);
 
             if (ImGui::Selectable(document_country_name, is_selected))
-              state.new_guest.document_country = document_country_type;
+              guests_screen_state.new_guest.document_country =
+                  document_country_type;
             if (is_selected) ImGui::SetItemDefaultFocus();
           }
         }
@@ -434,8 +442,9 @@ void CreationView() {
       ImGui::PushItemWidth(items_width_half);
 
       ImGui::BeginGroup();
-      widgets::MetaInputText("Document number", state.new_guest.document_number,
-                             IM_ARRAYSIZE(state.new_guest.document_number));
+      widgets::MetaInputText(
+          "Document number", guests_screen_state.new_guest.document_number,
+          IM_ARRAYSIZE(guests_screen_state.new_guest.document_number));
       ImGui::EndGroup();
 
       ImGui::SetCursorScreenPos(ImVec2(
@@ -443,16 +452,17 @@ void CreationView() {
           cursor_screen_position.y));
       ImGui::BeginGroup();
       widgets::MetaInputText(
-          "Document valid until", state.new_guest.document_valid_until,
-          IM_ARRAYSIZE(state.new_guest.document_valid_until),
+          "Document valid until",
+          guests_screen_state.new_guest.document_valid_until,
+          IM_ARRAYSIZE(guests_screen_state.new_guest.document_valid_until),
           ImGuiInputTextFlags_CallbackAlways, widgets::FilterInputDate);
       ImGui::EndGroup();
 
       ImGui::PopItemWidth();
     }
 
-    widgets::MetaInputText("Notes", state.new_guest.notes,
-                           IM_ARRAYSIZE(state.new_guest.notes));
+    widgets::MetaInputText("Notes", guests_screen_state.new_guest.notes,
+                           IM_ARRAYSIZE(guests_screen_state.new_guest.notes));
 
     ImGui::EndGroup();
     ImGui::PopItemWidth();
@@ -461,8 +471,8 @@ void CreationView() {
   // Error
   {
     ImGui::PushStyleColor(ImGuiCol_Text, kColorErrorText);
-    if (!state.creation_error.empty())
-      widgets::BodyTextCenter(state.creation_error.c_str());
+    if (!guests_screen_state.creation_error.empty())
+      widgets::BodyTextCenter(guests_screen_state.creation_error.c_str());
     ImGui::PopStyleColor();
   }
 
@@ -470,14 +480,14 @@ void CreationView() {
 
   // Button
   {
-    const auto is_create_button =
-        widgets::Button("Add", ImVec2(384.f, 0.f), state.is_requesting);
+    const auto is_create_button = widgets::Button(
+        "Add", ImVec2(384.f, 0.f), guests_screen_state.is_requesting);
 
     if (is_create_button) {
-      state.is_requesting = true;
-      state.request =
-          CreateGuest(app::states::system.opened_hotel_id.value(),
-                      state.new_guest.ToBackendCreateGuestRequestPayload());
+      guests_screen_state.is_requesting = true;
+      guests_screen_state.request = CreateGuest(
+          app::states::system.opened_hotel_id.value(),
+          guests_screen_state.new_guest.ToBackendCreateGuestRequestPayload());
     }
   }
 
@@ -490,7 +500,8 @@ void GuestView() {
   const auto occupied_size = ImVec2(viewport_work_size.x - available_region.x,
                                     viewport_work_size.y - available_region.y);
 
-  const auto guest = app::states::data.guests[state.guest_to_view_id];
+  const auto guest =
+      app::states::data.guests[guests_screen_state.guest_to_view_id];
   const auto gender =
       entities::kAllGenders[static_cast<int16_t>(guest.gender)].second;
   const auto date_of_birth =
@@ -562,19 +573,21 @@ void GuestView() {
 namespace screens {
 void GuestsScreen() {
   if (layouts::BeginAppLayout("Hotel Guests")) {
-    state = ScreenState();
+    guests_screen_state = GuestsScreenState();
   }
 
-  if (!state.is_guests_retrieved) {
-    state.is_requesting = true;
-    state.is_guests_retrieved = true;
-    state.request =
+  if (!guests_screen_state.is_guests_retrieved) {
+    guests_screen_state.is_requesting = true;
+    guests_screen_state.is_guests_retrieved = true;
+    guests_screen_state.request =
         backend::GetAllGuests(app::states::system.opened_hotel_id.value());
   }
 
-  if (state.is_requesting && state.view == ScreenView::kGuestsTable) {
+  if (guests_screen_state.is_requesting &&
+      guests_screen_state.view == GuestsScreenView::kGuestsTable) {
     backend::get_all_guests_response_t get_all_guests_response;
-    const auto response = GetResponse(state.request, get_all_guests_response);
+    const auto response =
+        GetResponse(guests_screen_state.request, get_all_guests_response);
 
     if (response == backend::ResponseStatus::kCompleted) {
       app::states::data.guests.clear();
@@ -584,45 +597,48 @@ void GuestsScreen() {
     }
 
     if (response != backend::ResponseStatus::kInProcess)
-      state.is_requesting = false;
-  } else if (state.is_requesting && state.view == ScreenView::kGuestCreation) {
+      guests_screen_state.is_requesting = false;
+  } else if (guests_screen_state.is_requesting &&
+             guests_screen_state.view == GuestsScreenView::kGuestCreation) {
     backend::create_guest_response_t create_guest_response;
 
-    if (const auto response = GetResponse(state.request, create_guest_response);
+    if (const auto response =
+            GetResponse(guests_screen_state.request, create_guest_response);
         response == backend::ResponseStatus::kCompleted) {
-      state.new_guest = NewGuest();
-      state.creation_error = "";
-      state.view = ScreenView::kGuestsTable;
+      guests_screen_state.new_guest = NewGuest();
+      guests_screen_state.creation_error = "";
+      guests_screen_state.view = GuestsScreenView::kGuestsTable;
 
       app::states::data.guests[create_guest_response.id] =
           create_guest_response.ToGuest();
 
-      state.request =
+      guests_screen_state.request =
           backend::GetAllGuests(app::states::system.opened_hotel_id.value());
     } else if (response == backend::ResponseStatus::kCompetedWithError) {
-      state.creation_error = state.request.error_response.message;
-      state.is_requesting = false;
+      guests_screen_state.creation_error =
+          guests_screen_state.request.error_response.message;
+      guests_screen_state.is_requesting = false;
     } else if (response == backend::ResponseStatus::kError) {
-      state.creation_error = "Something went wrong";
-      state.is_requesting = false;
+      guests_screen_state.creation_error = "Something went wrong";
+      guests_screen_state.is_requesting = false;
     }
   }
 
-  TopBar();
+  GuestsTopBar();
 
-  if (state.view == ScreenView::kGuestsTable &&
+  if (guests_screen_state.view == GuestsScreenView::kGuestsTable &&
       !app::states::data.guests.empty()) {
     ImGui::Spacing();
     GuestsTable();
     ImGui::Spacing();
-  } else if (state.view == ScreenView::kGuestCreation) {
+  } else if (guests_screen_state.view == GuestsScreenView::kGuestCreation) {
     CreationView();
-  } else if (state.view == ScreenView::kGuestView) {
+  } else if (guests_screen_state.view == GuestsScreenView::kGuestView) {
     GuestView();
   }
 
   if (layouts::EndAppLayout()) {
-    state = ScreenState();
+    guests_screen_state = GuestsScreenState();
   }
 }
 }  // namespace screens

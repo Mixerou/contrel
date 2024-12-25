@@ -47,6 +47,7 @@ async fn main() -> std::io::Result<()> {
                     .configure(services::auth::init_routes)
                     .configure(services::guest::init_routes)
                     .configure(services::hotel::init_routes)
+                    .configure(services::room::init_routes)
                     .configure(services::system::init_routes)
                     .configure(services::user::init_routes)
                     .wrap(services::session::middleware::CheckSession),

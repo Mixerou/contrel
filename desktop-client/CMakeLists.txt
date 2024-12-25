@@ -77,6 +77,7 @@ set(SOURCES
         src/ui/screens/dashboard.cc
         src/ui/screens/guests.cc
         src/ui/screens/hotels.cc
+        src/ui/screens/rooms.cc
 
         # UI Widgets
         src/ui/widgets/app_badges.cc
