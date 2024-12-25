@@ -1,5 +1,4 @@
-use serde::ser::SerializeSeq;
-use serde::{Serialize, Serializer};
+use serde::Serialize;
 use sqlx::{query, query_as, FromRow, Postgres, Transaction};
 use time::PrimitiveDateTime;
 
@@ -9,33 +8,20 @@ use crate::utils::time::{
 };
 use crate::{db, snowflake_generator};
 
-// TODO: remove, when rmp-serde will support `flatten` serde attribute
-pub fn serialize_booking<S>(booking: &Booking, serializer: S) -> Result<S::Ok, S::Error>
-where
-    S: Serializer,
-{
-    let mut sequence = serializer.serialize_seq(Some(6))?;
-
-    sequence.serialize_element(&booking.id)?;
-    sequence.serialize_element(&booking.hotel_id)?;
-    sequence.serialize_element(&booking.room_id)?;
-    sequence.serialize_element(&booking.check_in_at)?;
-    sequence.serialize_element(&booking.check_out_at)?;
-    sequence.serialize_element(&booking.created_at)?;
-
-    sequence.end()
+// TODO: OMG, PLEASE REWRITE THIS CHAOS
+#[derive(Clone, FromRow)]
+struct BookingWithOptionalGuestIds {
+    pub id: i64,
+    pub hotel_id: i64,
+    pub room_id: i64,
+    pub check_in_at: PrimitiveDateTime,
+    pub check_out_at: PrimitiveDateTime,
+    pub created_at: PrimitiveDateTime,
+    pub guest_ids: Option<Vec<i64>>,
 }
 
 #[derive(Clone, Serialize)]
 pub struct BookingWithGuestIds {
-    #[serde(serialize_with = "serialize_booking")]
-    pub booking: Booking,
-    pub guest_ids: Vec<i64>,
-}
-
-#[derive(Clone, FromRow, Serialize)]
-#[allow(dead_code)]
-pub struct Booking {
     pub id: i64,
     pub hotel_id: i64,
     pub room_id: i64,
@@ -44,6 +30,18 @@ pub struct Booking {
     #[serde(serialize_with = "serialize_primitive_date_time_as_unix_timestamp")]
     pub check_out_at: PrimitiveDateTime,
     #[serde(serialize_with = "serialize_primitive_date_time_as_unix_timestamp")]
+    pub created_at: PrimitiveDateTime,
+    pub guest_ids: Vec<i64>,
+}
+
+#[derive(Clone, FromRow)]
+#[allow(dead_code)]
+pub struct Booking {
+    pub id: i64,
+    pub hotel_id: i64,
+    pub room_id: i64,
+    pub check_in_at: PrimitiveDateTime,
+    pub check_out_at: PrimitiveDateTime,
     pub created_at: PrimitiveDateTime,
 }
 
@@ -81,7 +79,50 @@ impl Booking {
 
         transaction.commit().await?;
 
-        Ok(BookingWithGuestIds { booking, guest_ids })
+        Ok(BookingWithGuestIds {
+            id: booking.id,
+            hotel_id: booking.hotel_id,
+            room_id: booking.room_id,
+            check_in_at: booking.check_in_at,
+            check_out_at: booking.check_out_at,
+            created_at: booking.created_at,
+            guest_ids,
+        })
+    }
+
+    pub async fn find_all_by_hotel_id(
+        hotel_id: &i64,
+    ) -> Result<Vec<BookingWithGuestIds>, BackendError> {
+        let connection = db::get_connection();
+
+        // TODO: another optimisation alarm
+        let bookings = query_as!(
+            BookingWithOptionalGuestIds,
+            r#"
+                SELECT bookings.*,
+                       ARRAY_AGG(booking_guests.guest_id) AS guest_ids
+                FROM bookings
+                         LEFT JOIN booking_guests ON bookings.id = booking_guests.booking_id
+                WHERE hotel_id = $1
+                GROUP BY bookings.id;
+            "#,
+            hotel_id,
+        )
+        .fetch_all(connection)
+        .await?
+        .iter()
+        .map(|booking| BookingWithGuestIds {
+            id: booking.id,
+            hotel_id: booking.hotel_id,
+            room_id: booking.room_id,
+            check_in_at: booking.check_in_at,
+            check_out_at: booking.check_out_at,
+            created_at: booking.created_at,
+            guest_ids: booking.guest_ids.clone().unwrap_or_default(),
+        })
+        .collect();
+
+        Ok(bookings)
     }
 
     // Default implementation
