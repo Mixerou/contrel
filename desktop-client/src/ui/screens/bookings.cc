@@ -180,7 +180,10 @@ void BookingsTable() {
                                  kStyleButtonPadding.y * 2.f;
       const auto second_cell_points =
           widgets::BeginTableBodyCell(button_text, button_height);
-      const auto is_open_button = widgets::Button(button_text);
+      const auto is_open_button =
+          widgets::Button(button_text, ImVec2(),
+                          bookings_screen_state.request_type !=
+                              BookingsScreenRequestType::kNone);
       widgets::EndTableBodyCell();
 
       if (is_open_button) {
