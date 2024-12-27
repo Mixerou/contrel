@@ -295,6 +295,7 @@ backend_error_template! {
     (HTTP_CODE_BAD_REQUEST, Some(4008), BookingPastCheckInAt, "The booking check-in date can't be in the past");
     (HTTP_CODE_BAD_REQUEST, Some(4009), BookingPastCheckOutAt, "The booking check-out date can't be in the past");
     (HTTP_CODE_BAD_REQUEST, Some(4010), BookingCheckInAtAfterCheckOutAt, "The booking check-in date can't be after the check-out date");
+    (HTTP_CODE_BAD_REQUEST, Some(4011), BookingCheckInAtEqualsCheckOutAt, "The booking check-in date can't be the same as the check-out date");
 }
 
 macro_rules! websocket_close_error {

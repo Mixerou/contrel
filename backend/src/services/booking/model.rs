@@ -183,6 +183,9 @@ impl Booking {
         if check_in_at > check_out_at {
             return Err(BackendErrorTemplate::BookingCheckInAtAfterCheckOutAt.into());
         }
+        if check_in_at == check_out_at {
+            return Err(BackendErrorTemplate::BookingCheckInAtEqualsCheckOutAt.into());
+        }
 
         Ok(())
     }
