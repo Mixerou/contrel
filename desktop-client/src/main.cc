@@ -118,6 +118,9 @@ int main(int, char **) {
       case app::states::System::Screen::kDashboard:
         screens::DashboardScreen();
         break;
+      case app::states::System::Screen::kBookings:
+        screens::BookingsScreen();
+        break;
       case app::states::System::Screen::kGuests:
         screens::GuestsScreen();
         break;

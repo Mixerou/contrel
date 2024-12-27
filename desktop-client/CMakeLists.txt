@@ -74,6 +74,7 @@ set(SOURCES
 
         # UI Screens
         src/ui/screens/auth.cc
+        src/ui/screens/bookings.cc
         src/ui/screens/dashboard.cc
         src/ui/screens/guests.cc
         src/ui/screens/hotels.cc

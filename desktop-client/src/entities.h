@@ -10,6 +10,7 @@ typedef int64_t user_id_t;
 typedef int64_t hotel_id_t;
 typedef int64_t guest_id_t;
 typedef int64_t room_id_t;
+typedef int64_t booking_id_t;
 
 // Copied from some gist
 enum class Country : int16_t {
@@ -474,6 +475,19 @@ struct Room {
   int64_t created_at;
 
   MSGPACK_DEFINE(id, number, group_name, hotel_id, created_at);
+};
+
+struct Booking {
+  booking_id_t id;
+  hotel_id_t hotel_id;
+  room_id_t room_id;
+  int64_t check_in_at;
+  int64_t check_out_at;
+  int64_t created_at;
+  std::vector<guest_id_t> guest_ids;
+
+  MSGPACK_DEFINE(id, hotel_id, room_id, check_in_at, check_out_at, created_at,
+                 guest_ids);
 };
 }  // namespace entities
 

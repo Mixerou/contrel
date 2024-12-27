@@ -174,8 +174,15 @@ void NavBar(const float width) {
           app::states::System::Screen::kDashboard;
 
     ImGui::SetCursorPosX(kStyleScreenPadding.x);
-    Button("Bookings", ImVec2(button_width, 0.f), false,
-           widgets::ColorAccent::kPrimaryBlank);
+    const auto is_bookings_button =
+        Button("Bookings", ImVec2(button_width, 0.f), false,
+               current_screen == app::states::System::Screen::kBookings
+                   ? widgets::ColorAccent::kPrimaryLight
+                   : widgets::ColorAccent::kPrimaryBlank);
+
+    if (is_bookings_button)
+      app::states::system.current_screen =
+          app::states::System::Screen::kBookings;
 
     ImGui::SetCursorPosX(kStyleScreenPadding.x);
     const auto is_rooms_button =

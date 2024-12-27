@@ -29,6 +29,7 @@ namespace states {
 struct System {
   enum class Screen {
     kAuth,
+    kBookings,
     kDashboard,
     kGuests,
     kHotels,
@@ -63,6 +64,7 @@ struct Data {
   std::unordered_map<entities::hotel_id_t, entities::Hotel> hotels;
   std::unordered_map<entities::guest_id_t, entities::Guest> guests;
   std::unordered_map<entities::room_id_t, entities::Room> rooms;
+  std::unordered_map<entities::booking_id_t, entities::Booking> bookings;
 
   void Clear();
 };
