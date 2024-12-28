@@ -38,14 +38,14 @@ struct NewBooking {
 enum class BookingsScreenView {
   kBookingsTable,
   kBookingGuestsTable,
-  kBookingCreation,  // TODO: not implemented
+  kBookingCreation,
 };
 
 enum class BookingsScreenRequestType {
   kGetAllBookings,
   kGetAllRooms,
   kGetAllGuests,
-  kCreateBooking,  // TODO: not implemented
+  kCreateBooking,
   kNone,
 };
 
