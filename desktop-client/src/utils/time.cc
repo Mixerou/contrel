@@ -49,4 +49,12 @@ int64_t ConvertHumanReadableTimestampToUnix(const std::string& date) {
 
   return time;
 }
+
+int64_t GetCurrentUnixTimestamp() {
+  const auto now = std::chrono::system_clock::now();
+  const auto duration =
+      std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch());
+
+  return duration.count();
+}
 }  // namespace utils

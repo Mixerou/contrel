@@ -8,6 +8,7 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 #include <ixwebsocket/IXNetSystem.h>
+#include <utils.h>
 
 #include "app.h"
 #include "backend.h"
@@ -88,21 +89,25 @@ int main(int, char **) {
 #endif
 
     {  // Dumb ping loop
+      static int64_t last_ping_response_at;
       static bool is_ping_requested = false;
       static backend::BackendRequest request;
 
       if (is_ping_requested) {
         backend::ping_response_t response_body;
+        const auto response = GetResponse(request, response_body);
 
-        if (const auto response = GetResponse(request, response_body);
-            response == backend::ResponseStatus::kCompleted) {
+        if (response != backend::ResponseStatus::kInProcess) {
+          last_ping_response_at = utils::GetCurrentUnixTimestamp();
           is_ping_requested = false;
-          app::states::system.is_online = true;
-        } else if (response != backend::ResponseStatus::kInProcess) {
-          is_ping_requested = false;
-          app::states::system.is_online = false;
         }
-      } else {
+
+        if (response == backend::ResponseStatus::kCompleted)
+          app::states::system.is_online = true;
+        else if (response != backend::ResponseStatus::kInProcess)
+          app::states::system.is_online = false;
+      } else if (utils::GetCurrentUnixTimestamp() - last_ping_response_at >=
+                 5) {
         is_ping_requested = true;
         request = backend::Ping();
       }
