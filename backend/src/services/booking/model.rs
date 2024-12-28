@@ -140,11 +140,9 @@ impl Booking {
                 SELECT COUNT(*)
                 FROM bookings
                 WHERE hotel_id = $1
-                    AND room_id = $2
-                    AND (check_in_at >= $3
-                        AND check_in_at <= $4)
-                   OR (check_out_at >= $3
-                    AND check_out_at <= $4)
+                  AND room_id = $2
+                  AND ((check_in_at >= $3 AND check_in_at <= $4)
+                    OR (check_out_at >= $3 AND check_out_at <= $4))
             "#,
             hotel_id,
             room_id,
