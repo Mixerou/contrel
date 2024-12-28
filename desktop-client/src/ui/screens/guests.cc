@@ -22,6 +22,12 @@ enum class GuestsScreenView {
   kGuestView,
 };
 
+enum class GuestsScreenRequestType {
+  kGetAllGuests,
+  kCreateGuest,
+  kNone,
+};
+
 struct NewGuest {
   char first_name[128];
   char last_name[128];
@@ -64,18 +70,15 @@ struct NewGuest {
 };
 
 struct GuestsScreenState {
-  GuestsScreenView view;
-  entities::guest_id_t guest_to_view_id;
-  NewGuest new_guest;
+  GuestsScreenView view = GuestsScreenView::kGuestsTable;
+  entities::guest_id_t guest_to_view_id = 0;
+  NewGuest new_guest = NewGuest();
   std::string creation_error;
-  bool is_requesting = false;
-  bool is_guests_retrieved = false;
+  GuestsScreenRequestType request_type = GuestsScreenRequestType::kNone;
+  bool is_initial_retrieved = false;
   backend::BackendRequest request;
 
-  GuestsScreenState()
-      : view(GuestsScreenView::kGuestsTable),
-        guest_to_view_id(0),
-        new_guest(NewGuest()) {}
+  GuestsScreenState() = default;
 };
 
 static auto guests_screen_state = GuestsScreenState();
@@ -120,8 +123,9 @@ void GuestsTopBar() {
   widgets::BodyTextDimmed(text.c_str());
 
   ImGui::SetCursorPos(button_position);
-  if (widgets::Button(button_text.c_str(), ImVec2(),
-                      guests_screen_state.is_requesting)) {
+  if (widgets::Button(
+          button_text.c_str(), ImVec2(),
+          guests_screen_state.request_type != GuestsScreenRequestType::kNone)) {
     guests_screen_state.new_guest = NewGuest();
     guests_screen_state.creation_error = "";
 
@@ -239,7 +243,7 @@ void GuestsTable() {
       top_left_body_point, bottom_right_body_point));
 }
 
-void CreationView() {
+void GuestCreationView() {
   auto available_region = ImGui::GetContentRegionAvail();
   auto viewport_work_size = ImGui::GetMainViewport()->WorkSize;
   auto occupied_size = ImVec2(viewport_work_size.x - available_region.x,
@@ -481,10 +485,11 @@ void CreationView() {
   // Button
   {
     const auto is_create_button = widgets::Button(
-        "Add", ImVec2(384.f, 0.f), guests_screen_state.is_requesting);
+        "Add", ImVec2(384.f, 0.f),
+        guests_screen_state.request_type != GuestsScreenRequestType::kNone);
 
     if (is_create_button) {
-      guests_screen_state.is_requesting = true;
+      guests_screen_state.request_type = GuestsScreenRequestType::kCreateGuest;
       guests_screen_state.request = CreateGuest(
           app::states::system.opened_hotel_id.value(),
           guests_screen_state.new_guest.ToBackendCreateGuestRequestPayload());
@@ -576,30 +581,31 @@ void GuestsScreen() {
     guests_screen_state = GuestsScreenState();
   }
 
-  if (!guests_screen_state.is_guests_retrieved) {
-    guests_screen_state.is_requesting = true;
-    guests_screen_state.is_guests_retrieved = true;
+  if (!guests_screen_state.is_initial_retrieved) {
+    guests_screen_state.request_type = GuestsScreenRequestType::kGetAllGuests;
+    guests_screen_state.is_initial_retrieved = true;
     guests_screen_state.request =
         backend::GetAllGuests(app::states::system.opened_hotel_id.value());
   }
 
-  if (guests_screen_state.is_requesting &&
-      guests_screen_state.view == GuestsScreenView::kGuestsTable) {
+  if (guests_screen_state.request_type ==
+      GuestsScreenRequestType::kGetAllGuests) {
     backend::get_all_guests_response_t get_all_guests_response;
     const auto response =
         GetResponse(guests_screen_state.request, get_all_guests_response);
 
-    if (response == backend::ResponseStatus::kCompleted) {
+    if (response != backend::ResponseStatus::kInProcess) {
       app::states::data.guests.clear();
-
-      for (const auto& guest : get_all_guests_response)
-        app::states::data.guests[guest.id] = guest.ToGuest();
+      guests_screen_state.request_type = GuestsScreenRequestType::kNone;
     }
 
-    if (response != backend::ResponseStatus::kInProcess)
-      guests_screen_state.is_requesting = false;
-  } else if (guests_screen_state.is_requesting &&
-             guests_screen_state.view == GuestsScreenView::kGuestCreation) {
+    if (response == backend::ResponseStatus::kCompleted)
+      for (const auto& guest : get_all_guests_response)
+        app::states::data.guests[guest.id] = guest.ToGuest();
+  }
+
+  else if (guests_screen_state.request_type ==
+           GuestsScreenRequestType::kCreateGuest) {
     backend::create_guest_response_t create_guest_response;
 
     if (const auto response =
@@ -612,15 +618,16 @@ void GuestsScreen() {
       app::states::data.guests[create_guest_response.id] =
           create_guest_response.ToGuest();
 
+      guests_screen_state.request_type = GuestsScreenRequestType::kGetAllGuests;
       guests_screen_state.request =
           backend::GetAllGuests(app::states::system.opened_hotel_id.value());
     } else if (response == backend::ResponseStatus::kCompetedWithError) {
       guests_screen_state.creation_error =
           guests_screen_state.request.error_response.message;
-      guests_screen_state.is_requesting = false;
+      guests_screen_state.request_type = GuestsScreenRequestType::kNone;
     } else if (response == backend::ResponseStatus::kError) {
       guests_screen_state.creation_error = "Something went wrong";
-      guests_screen_state.is_requesting = false;
+      guests_screen_state.request_type = GuestsScreenRequestType::kNone;
     }
   }
 
@@ -632,7 +639,7 @@ void GuestsScreen() {
     GuestsTable();
     ImGui::Spacing();
   } else if (guests_screen_state.view == GuestsScreenView::kGuestCreation) {
-    CreationView();
+    GuestCreationView();
   } else if (guests_screen_state.view == GuestsScreenView::kGuestView) {
     GuestView();
   }
