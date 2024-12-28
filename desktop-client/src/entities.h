@@ -489,6 +489,16 @@ struct Booking {
   MSGPACK_DEFINE(id, hotel_id, room_id, check_in_at, check_out_at, created_at,
                  guest_ids);
 };
+
+struct LongTimeGuest {
+  guest_id_t guest_id;
+  hotel_id_t hotel_id;
+  room_id_t room_id;
+  int64_t check_in_at;
+  int64_t check_out_at;
+
+  MSGPACK_DEFINE(guest_id, hotel_id, room_id, check_in_at, check_out_at);
+};
 }  // namespace entities
 
 #endif  // DESKTOP_CLIENT_ENTITIES_H

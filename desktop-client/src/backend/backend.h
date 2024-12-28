@@ -222,12 +222,18 @@ struct CreateBookingRequestPayload {
 typedef entities::Booking create_booking_response_t;
 
 BackendRequest CreateBooking(entities::hotel_id_t hotel_id,
-                          const CreateBookingRequestPayload &payload);
+                             const CreateBookingRequestPayload &payload);
 
 // Get All Bookings
 typedef std::vector<entities::Booking> get_all_bookings_response_t;
 
 BackendRequest GetAllBookings(entities::hotel_id_t hotel_id);
+
+// Get Stats Long-Time Guests
+typedef std::vector<entities::LongTimeGuest>
+    get_stats_long_time_guests_response_t;
+
+BackendRequest GetStatsLongTimeGuests(entities::hotel_id_t hotel_id);
 
 template <typename T>
 ResponseStatus GetResponse(BackendRequest &request, T &response_reference) {

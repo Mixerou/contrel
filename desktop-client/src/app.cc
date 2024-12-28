@@ -125,6 +125,7 @@ void Data::Clear() {
   guests.clear();
   rooms.clear();
   bookings.clear();
+  long_time_guests.clear();
 }
 
 Data data;
