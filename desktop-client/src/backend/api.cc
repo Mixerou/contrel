@@ -116,6 +116,20 @@ BackendRequest GetAllRooms(const entities::hotel_id_t hotel_id) {
 }
 
 // Bookings
+BackendRequest CreateBooking(entities::hotel_id_t hotel_id,
+                          const CreateBookingRequestPayload &payload) {
+  msgpack::sbuffer buffer;
+  msgpack::pack(buffer, payload);
+
+  BackendRequest request(
+      app::api_worker.Enqueue(std::format("/hotels/{}/bookings", hotel_id),
+                              ix::HttpClient::kPost,
+                              std::string(buffer.data(), buffer.size())),
+      Layer::kApi);
+
+  return request;
+}
+
 BackendRequest GetAllBookings(const entities::hotel_id_t hotel_id) {
   BackendRequest request(
       app::api_worker.Enqueue(std::format("/hotels/{}/bookings", hotel_id)),
