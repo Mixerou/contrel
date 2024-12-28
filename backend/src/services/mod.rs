@@ -4,5 +4,6 @@ pub mod guest;
 pub mod hotel;
 pub mod room;
 pub mod session;
+pub mod stats;
 pub mod system;
 pub mod user;
