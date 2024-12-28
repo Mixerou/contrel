@@ -278,6 +278,8 @@ backend_error_template! {
     (HTTP_CODE_BAD_REQUEST, Some(3024), RoomNumberTooLong, "Room number is too long");
     (HTTP_CODE_BAD_REQUEST, Some(3025), RoomGroupNameTooShort, "Room group name is too short");
     (HTTP_CODE_BAD_REQUEST, Some(3026), RoomGroupNameTooLong, "Room group name is too long");
+    (HTTP_CODE_BAD_REQUEST, Some(3027), BookingNoGuestIds, "Booking must have at least one guest");
+    (HTTP_CODE_BAD_REQUEST, Some(3028), BookingRoomNotAvailable, "Room already booked for this period");
 
     // Invalid body or something else
     // The first error (4000) is virtually, the same as the standard 400 HTTP error.
@@ -290,6 +292,10 @@ backend_error_template! {
     (HTTP_CODE_BAD_REQUEST, Some(4005), FutureDateOfBirth, "The date of birth can't be in the future");
     (HTTP_CODE_BAD_REQUEST, Some(4006), GuestPastDocumentValidUntil, "The document valid date can't be in the past");
     (HTTP_CODE_BAD_REQUEST, Some(4007), BadPhoneNumber, "Bad phone number");
+    (HTTP_CODE_BAD_REQUEST, Some(4008), BookingPastCheckInAt, "The booking check-in date can't be in the past");
+    (HTTP_CODE_BAD_REQUEST, Some(4009), BookingPastCheckOutAt, "The booking check-out date can't be in the past");
+    (HTTP_CODE_BAD_REQUEST, Some(4010), BookingCheckInAtAfterCheckOutAt, "The booking check-in date can't be after the check-out date");
+    (HTTP_CODE_BAD_REQUEST, Some(4011), BookingCheckInAtEqualsCheckOutAt, "The booking check-in date can't be the same as the check-out date");
 }
 
 macro_rules! websocket_close_error {

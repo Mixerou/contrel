@@ -209,6 +209,26 @@ typedef std::vector<entities::Room> get_all_rooms_response_t;
 
 BackendRequest GetAllRooms(entities::hotel_id_t hotel_id);
 
+// Create Booking
+struct CreateBookingRequestPayload {
+  entities::room_id_t room_id;
+  int64_t check_in_at;
+  int64_t check_out_at;
+  std::vector<entities::guest_id_t> guest_ids;
+
+  MSGPACK_DEFINE(room_id, check_in_at, check_out_at, guest_ids);
+};
+
+typedef entities::Booking create_booking_response_t;
+
+BackendRequest CreateBooking(entities::hotel_id_t hotel_id,
+                          const CreateBookingRequestPayload &payload);
+
+// Get All Bookings
+typedef std::vector<entities::Booking> get_all_bookings_response_t;
+
+BackendRequest GetAllBookings(entities::hotel_id_t hotel_id);
+
 template <typename T>
 ResponseStatus GetResponse(BackendRequest &request, T &response_reference) {
   switch (request.layer) {

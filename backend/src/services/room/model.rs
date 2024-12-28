@@ -44,6 +44,24 @@ impl Room {
         Ok(room)
     }
 
+    pub async fn find(id: &i64) -> Result<Self, BackendError> {
+        let connection = db::get_connection();
+
+        let room = query_as!(
+            Self,
+            r#"
+                SELECT *
+                FROM rooms
+                WHERE id = $1
+            "#,
+            id,
+        )
+        .fetch_one(connection)
+        .await?;
+
+        Ok(room)
+    }
+
     pub async fn find_all_by_hotel_id(hotel_id: &i64) -> Result<Vec<Self>, BackendError> {
         let connection = db::get_connection();
 

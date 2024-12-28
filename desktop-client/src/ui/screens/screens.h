@@ -8,6 +8,8 @@
 namespace screens {
 void LoginScreen();
 
+void BookingsScreen();
+
 void DashboardScreen();
 
 void GuestsScreen();
