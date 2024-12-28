@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <unordered_map>
+#include <unordered_set>
 
 #include <imgui.h>
 #include <msgpack.hpp>
@@ -65,6 +66,8 @@ struct Data {
   std::unordered_map<entities::guest_id_t, entities::Guest> guests;
   std::unordered_map<entities::room_id_t, entities::Room> rooms;
   std::unordered_map<entities::booking_id_t, entities::Booking> bookings;
+  // TODO: maybe it's better to use something unordered
+  std::vector<entities::LongTimeGuest> long_time_guests;
 
   void Clear();
 };

@@ -117,7 +117,7 @@ BackendRequest GetAllRooms(const entities::hotel_id_t hotel_id) {
 
 // Bookings
 BackendRequest CreateBooking(entities::hotel_id_t hotel_id,
-                          const CreateBookingRequestPayload &payload) {
+                             const CreateBookingRequestPayload &payload) {
   msgpack::sbuffer buffer;
   msgpack::pack(buffer, payload);
 
@@ -134,6 +134,14 @@ BackendRequest GetAllBookings(const entities::hotel_id_t hotel_id) {
   BackendRequest request(
       app::api_worker.Enqueue(std::format("/hotels/{}/bookings", hotel_id)),
       Layer::kApi);
+  return request;
+}
+
+// Stats
+BackendRequest GetStatsLongTimeGuests(const entities::hotel_id_t hotel_id) {
+  BackendRequest request(app::api_worker.Enqueue(std::format(
+                             "/hotels/{}/stats/long-time-guests", hotel_id)),
+                         Layer::kApi);
   return request;
 }
 }  // namespace backend
