@@ -21,6 +21,12 @@ enum class RoomsScreenView {
   kRoomCreation,
 };
 
+enum class RoomsScreenRequestType {
+  kGetAllRooms,
+  kCreateRoom,
+  kNone,
+};
+
 struct NewRoom {
   char number[128];
   char group_name[128];
@@ -36,8 +42,8 @@ struct RoomsScreenState {
   RoomsScreenView view;
   NewRoom new_room;
   std::string creation_error;
-  bool is_requesting = false;
-  bool is_rooms_retrieved = false;
+  RoomsScreenRequestType request_type = RoomsScreenRequestType::kNone;
+  bool is_initial_retrieved = false;
   backend::BackendRequest request;
 
   RoomsScreenState()
@@ -83,8 +89,9 @@ void RoomsTopBar() {
   widgets::BodyTextDimmed(text.c_str());
 
   ImGui::SetCursorPos(button_position);
-  if (widgets::Button(button_text.c_str(), ImVec2(),
-                      rooms_screen_state.is_requesting)) {
+  if (widgets::Button(
+          button_text.c_str(), ImVec2(),
+          rooms_screen_state.request_type != RoomsScreenRequestType::kNone)) {
     rooms_screen_state.new_room = NewRoom();
     rooms_screen_state.creation_error = "";
 
@@ -172,6 +179,7 @@ void RoomCreationView() {
   auto viewport_work_size = ImGui::GetMainViewport()->WorkSize;
   auto occupied_size = ImVec2(viewport_work_size.x - available_region.x,
                               viewport_work_size.y - available_region.y);
+  const float items_width = 384.f;
 
   ImGui::SetNextWindowPos(
       ImVec2(viewport_work_size.x / 2.f + occupied_size.x / 2.f,
@@ -182,7 +190,6 @@ void RoomCreationView() {
   // Inputs
   {
     const auto style = ImGui::GetStyle();
-    const float items_width = 384.f;
 
     ImGui::PushItemWidth(items_width);
     ImGui::BeginGroup();
@@ -229,10 +236,11 @@ void RoomCreationView() {
   // Button
   {
     const auto is_create_button = widgets::Button(
-        "Create", ImVec2(384.f, 0.f), rooms_screen_state.is_requesting);
+        "Create", ImVec2(items_width, 0.f),
+        rooms_screen_state.request_type != RoomsScreenRequestType::kNone);
 
     if (is_create_button) {
-      rooms_screen_state.is_requesting = true;
+      rooms_screen_state.request_type = RoomsScreenRequestType::kCreateRoom;
       rooms_screen_state.request = CreateRoom(
           app::states::system.opened_hotel_id.value(),
           rooms_screen_state.new_room.ToBackendCreateRoomRequestPayload());
@@ -248,29 +256,30 @@ void RoomsScreen() {
     rooms_screen_state = RoomsScreenState();
   }
 
-  if (!rooms_screen_state.is_rooms_retrieved) {
-    rooms_screen_state.is_requesting = true;
-    rooms_screen_state.is_rooms_retrieved = true;
+  if (!rooms_screen_state.is_initial_retrieved) {
+    rooms_screen_state.request_type = RoomsScreenRequestType::kGetAllRooms;
+    rooms_screen_state.is_initial_retrieved = true;
     rooms_screen_state.request =
         backend::GetAllRooms(app::states::system.opened_hotel_id.value());
   }
 
-  if (rooms_screen_state.is_requesting &&
-      rooms_screen_state.view == RoomsScreenView::kRoomsTable) {
+  if (rooms_screen_state.request_type == RoomsScreenRequestType::kGetAllRooms) {
     backend::get_all_rooms_response_t get_all_rooms_response;
     const auto response =
         GetResponse(rooms_screen_state.request, get_all_rooms_response);
 
     if (response != backend::ResponseStatus::kInProcess) {
       app::states::data.rooms.clear();
-      rooms_screen_state.is_requesting = false;
+      rooms_screen_state.request_type = RoomsScreenRequestType::kNone;
     }
 
     if (response == backend::ResponseStatus::kCompleted)
       for (const auto& room : get_all_rooms_response)
         app::states::data.rooms[room.id] = room;
-  } else if (rooms_screen_state.is_requesting &&
-             rooms_screen_state.view == RoomsScreenView::kRoomCreation) {
+  }
+
+  else if (rooms_screen_state.request_type ==
+           RoomsScreenRequestType::kCreateRoom) {
     backend::create_room_response_t create_room_response;
 
     if (const auto response =
@@ -282,15 +291,16 @@ void RoomsScreen() {
 
       app::states::data.rooms[create_room_response.id] = create_room_response;
 
+      rooms_screen_state.request_type = RoomsScreenRequestType::kGetAllRooms;
       rooms_screen_state.request =
           backend::GetAllRooms(app::states::system.opened_hotel_id.value());
     } else if (response == backend::ResponseStatus::kCompetedWithError) {
       rooms_screen_state.creation_error =
           rooms_screen_state.request.error_response.message;
-      rooms_screen_state.is_requesting = false;
+      rooms_screen_state.request_type = RoomsScreenRequestType::kNone;
     } else if (response == backend::ResponseStatus::kError) {
       rooms_screen_state.creation_error = "Something went wrong";
-      rooms_screen_state.is_requesting = false;
+      rooms_screen_state.request_type = RoomsScreenRequestType::kNone;
     }
   }
 
