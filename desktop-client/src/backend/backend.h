@@ -258,13 +258,13 @@ ResponseStatus GetResponse(BackendRequest &request, T &response_reference) {
         object.convert(request.error_response);
         return ResponseStatus::kCompetedWithError;
       } catch (...) {
-        object.convert(response_reference);
-        return ResponseStatus::kCompleted;
+        try {
+          object.convert(response_reference);
+          return ResponseStatus::kCompleted;
+        } catch (...) {
+          return ResponseStatus::kError;
+        }
       }
-
-      //      catch (...) {
-      //        return ResponseStatus::kError;
-      //      }
     }
     default:
       // theoretically unreachable code
