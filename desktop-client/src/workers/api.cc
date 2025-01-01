@@ -22,6 +22,11 @@ void ApiWorker::Loop() {
     ix::WebSocketHttpHeaders headers;
     const auto args = http_client.createRequest();
 
+    auto tls_options = ix::SocketTLSOptions();
+    // FIXME: dangerous
+    tls_options.caFile = "NONE";
+    http_client.setTLSOptions(tls_options);
+
     headers.emplace("authorization", app::states::system.GetSessionToken());
 
     args->extraHeaders = headers;
