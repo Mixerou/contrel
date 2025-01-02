@@ -131,7 +131,7 @@ void DashboardScreen() {
 
   if (dashboard_screen_state.request_type ==
       DashboardScreenRequestType::kGetStatsLongTimeGuests) {
-    backend::get_stats_long_time_guests_response_t long_time_guests_response;
+    backend::GetStatsLongTimeGuestsResponse long_time_guests_response;
     const auto response =
         GetResponse(dashboard_screen_state.request, long_time_guests_response);
 
@@ -150,7 +150,7 @@ void DashboardScreen() {
 
   else if (dashboard_screen_state.request_type ==
            DashboardScreenRequestType::kGetAllRooms) {
-    backend::get_all_rooms_response_t get_all_rooms_response;
+    backend::GetAllRoomsResponse get_all_rooms_response;
     const auto response =
         GetResponse(dashboard_screen_state.request, get_all_rooms_response);
 
@@ -169,7 +169,7 @@ void DashboardScreen() {
 
   else if (dashboard_screen_state.request_type ==
            DashboardScreenRequestType::kGetAllGuests) {
-    backend::get_all_guests_response_t get_all_guests_response;
+    backend::GetAllGuestsResponse get_all_guests_response;
     const auto response =
         GetResponse(dashboard_screen_state.request, get_all_guests_response);
 

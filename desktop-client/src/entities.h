@@ -6,11 +6,11 @@
 #define DESKTOP_CLIENT_ENTITIES_H
 
 namespace entities {
-typedef int64_t user_id_t;
-typedef int64_t hotel_id_t;
-typedef int64_t guest_id_t;
-typedef int64_t room_id_t;
-typedef int64_t booking_id_t;
+typedef int64_t UserId;
+typedef int64_t HotelId;
+typedef int64_t GuestId;
+typedef int64_t RoomId;
+typedef int64_t BookingId;
 
 // Copied from some gist
 enum class Country : int16_t {
@@ -424,7 +424,7 @@ constexpr auto kAllGenders = std::array{
 };
 
 struct User {
-  user_id_t id;
+  UserId id;
   std::string email;
   std::string first_name;
   std::string last_name;
@@ -434,9 +434,9 @@ struct User {
 };
 
 struct Hotel {
-  user_id_t id;
+  UserId id;
   std::string name;
-  user_id_t owner_id;
+  UserId owner_id;
   int64_t created_at;
 
   MSGPACK_DEFINE(id, name, owner_id, created_at);
@@ -451,7 +451,7 @@ constexpr auto kAllDocumentTypes = std::array{
 };
 
 struct Guest {
-  guest_id_t id;
+  GuestId id;
   std::string first_name;
   std::string last_name;
   int64_t date_of_birth;
@@ -463,37 +463,37 @@ struct Guest {
   Country document_country;
   int64_t document_valid_until;
   std::string notes;
-  hotel_id_t hotel_id;
+  HotelId hotel_id;
   int64_t created_at;
 };
 
 struct Room {
-  room_id_t id;
+  RoomId id;
   std::string number;
   std::string group_name;
-  hotel_id_t hotel_id;
+  HotelId hotel_id;
   int64_t created_at;
 
   MSGPACK_DEFINE(id, number, group_name, hotel_id, created_at);
 };
 
 struct Booking {
-  booking_id_t id;
-  hotel_id_t hotel_id;
-  room_id_t room_id;
+  BookingId id;
+  HotelId hotel_id;
+  RoomId room_id;
   int64_t check_in_at;
   int64_t check_out_at;
   int64_t created_at;
-  std::vector<guest_id_t> guest_ids;
+  std::vector<GuestId> guest_ids;
 
   MSGPACK_DEFINE(id, hotel_id, room_id, check_in_at, check_out_at, created_at,
                  guest_ids);
 };
 
 struct LongTimeGuest {
-  guest_id_t guest_id;
-  hotel_id_t hotel_id;
-  room_id_t room_id;
+  GuestId guest_id;
+  HotelId hotel_id;
+  RoomId room_id;
   int64_t check_in_at;
   int64_t check_out_at;
 

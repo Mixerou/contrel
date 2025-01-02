@@ -72,7 +72,7 @@ BackendRequest GetAllHotels() {
 }
 
 // Guests
-BackendRequest CreateGuest(entities::hotel_id_t hotel_id,
+BackendRequest CreateGuest(entities::HotelId hotel_id,
                            const CreateGuestRequestPayload &payload) {
   msgpack::sbuffer buffer;
   msgpack::pack(buffer, payload);
@@ -86,7 +86,7 @@ BackendRequest CreateGuest(entities::hotel_id_t hotel_id,
   return request;
 }
 
-BackendRequest GetAllGuests(const entities::hotel_id_t hotel_id) {
+BackendRequest GetAllGuests(const entities::HotelId hotel_id) {
   BackendRequest request(
       app::api_worker.Enqueue(std::format("/hotels/{}/guests", hotel_id)),
       Layer::kApi);
@@ -94,7 +94,7 @@ BackendRequest GetAllGuests(const entities::hotel_id_t hotel_id) {
 }
 
 // Rooms
-BackendRequest CreateRoom(entities::hotel_id_t hotel_id,
+BackendRequest CreateRoom(entities::HotelId hotel_id,
                           const CreateRoomRequestPayload &payload) {
   msgpack::sbuffer buffer;
   msgpack::pack(buffer, payload);
@@ -108,7 +108,7 @@ BackendRequest CreateRoom(entities::hotel_id_t hotel_id,
   return request;
 }
 
-BackendRequest GetAllRooms(const entities::hotel_id_t hotel_id) {
+BackendRequest GetAllRooms(const entities::HotelId hotel_id) {
   BackendRequest request(
       app::api_worker.Enqueue(std::format("/hotels/{}/rooms", hotel_id)),
       Layer::kApi);
@@ -116,7 +116,7 @@ BackendRequest GetAllRooms(const entities::hotel_id_t hotel_id) {
 }
 
 // Bookings
-BackendRequest CreateBooking(entities::hotel_id_t hotel_id,
+BackendRequest CreateBooking(entities::HotelId hotel_id,
                              const CreateBookingRequestPayload &payload) {
   msgpack::sbuffer buffer;
   msgpack::pack(buffer, payload);
@@ -130,7 +130,7 @@ BackendRequest CreateBooking(entities::hotel_id_t hotel_id,
   return request;
 }
 
-BackendRequest GetAllBookings(const entities::hotel_id_t hotel_id) {
+BackendRequest GetAllBookings(const entities::HotelId hotel_id) {
   BackendRequest request(
       app::api_worker.Enqueue(std::format("/hotels/{}/bookings", hotel_id)),
       Layer::kApi);
@@ -138,7 +138,7 @@ BackendRequest GetAllBookings(const entities::hotel_id_t hotel_id) {
 }
 
 // Stats
-BackendRequest GetStatsLongTimeGuests(const entities::hotel_id_t hotel_id) {
+BackendRequest GetStatsLongTimeGuests(const entities::HotelId hotel_id) {
   BackendRequest request(app::api_worker.Enqueue(std::format(
                              "/hotels/{}/stats/long-time-guests", hotel_id)),
                          Layer::kApi);

@@ -18,12 +18,12 @@
 using namespace constants;
 
 struct NewBooking {
-  entities::room_id_t room_id;
+  entities::RoomId room_id;
   char check_in_at[128];
   char check_out_at[128];
   std::string last_checked_dates;
-  std::vector<entities::room_id_t> unavailable_room_ids;
-  std::vector<entities::guest_id_t> guest_ids;
+  std::vector<entities::RoomId> unavailable_room_ids;
+  std::vector<entities::GuestId> guest_ids;
 
   NewBooking() : room_id(0), check_in_at(""), check_out_at("") {}
 
@@ -529,7 +529,7 @@ void BookingsScreen() {
 
   if (bookings_screen_state.request_type ==
       BookingsScreenRequestType::kGetAllBookings) {
-    backend::get_all_bookings_response_t get_all_bookings_response;
+    backend::GetAllBookingsResponse get_all_bookings_response;
     const auto response =
         GetResponse(bookings_screen_state.request, get_all_bookings_response);
 
@@ -548,7 +548,7 @@ void BookingsScreen() {
 
   else if (bookings_screen_state.request_type ==
            BookingsScreenRequestType::kGetAllRooms) {
-    backend::get_all_rooms_response_t get_all_rooms_response;
+    backend::GetAllRoomsResponse get_all_rooms_response;
     const auto response =
         GetResponse(bookings_screen_state.request, get_all_rooms_response);
 
@@ -567,7 +567,7 @@ void BookingsScreen() {
 
   else if (bookings_screen_state.request_type ==
            BookingsScreenRequestType::kGetAllGuests) {
-    backend::get_all_guests_response_t get_all_guests_response;
+    backend::GetAllGuestsResponse get_all_guests_response;
     const auto response =
         GetResponse(bookings_screen_state.request, get_all_guests_response);
 
@@ -583,7 +583,7 @@ void BookingsScreen() {
 
   else if (bookings_screen_state.request_type ==
            BookingsScreenRequestType::kCreateBooking) {
-    backend::create_booking_response_t create_booking_response;
+    backend::CreateBookingResponse create_booking_response;
 
     if (const auto response =
             GetResponse(bookings_screen_state.request, create_booking_response);

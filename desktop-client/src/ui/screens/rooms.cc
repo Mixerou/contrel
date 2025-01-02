@@ -264,7 +264,7 @@ void RoomsScreen() {
   }
 
   if (rooms_screen_state.request_type == RoomsScreenRequestType::kGetAllRooms) {
-    backend::get_all_rooms_response_t get_all_rooms_response;
+    backend::GetAllRoomsResponse get_all_rooms_response;
     const auto response =
         GetResponse(rooms_screen_state.request, get_all_rooms_response);
 
@@ -280,7 +280,7 @@ void RoomsScreen() {
 
   else if (rooms_screen_state.request_type ==
            RoomsScreenRequestType::kCreateRoom) {
-    backend::create_room_response_t create_room_response;
+    backend::CreateRoomResponse create_room_response;
 
     if (const auto response =
             GetResponse(rooms_screen_state.request, create_room_response);

@@ -38,8 +38,8 @@ struct System {
   };
 
   Screen current_screen;
-  entities::user_id_t user_id;
-  std::optional<entities::hotel_id_t> opened_hotel_id;
+  entities::UserId user_id;
+  std::optional<entities::HotelId> opened_hotel_id;
   bool is_online;
 
   System();
@@ -61,11 +61,11 @@ struct System {
 };
 
 struct Data {
-  std::unordered_map<entities::user_id_t, entities::User> users;
-  std::unordered_map<entities::hotel_id_t, entities::Hotel> hotels;
-  std::unordered_map<entities::guest_id_t, entities::Guest> guests;
-  std::unordered_map<entities::room_id_t, entities::Room> rooms;
-  std::unordered_map<entities::booking_id_t, entities::Booking> bookings;
+  std::unordered_map<entities::UserId, entities::User> users;
+  std::unordered_map<entities::HotelId, entities::Hotel> hotels;
+  std::unordered_map<entities::GuestId, entities::Guest> guests;
+  std::unordered_map<entities::RoomId, entities::Room> rooms;
+  std::unordered_map<entities::BookingId, entities::Booking> bookings;
   // TODO: maybe it's better to use something unordered
   std::vector<entities::LongTimeGuest> long_time_guests;
 

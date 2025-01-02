@@ -123,7 +123,7 @@ void HotelsScreen() {
   }
 
   if (is_requesting && is_creating_hotel) {
-    backend::create_hotel_response_t create_hotel_response;
+    backend::CreateHotelResponse create_hotel_response;
 
     if (const auto response = GetResponse(request, create_hotel_response);
         response == backend::ResponseStatus::kCompleted) {
@@ -145,7 +145,7 @@ void HotelsScreen() {
   }
 
   if (is_requesting && !is_creating_hotel) {
-    backend::get_all_hotels_response_t get_all_hotels_response;
+    backend::GetAllHotelsResponse get_all_hotels_response;
     const auto response = GetResponse(request, get_all_hotels_response);
 
     if (response == backend::ResponseStatus::kCompleted) {

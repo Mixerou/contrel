@@ -54,7 +54,7 @@ struct EmptyResponse {
 };
 
 // Ping
-typedef std::string ping_response_t;
+typedef std::string PingResponse;
 
 BackendRequest Ping();
 
@@ -84,7 +84,7 @@ BackendRequest Register(const RegisterRequestPayload &payload);
 BackendRequest Logout();
 
 // Get Me
-typedef entities::User get_me_response_t;
+typedef entities::User GetMeResponse;
 
 BackendRequest GetMe();
 
@@ -95,18 +95,18 @@ struct CreateHotelRequestPayload {
   MSGPACK_DEFINE(name);
 };
 
-typedef entities::Hotel create_hotel_response_t;
+typedef entities::Hotel CreateHotelResponse;
 
 BackendRequest CreateHotel(const CreateHotelRequestPayload &payload);
 
 // Get All Hotels
-typedef std::vector<entities::Hotel> get_all_hotels_response_t;
+typedef std::vector<entities::Hotel> GetAllHotelsResponse;
 
 BackendRequest GetAllHotels();
 
 // For Guest Requests
 struct GetGuestResponse {
-  entities::guest_id_t id;
+  entities::GuestId id;
   std::string first_name;
   std::string last_name;
   int64_t date_of_birth;
@@ -118,7 +118,7 @@ struct GetGuestResponse {
   int16_t document_country;
   int64_t document_valid_until;
   std::string notes;
-  entities::hotel_id_t hotel_id;
+  entities::HotelId hotel_id;
   int64_t created_at;
 
   entities::Guest ToGuest() const {
@@ -181,15 +181,15 @@ struct CreateGuestRequestPayload {
                  document_valid_until, notes);
 };
 
-typedef GetGuestResponse create_guest_response_t;
+typedef GetGuestResponse CreateGuestResponse;
 
-BackendRequest CreateGuest(entities::hotel_id_t hotel_id,
+BackendRequest CreateGuest(entities::HotelId hotel_id,
                            const CreateGuestRequestPayload &payload);
 
 // Get All Guests
-typedef std::vector<GetGuestResponse> get_all_guests_response_t;
+typedef std::vector<GetGuestResponse> GetAllGuestsResponse;
 
-BackendRequest GetAllGuests(entities::hotel_id_t hotel_id);
+BackendRequest GetAllGuests(entities::HotelId hotel_id);
 
 // Create Room
 struct CreateRoomRequestPayload {
@@ -199,41 +199,40 @@ struct CreateRoomRequestPayload {
   MSGPACK_DEFINE(number, group_name);
 };
 
-typedef entities::Room create_room_response_t;
+typedef entities::Room CreateRoomResponse;
 
-BackendRequest CreateRoom(entities::hotel_id_t hotel_id,
+BackendRequest CreateRoom(entities::HotelId hotel_id,
                           const CreateRoomRequestPayload &payload);
 
 // Get All Rooms
-typedef std::vector<entities::Room> get_all_rooms_response_t;
+typedef std::vector<entities::Room> GetAllRoomsResponse;
 
-BackendRequest GetAllRooms(entities::hotel_id_t hotel_id);
+BackendRequest GetAllRooms(entities::HotelId hotel_id);
 
 // Create Booking
 struct CreateBookingRequestPayload {
-  entities::room_id_t room_id;
+  entities::RoomId room_id;
   int64_t check_in_at;
   int64_t check_out_at;
-  std::vector<entities::guest_id_t> guest_ids;
+  std::vector<entities::GuestId> guest_ids;
 
   MSGPACK_DEFINE(room_id, check_in_at, check_out_at, guest_ids);
 };
 
-typedef entities::Booking create_booking_response_t;
+typedef entities::Booking CreateBookingResponse;
 
-BackendRequest CreateBooking(entities::hotel_id_t hotel_id,
+BackendRequest CreateBooking(entities::HotelId hotel_id,
                              const CreateBookingRequestPayload &payload);
 
 // Get All Bookings
-typedef std::vector<entities::Booking> get_all_bookings_response_t;
+typedef std::vector<entities::Booking> GetAllBookingsResponse;
 
-BackendRequest GetAllBookings(entities::hotel_id_t hotel_id);
+BackendRequest GetAllBookings(entities::HotelId hotel_id);
 
 // Get Stats Long-Time Guests
-typedef std::vector<entities::LongTimeGuest>
-    get_stats_long_time_guests_response_t;
+typedef std::vector<entities::LongTimeGuest> GetStatsLongTimeGuestsResponse;
 
-BackendRequest GetStatsLongTimeGuests(entities::hotel_id_t hotel_id);
+BackendRequest GetStatsLongTimeGuests(entities::HotelId hotel_id);
 
 template <typename T>
 ResponseStatus GetResponse(BackendRequest &request, T &response_reference) {

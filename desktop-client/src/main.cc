@@ -94,7 +94,7 @@ int main(int, char **) {
       static backend::BackendRequest request;
 
       if (is_ping_requested) {
-        backend::ping_response_t response_body;
+        backend::PingResponse response_body;
         const auto response = GetResponse(request, response_body);
 
         if (response != backend::ResponseStatus::kInProcess) {

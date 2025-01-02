@@ -71,7 +71,7 @@ struct NewGuest {
 
 struct GuestsScreenState {
   GuestsScreenView view = GuestsScreenView::kGuestsTable;
-  entities::guest_id_t guest_to_view_id = 0;
+  entities::GuestId guest_to_view_id = 0;
   NewGuest new_guest = NewGuest();
   std::string creation_error;
   GuestsScreenRequestType request_type = GuestsScreenRequestType::kNone;
@@ -590,7 +590,7 @@ void GuestsScreen() {
 
   if (guests_screen_state.request_type ==
       GuestsScreenRequestType::kGetAllGuests) {
-    backend::get_all_guests_response_t get_all_guests_response;
+    backend::GetAllGuestsResponse get_all_guests_response;
     const auto response =
         GetResponse(guests_screen_state.request, get_all_guests_response);
 
@@ -606,7 +606,7 @@ void GuestsScreen() {
 
   else if (guests_screen_state.request_type ==
            GuestsScreenRequestType::kCreateGuest) {
-    backend::create_guest_response_t create_guest_response;
+    backend::CreateGuestResponse create_guest_response;
 
     if (const auto response =
             GetResponse(guests_screen_state.request, create_guest_response);

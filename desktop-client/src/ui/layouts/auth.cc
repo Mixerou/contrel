@@ -27,7 +27,7 @@ bool BeginAuthLayout() {
   }
 
   if (is_requesting) {
-    backend::get_me_response_t get_me_response;
+    backend::GetMeResponse get_me_response;
     const auto response = GetResponse(request, get_me_response);
 
     if (response == backend::ResponseStatus::kCompleted) {
